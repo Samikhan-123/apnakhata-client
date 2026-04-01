@@ -81,7 +81,7 @@ export default function LoginPage() {
               </h1>
             </div>
             <p className="text-lg text-muted-foreground font-bold max-w-sm leading-relaxed">
-              Experience the simplest way to track your expenses and build your savings. No jargon, no complexity.
+              Experience the simplest way to track your expenses and build your savings. No difficulty, no complexity.
             </p>
 
             <div className="flex items-center gap-10 pt-10">
