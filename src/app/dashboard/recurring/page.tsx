@@ -107,7 +107,7 @@ export default function RecurringPage() {
     }
 
     try {
-      const executionDateTime = new Date(`${nextDate}T12:00:00`); // Default to 12 PM Noon
+      const executionDateTime = new Date(`${nextDate}T12:00:00`); // Default to 12 PM daytime
       
       await recurringService.create({
         description: description.toLowerCase(),

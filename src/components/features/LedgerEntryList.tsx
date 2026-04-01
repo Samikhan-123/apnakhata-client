@@ -55,7 +55,7 @@ export const LedgerEntryList = ({ ledgerEntries, onDelete }: { ledgerEntries: an
               key={entry.id}
               className="premium-card rounded-2xl p-5 flex items-center group transition-all hover:bg-muted/5 border-border/40"
             >
-              {/* Icon Container */}
+              {/* Icons Container */}
               <div className={cn(
                 "w-12 h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105",
                 isIncome

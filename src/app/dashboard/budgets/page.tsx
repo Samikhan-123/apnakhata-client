@@ -8,14 +8,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { 
-  Plus, 
-  ChevronLeft, 
-  ChevronRight, 
-  Trash2, 
-  Calendar as CalendarIcon, 
-  TrendingUp, 
-  AlertCircle 
+import {
+  Plus,
+  ChevronLeft,
+  ChevronRight,
+  Trash2,
+  Calendar as CalendarIcon,
+  TrendingUp,
+  AlertCircle
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { cn, capitalize } from '@/lib/utils';
@@ -142,51 +142,51 @@ export default function BudgetsPage() {
           <div className="w-1.5 h-1.5 rounded-full bg-primary" />
           <span className="text-xs font-bold text-muted-foreground/50 uppercase tracking-wide">Live Tracking</span>
         </div>
-        
-        <Button 
+
+        <Button
           onClick={() => setIsModalOpen(true)}
           className="h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2"
         >
           <Plus size={18} />
           <span>New Budget</span>
         </Button>
-
+        {/* modal  */}
         <CustomModal
           isOpen={isModalOpen}
           onClose={setIsModalOpen}
           title="Plan Spending"
-          description={`Choose a category and set your spending goal for ${months[selectedMonth-1]}.`}
+          description={`Choose a category and set your spending goal for ${months[selectedMonth - 1]}.`}
         >
-              <form onSubmit={handleSetBudget} className="space-y-6">
-                <div className="space-y-3">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 px-1">Category</Label>
-                  <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
-                    <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                      <SelectValue placeholder="Select Category" />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl border-none shadow-2xl">
-                      {categories.map(cat => (
-                        <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+          <form onSubmit={handleSetBudget} className="space-y-6">
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 px-1">Category</Label>
+              <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
+                <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                  <SelectValue placeholder="Select Category" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-none shadow-2xl">
+                  {categories.map(cat => (
+                    <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-                <div className="space-y-3">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 px-1">Budget Limit ({currency})</Label>
-                  <Input
-                    type="number"
-                    placeholder="0.00"
-                    value={limit}
-                    onChange={(e) => setLimit(e.target.value)}
-                    className="h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6"
-                  />
-                </div>
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 px-1">Budget Limit ({currency})</Label>
+              <Input
+                type="number"
+                placeholder="0.00"
+                value={limit}
+                onChange={(e) => setLimit(e.target.value)}
+                className="h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6"
+              />
+            </div>
 
-                <Button type="submit" className="w-full h-18 bg-primary text-primary-foreground hover:scale-[1.02] rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-2xl active:scale-95">
-                  Save Goal
-                </Button>
-              </form>
+            <Button type="submit" className="w-full h-18 bg-primary text-primary-foreground hover:scale-[1.02] rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-2xl active:scale-95">
+              Save Goal
+            </Button>
+          </form>
         </CustomModal>
       </div>
 
@@ -214,72 +214,72 @@ export default function BudgetsPage() {
                   duration={0.5}
                 >
                   <div className="premium-card rounded-2xl p-6 lg:p-8 relative h-full transition-all hover:bg-muted/5 border-border/40">
-                  {budget.isOverBudget && (
-                    <div className="absolute top-0 right-8 py-1 px-4 bg-rose-500 text-[10px] font-bold text-white uppercase tracking-wider rounded-b-xl z-10">
-                      Limit Reached
-                    </div>
-                  )}
-
-                  <div className="flex items-start justify-between mb-8">
-                    <div className="flex items-center gap-4">
-                      <div className={cn(
-                        "h-12 w-12 rounded-xl flex items-center justify-center border",
-                        statusColor === 'rose' ? "bg-rose-500/5 text-rose-600 border-rose-500/10" :
-                        statusColor === 'amber' ? "bg-amber-500/5 text-amber-600 border-amber-500/10" :
-                        "bg-emerald-500/5 text-emerald-600 border-emerald-500/10"
-                      )}>
-                        <Icon size={24} />
+                    {budget.isOverBudget && (
+                      <div className="absolute top-0 right-8 py-1 px-4 bg-rose-500 text-[10px] font-bold text-white uppercase tracking-wider rounded-b-xl z-10">
+                        Limit Reached
                       </div>
+                    )}
+
+                    <div className="flex items-start justify-between mb-8">
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "h-12 w-12 rounded-xl flex items-center justify-center border",
+                          statusColor === 'rose' ? "bg-rose-500/5 text-rose-600 border-rose-500/10" :
+                            statusColor === 'amber' ? "bg-amber-500/5 text-amber-600 border-amber-500/10" :
+                              "bg-emerald-500/5 text-emerald-600 border-emerald-500/10"
+                        )}>
+                          <Icon size={24} />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-foreground text-lg tracking-tight">{capitalize(budget.category.name)}</h4>
+                          <p className="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-widest mt-0.5">
+                            Category Goal
+                          </p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost" size="icon"
+                        className="h-9 w-9 text-muted-foreground/30 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
+                        onClick={() => setDeleteId(budget.id)}
+                      >
+                        <Trash2 size={16} />
+                      </Button>
+                    </div>
+
+                    <div className="flex justify-between items-end mb-3">
                       <div>
-                        <h4 className="font-bold text-foreground text-lg tracking-tight">{capitalize(budget.category.name)}</h4>
-                        <p className="text-[11px] font-medium text-muted-foreground/40 uppercase tracking-widest mt-0.5">
-                          Category Goal
-                        </p>
+                        <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider mb-0.5">Spent</p>
+                        <p className="text-xl font-bold tabular-nums text-foreground">{formatCurrency(budget.spent)}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider mb-0.5">Limit</p>
+                        <p className="text-xl font-bold tabular-nums text-muted-foreground/40">{formatCurrency(budget.limit)}</p>
                       </div>
                     </div>
-                    <Button
-                      variant="ghost" size="icon"
-                      className="h-9 w-9 text-muted-foreground/30 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
-                      onClick={() => setDeleteId(budget.id)}
-                    >
-                      <Trash2 size={16} />
-                    </Button>
-                  </div>
 
-                  <div className="flex justify-between items-end mb-3">
-                    <div>
-                      <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider mb-0.5">Spent</p>
-                      <p className="text-xl font-bold tabular-nums text-foreground">{formatCurrency(budget.spent)}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider mb-0.5">Limit</p>
-                      <p className="text-xl font-bold tabular-nums text-muted-foreground/40">{formatCurrency(budget.limit)}</p>
-                    </div>
-                  </div>
-
-                  <div className="space-y-3">
-                    <div className="h-2 w-full bg-muted/30 rounded-full overflow-hidden">
-                      <div
-                        className={cn(
-                          "h-full rounded-full transition-all duration-1000",
-                          budget.isOverBudget ? "bg-rose-500" : budget.progress > 80 ? "bg-amber-500" : "bg-primary"
-                        )}
-                        style={{ width: `${Math.min(100, budget.progress)}%` }}
-                      />
-                    </div>
-                    <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider">
-                      <span className={cn(
-                        budget.isOverBudget ? "text-rose-600" : "text-muted-foreground/60"
-                      )}>
-                        {Math.round(budget.progress)}% Used
-                      </span>
-                      <span className="text-muted-foreground/40">
-                        {formatCurrency(Math.max(0, budget.limit - budget.spent))} Left
-                      </span>
+                    <div className="space-y-3">
+                      <div className="h-2 w-full bg-muted/30 rounded-full overflow-hidden">
+                        <div
+                          className={cn(
+                            "h-full rounded-full transition-all duration-1000",
+                            budget.isOverBudget ? "bg-rose-500" : budget.progress > 80 ? "bg-amber-500" : "bg-primary"
+                          )}
+                          style={{ width: `${Math.min(100, budget.progress)}%` }}
+                        />
+                      </div>
+                      <div className="flex justify-between text-[11px] font-bold uppercase tracking-wider">
+                        <span className={cn(
+                          budget.isOverBudget ? "text-rose-600" : "text-muted-foreground/60"
+                        )}>
+                          {Math.round(budget.progress)}% Used
+                        </span>
+                        <span className="text-muted-foreground/40">
+                          {formatCurrency(Math.max(0, budget.limit - budget.spent))} Left
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </SlideIn>
+                </SlideIn>
               );
             })}
           </div>
@@ -294,7 +294,7 @@ export default function BudgetsPage() {
         title="Remove this goal?"
         description="Are you sure you want to stop tracking this goal? This will remove your spending limit for this category this month."
       />
-      
+
       {/* Footer Info Box */}
       <div className="mt-12">
         <div className="premium-card rounded-3xl p-8 flex flex-col md:flex-row gap-8 items-center bg-transparent border-dashed">

@@ -90,7 +90,7 @@ export const LedgerEntryForm = ({
         const catData = await categoryService.getAll();
         setCategories(catData || []);
       } catch (error) {
-        console.error('Failed to fetch categories:', error);
+        // console.error('Failed to fetch categories:', error);
       }
     };
     fetchCategories();
