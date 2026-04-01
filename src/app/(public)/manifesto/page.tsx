@@ -1,0 +1,75 @@
+'use client';
+
+import React from 'react';
+import { Heart, ShieldCheck, Zap, TrendingUp, Gem } from 'lucide-react';
+import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
+
+export default function ManifestoPage() {
+  return (
+    <div className="max-w-4xl mx-auto px-6 py-24 space-y-24">
+      <header className="text-center space-y-6">
+        <SlideIn duration={0.5}>
+          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">The Vision</p>
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85]">
+            Our <br /> <span className="text-primary italic">Manifesto.</span>
+          </h1>
+          <p className="text-muted-foreground text-xl font-bold max-w-xl mx-auto mt-8 leading-relaxed">
+            We believe that financial peace shouldn't be a luxury. It should be the default.
+          </p>
+        </SlideIn>
+      </header>
+
+      <section className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <FadeIn delay={0.2}>
+          <div className="premium-card p-10 rounded-[3rem] border-border/40 h-full">
+            <div className="w-14 h-14 bg-primary/5 text-primary rounded-2xl flex items-center justify-center mb-6">
+              <ShieldCheck size={28} />
+            </div>
+            <h3 className="text-2xl font-black tracking-tight mb-4 text-foreground">Radical Simple</h3>
+            <p className="text-muted-foreground font-medium leading-relaxed">
+              Most apps are built to keep you scrolling. We build to get you in, recorded, and back to your life. Simple is harder than complex, but it's always better.
+            </p>
+          </div>
+        </FadeIn>
+
+        <FadeIn delay={0.3}>
+          <div className="premium-card p-10 rounded-[3rem] border-border/40 h-full">
+            <div className="w-14 h-14 bg-rose-500/5 text-rose-500 rounded-2xl flex items-center justify-center mb-6">
+              <Heart size={28} />
+            </div>
+            <h3 className="text-2xl font-black tracking-tight mb-4 text-foreground">Human Centered</h3>
+            <p className="text-muted-foreground font-medium leading-relaxed">
+              You aren't a data point. You're a human being trying to build a better future. Every feature we build starts with how it makes you feel.
+            </p>
+          </div>
+        </FadeIn>
+      </section>
+
+      <article className="prose prose-emerald dark:prose-invert max-w-none space-y-8">
+        <FadeIn delay={0.4}>
+          <h2 className="text-3xl font-black tracking-tight text-foreground">Why we built Apna Khata?</h2>
+          <p className="text-lg text-muted-foreground font-medium leading-8">
+            Apna Khata was born out of frustration. Frustration with apps that felt like casinos, apps that sold your data, and apps that were so complex you needed a degree in finance to use them.
+          </p>
+          <p className="text-lg text-muted-foreground font-medium leading-8">
+            We wanted something elegant. Something that felt like a tool, not a trap. A place where you can see your financial truth without the noise. 
+          </p>
+          <p className="text-lg text-muted-foreground font-medium leading-8">
+            Our mission is simple: To empower every individual with the clarity they need to live a life free from financial anxiety. 
+          </p>
+        </FadeIn>
+      </article>
+
+      <FadeIn delay={0.5}>
+        <div className="bg-primary/5 rounded-[3rem] p-12 text-center border border-primary/10">
+          <TrendingUp className="h-12 w-12 text-primary mx-auto mb-6" />
+          <h3 className="text-3xl font-black tracking-tight mb-4 text-foreground">Join the Movement</h3>
+          <p className="text-muted-foreground font-bold mb-8">Ready to take control? It starts with one entry.</p>
+          <a href="/register" className="inline-flex items-center justify-center h-14 px-8 rounded-2xl bg-primary text-primary-foreground font-black transition-all hover:scale-105 shadow-xl shadow-primary/20">
+            Create Free Account
+          </a>
+        </div>
+      </FadeIn>
+    </div>
+  );
+}
