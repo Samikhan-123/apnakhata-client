@@ -20,7 +20,7 @@ interface DashboardChartsProps {
 export function DashboardCharts({ stats }: DashboardChartsProps) {
   const { formatCurrency } = useCurrency();
 
-  // Use pre-computed monthly trends from service
+  //  pre-computed monthly trends from service
   const data = stats?.monthlyTrends || [];
 
   if (data.length === 0) {

@@ -121,7 +121,7 @@ export default function LandingPage() {
               <div className="w-14 h-14 bg-rose-500/5 text-rose-500 rounded-2xl flex items-center justify-center mb-8 border border-rose-500/10 group-hover:scale-110 transition-transform">
                 <ShieldCheck size={28} />
               </div>
-              <h4 className="text-xl font-black tracking-tight mb-3">Military Security</h4>
+              <h4 className="text-xl font-black tracking-tight mb-3">Top-Notch Security</h4>
               <p className="text-muted-foreground font-bold text-sm leading-relaxed">
                 Your data is protected with end-to-end encryption. Only you hold the keys to your financial life.
               </p>

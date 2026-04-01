@@ -36,7 +36,7 @@ const menuGroups = [
       { name: 'Ledger', icon: ReceiptText, href: '/dashboard/ledger' },
       { name: 'Categories', icon: Tags, href: '/dashboard/categories' },
       { name: 'Budgets', icon: PiggyBank, href: '/dashboard/budgets' },
-      { name: 'Recurring', icon: RefreshCcw, href: '/dashboard/recurring' },
+      { name: 'Auto-Pay', icon: RefreshCcw, href: '/dashboard/recurring' },
     ]
   },
   {

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { cn, capitalize } from '@/lib/utils';
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
+// import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { CustomModal } from '@/components/ui/CustomModal';
@@ -53,7 +53,7 @@ export default function BudgetsPage() {
         setSelectedCategoryId(catData[0].id);
       }
     } catch (error) {
-      console.error('Failed to fetch budget data:', error);
+      // console.error('Failed to fetch budget data:', error);
     } finally {
       setLoading(false);
     }

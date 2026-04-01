@@ -95,10 +95,10 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
         </Button>
 
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="rounded-full w-10 h-10 text-muted-foreground relative hover:bg-muted/50 transition-all active:scale-95">
+        {/* <Button variant="ghost" size="icon" className="rounded-full w-10 h-10 text-muted-foreground relative hover:bg-muted/50 transition-all active:scale-95">
           <Bell className="h-5 w-5" />
           <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-primary rounded-full border-2 border-background animate-pulse"></span>
-        </Button>
+        </Button> */}
 
         <div className="hidden md:block h-8 w-px bg-border/40 mx-2"></div>
 

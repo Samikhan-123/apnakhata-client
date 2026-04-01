@@ -51,9 +51,9 @@ export default function RecurringPage() {
     toast.promise(
       (async () => {
         try {
-          console.log('[SYNC_DEBUG] Triggering recurringService.processManual()...');
+          // console.log('[SYNC_DEBUG] Triggering recurringService.processManual()...');
           const response = await recurringService.processManual();
-          console.log('[SYNC_DEBUG] Service Response:', response);
+          // console.log('[SYNC_DEBUG] Service Response:', response);
           
           // The server response doesn't have a 'success' boolean, it has successCount and message
           if (response.successCount === 0 && response.count > 0 && !response.message?.includes('Successfully synced')) {
@@ -63,7 +63,7 @@ export default function RecurringPage() {
           await fetchData(); // Refresh patterns
           return response.message || `Successfully synced ${response.successCount} tasks.`;
         } catch (err: any) {
-          console.error('[SYNC_DEBUG] Error during sync:', err);
+          // console.error('[SYNC_DEBUG] Error during sync:', err);
           throw err;
         }
       })(),
@@ -118,7 +118,7 @@ export default function RecurringPage() {
         nextExecution: executionDateTime.toISOString()
       });
       
-      toast.success("Recurring task added successfully");
+      toast.success("Automated task added successfully");
       setIsModalOpen(false);
       resetForm();
       fetchData();
@@ -168,7 +168,7 @@ export default function RecurringPage() {
       {/* Header & Status Center */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Recurring</h1>
+          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Automated</h1>
           <p className="text-muted-foreground font-medium mt-2 text-lg max-w-lg">
             Manage your automated payments and regular income entries in one place.
           </p>
@@ -200,7 +200,7 @@ export default function RecurringPage() {
         <CustomModal
             isOpen={isModalOpen}
             onClose={setIsModalOpen}
-            title="New Recurring Task"
+            title="New Automated Task"
             description="Setup a regular payment or automated income."
             maxWidth="550px"
           >
@@ -305,7 +305,7 @@ export default function RecurringPage() {
                 </div>
 
                 <Button type="submit" className="w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all mt-4">
-                   Start Recurring Task
+                   Start Automated Task
                 </Button>
               </form>
           </CustomModal>
@@ -334,7 +334,7 @@ export default function RecurringPage() {
               <Plus size={32} className="text-primary/15" />
             </div>
             <h4 className="text-xl font-bold tracking-tight mb-2">No tasks found</h4>
-            <p className="text-muted-foreground font-medium text-sm max-w-sm mx-auto">Add a recurring payment or income to see it here.</p>
+            <p className="text-muted-foreground font-medium text-sm max-w-sm mx-auto">Add a automated payment or income to see it here.</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -429,7 +429,7 @@ export default function RecurringPage() {
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
         title="Stop this task?"
-        description="Are you sure you want to stop this recurring entry? This won't affect your past records, but no new entries will be added automatically."
+        description="Are you sure you want to stop this automated entry? This won't affect your past records, but no new entries will be added automatically."
         loading={isDeleting}
       />
     </div>
