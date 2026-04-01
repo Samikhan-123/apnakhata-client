@@ -171,7 +171,7 @@ export default function RegisterPage() {
                   </HeightChange>
                 </div>
 
-                {/* Password */}
+                {/* stong Password */}
                 <div className="space-y-2.5">
                   <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1">Secure Password</Label>
                   <PasswordInput 

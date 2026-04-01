@@ -150,7 +150,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer section */}
       <PublicFooter />
     </div>
   );

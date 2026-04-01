@@ -73,7 +73,7 @@ export default function DashboardPage() {
         </header>
       </SlideIn>
 
-      {/* Stats Grid - Professional Cards */}
+      {/* Stats Grid -  Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
         {[
           { label: 'Total Balance', value: allTimeBalance, icon: Wallet, color: 'primary', description: 'Available funds' },
