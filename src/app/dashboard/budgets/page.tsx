@@ -150,7 +150,7 @@ export default function BudgetsPage() {
           <Plus size={18} />
           <span>New Budget</span>
         </Button>
-        {/* modal  */}
+        {/* popup modal */}
         <CustomModal
           isOpen={isModalOpen}
           onClose={setIsModalOpen}

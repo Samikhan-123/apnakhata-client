@@ -78,7 +78,6 @@ export default function ReportsPage() {
       const data = await ledgerEntryService.getStats(currentFilters);
       setStats(data);
     } catch (error) {
-      // console.error('Failed to fetch stats:', error );
     } finally {
       setLoading(false);
       setIsRefreshing(false);

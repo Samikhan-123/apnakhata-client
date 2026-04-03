@@ -52,6 +52,7 @@ export default function DashboardPage() {
   const monthlyExpense = stats?.overview?.totalExpense || 0;
 
   return (
+    // main container
     <div className="space-y-12 pb-12">
       <SlideIn duration={0.5}>
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">

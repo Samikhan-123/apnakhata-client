@@ -129,7 +129,7 @@ export default function LedgerPage() {
         </header>
       </SlideIn>
 
-      {/* Dynamic Stats Row */}
+      {/* Dynamic Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           { label: 'Available Balance', value: overview?.remainingBalance || 0, icon: Wallet, color: 'primary' },

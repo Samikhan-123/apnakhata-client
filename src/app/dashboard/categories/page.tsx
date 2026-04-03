@@ -25,7 +25,7 @@ export default function CategoriesPage() {
 
   return (
     <div className="space-y-12 pb-20 max-w-7xl mx-auto">
-      {/* Header Section -- */}
+      {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <SlideIn duration={0.5}>
           <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Categories</h1>
