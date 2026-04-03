@@ -196,7 +196,7 @@ export default function LedgerPage() {
               fetchData(filters, pagination.page);
             }}
           />
-          {/* Pagination */}
+          {/* Pagination for ledger entries */}
           <PaginationPlus
             currentPage={pagination.page}
             totalPages={pagination.totalPages}

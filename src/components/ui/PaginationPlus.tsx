@@ -14,7 +14,7 @@ interface PaginationPlusProps {
   onPageChange: (page: number) => void;
   className?: string;
 }
-
+// pagination component custom feature
 export function PaginationPlus({
   currentPage,
   totalPages,
