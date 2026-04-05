@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { cn } from '@/lib/utils';
+import Link from 'next/link';
 
 export const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -21,7 +22,7 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
 
         <main className="flex-1 flex flex-col scroll-smooth">
-          <div className="dashboard-container flex-1 p-4 md:p-8">
+          <div className="dashboard-container flex-1">
             {children}
           </div>
 
@@ -29,9 +30,9 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em]">
               <p>&copy; {new Date().getFullYear()} Apna Khata • Human Edition</p>
               <div className="flex gap-6">
-                <span className="cursor-pointer hover:text-primary transition-colors">Premium Experience</span>
-                <span className="cursor-pointer hover:text-primary transition-colors">Safety Standards</span>
-                <span className="cursor-pointer hover:text-primary transition-colors">Help & Support</span>
+                <Link href="/premium-experience" className="hover:text-primary transition-colors cursor-pointer">Premium Experience</Link>
+                <Link href="/manifesto" className="hover:text-primary transition-colors cursor-pointer">Manifesto</Link>
+                <Link href="/contact" className="hover:text-primary transition-colors cursor-pointer">Contact</Link>
               </div>
             </div>
           </footer>

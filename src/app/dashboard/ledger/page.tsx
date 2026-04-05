@@ -96,7 +96,7 @@ export default function LedgerPage() {
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div>
             <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">
-              {isFiltered ? 'Filtered Results' : 'Ledger'}
+              {isFiltered ? 'Financial Records' : 'Records'}
             </h1>
             <p className="text-muted-foreground font-medium mt-2 text-lg">
               {isFiltered ? `Viewing records for ${periodText}` : `Your complete transaction history for ${periodText}`}

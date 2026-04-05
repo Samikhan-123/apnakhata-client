@@ -7,16 +7,20 @@ import { CurrencyProvider } from "@/context/CurrencyContext";
 import { Toaster } from "sonner";
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
+import { NetworkProvider } from "@/context/NetworkContext";
+
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-      <GoogleOAuthProvider clientId="1086444278848-e3vgdseo2n8n73272kp9v5998afi3prj.apps.googleusercontent.com">
-        <AuthProvider>
-          <CurrencyProvider>
-            {children}
-            <Toaster position="bottom-right" expand={false} richColors closeButton />
-          </CurrencyProvider>
-        </AuthProvider>
+      <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || ''}>
+        <NetworkProvider>
+          <AuthProvider>
+            <CurrencyProvider>
+              {children}
+              <Toaster position="bottom-right" expand={false} richColors closeButton />
+            </CurrencyProvider>
+          </AuthProvider>
+        </NetworkProvider>
       </GoogleOAuthProvider>
     </ThemeProvider>
   );

@@ -1,76 +1,72 @@
 'use client';
 
 import React from 'react';
-import { Mail, MessageCircle, Globe, Code } from 'lucide-react';
-import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
-import { Button } from '@/components/ui/button';
+import { PublicHeader } from '@/components/layout/PublicHeader';
+import { Mail, MessageSquare, Send, Globe, Share2, MapPin } from 'lucide-react';
 
 export default function ContactPage() {
   return (
-    <div className="max-w-4xl mx-auto px-6 py-24 space-y-20">
-      <header className="text-center space-y-4">
-        <SlideIn duration={0.5}>
-          <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Get In Touch</p>
-          <h1 className="text-6xl md:text-7xl font-black tracking-tighter">Talk to <span className="text-primary italic">Us.</span></h1>
-          <p className="text-muted-foreground font-bold text-lg max-w-xl mx-auto mt-6 leading-relaxed">
-            Have a question, feedback, or just want to say hi? We'd love to hear from you.
-          </p>
-        </SlideIn>
-      </header>
+    <div className="min-h-screen bg-background flex flex-col">
+      <PublicHeader />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <FadeIn delay={0.2}>
-          <div className="premium-card p-12 rounded-[3.5rem] border-primary/10 h-full flex flex-col justify-between group">
-            <div className="space-y-6">
-              <div className="w-16 h-16 bg-primary/5 text-primary rounded-[1.5rem] flex items-center justify-center group-hover:scale-110 transition-all duration-500">
-                <Mail size={32} />
+      <main className="flex-1 pt-32 pb-20">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="text-center space-y-8 mb-20">
+            <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-none">
+              Reach <span className="text-primary italic">Out.</span>
+            </h1>
+            <p className="text-muted-foreground text-lg font-bold max-w-2xl mx-auto leading-relaxed">
+              Apna Khata is built on user feedback. Whether you have a question, a feature request, or just want to discuss your financial journey, we are all ears.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div className="bg-muted/30 p-12 rounded-[2.5rem] border border-border/40 hover:bg-muted/40 transition-colors group">
+              <div className="w-14 h-14 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center mb-10 shadow-lg shadow-primary/20 transition-transform group-hover:rotate-12">
+                <Mail size={28} />
               </div>
-              <div>
-                <h3 className="text-3xl font-black tracking-tight mb-2">Email Support</h3>
-                <p className="text-muted-foreground font-medium leading-relaxed">The fastest way to get help with account issues or technical questions.</p>
+              <h3 className="text-2xl font-black tracking-tight mb-4">Direct Support</h3>
+              <p className="text-muted-foreground font-bold text-sm mb-8 leading-relaxed">
+                Our dedicated support team is available 24/7 to help you with any technical hurdles.
+              </p>
+              <a href="mailto:support@apnakhata.com" className="text-xl font-black text-foreground hover:text-primary transition-colors">
+                support@apnakhata.com
+              </a>
+            </div>
+
+            <div className="bg-primary p-12 rounded-[2.5rem] border border-primary text-primary-foreground hover:scale-[1.02] transition-all group">
+              <div className="w-14 h-14 bg-white text-primary rounded-2xl flex items-center justify-center mb-10 shadow-lg transition-transform group-hover:-rotate-12">
+                <MessageSquare size={28} />
+              </div>
+              <h3 className="text-2xl font-black tracking-tight mb-4">Community</h3>
+              <p className="text-white/60 font-bold text-sm mb-8 leading-relaxed">
+                Join our growing community of financial masters on our official Discord server.
+              </p>
+              <div className="text-xl font-black hover:underline cursor-pointer">
+                Join Discord Community
               </div>
             </div>
-            <a href="mailto:support@apnakhata.com" className="block mt-8">
-               <Button className="w-full h-14 rounded-2xl bg-foreground text-background font-black hover:bg-primary hover:text-white transition-all shadow-2xl">
-                 support@apnakhata.com
-               </Button>
-            </a>
-          </div>
-        </FadeIn>
 
-        <FadeIn delay={0.3}>
-          <div className="premium-card p-12 rounded-[3.5rem] border-border/40 h-full flex flex-col justify-between group bg-muted/10">
-             <div className="space-y-8">
-               <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-card rounded-xl flex items-center justify-center border border-border/40 text-primary shadow-sm">
-                    <MessageCircle size={24} />
-                  </div>
-                  <h4 className="text-xl font-black tracking-tight">Social Connect</h4>
-               </div>
-               
-               <div className="space-y-2">
-                 {[
-                   { name: 'Twitter', icon: Globe, link: '#' },
-                   { name: 'GitHub', icon: Code, link: '#' }
-                 ].map((social, i) => (
-                   <a key={i} href={social.link} className="flex items-center justify-between p-4 rounded-2xl bg-card border border-border/10 hover:border-primary/20 transition-all group/link">
-                      <div className="flex items-center gap-3">
-                         <social.icon size={18} className="text-muted-foreground group-hover/link:text-primary transition-colors" />
-                         <span className="font-bold text-sm">{social.name}</span>
-                      </div>
-                      <span className="text-[10px] font-black uppercase text-muted-foreground/30 tracking-widest group-hover/link:text-primary transition-colors">Follow</span>
-                   </a>
-                 ))}
-               </div>
-             </div>
-
-             <div className="mt-12 bg-primary/5 p-6 rounded-3xl border border-primary/5 text-center">
-                <p className="text-[10px] font-black uppercase tracking-widest text-primary/40 mb-1">Average Response Time</p>
-                <p className="text-2xl font-black tracking-tighter text-foreground">Under 24h</p>
-             </div>
+            <div className="bg-card p-12 rounded-[2.5rem] border border-border/40 hover:bg-muted/10 transition-colors col-span-1 md:col-span-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
+              <div>
+                <h4 className="text-xl font-black tracking-tight mb-2">Technical Headquarters</h4>
+                <p className="text-muted-foreground font-bold text-sm">Building the future of finance, anywhere.</p>
+              </div>
+              <div className="flex gap-10">
+                <div className="flex items-center gap-3">
+                  <Share2 size={20} className="text-primary" />
+                  <span className="text-sm font-black uppercase tracking-widest opacity-40">@ApnaKhataApp</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Globe size={20} className="text-primary" />
+                  <span className="text-sm font-black uppercase tracking-widest opacity-40">Identity Verified</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </FadeIn>
-      </div>
+        </div>
+      </main>
+
     </div>
   );
 }

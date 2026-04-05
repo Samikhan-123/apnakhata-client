@@ -1,6 +1,10 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'sonner';
+import * as Sentry from "@sentry/nextjs";
+import { db, offlineService } from './offline.service';
+import { handleApiError } from '@/lib/error-handler';
+import { logger } from '@/lib/logger';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
@@ -96,13 +100,33 @@ api.interceptors.request.use((config) => {
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    const message = error.response?.data?.message || error.message || 'An unexpected error occurred';
+  async (error) => {
     const status = error.response?.status;
 
-    if (status !== 401) {
-      toast.error(message);
+    // --- Offline Logic ---
+    const isOffline = !window.navigator.onLine || !error.response;
+    const isMutation = ['post', 'patch', 'delete'].includes(error.config?.method?.toLowerCase() || '');
+    const isSyncRequest = error.config?._isSyncRequest;
+
+    if (isOffline && isMutation && !isSyncRequest) {
+      await offlineService.addToQueue({
+        url: error.config.url,
+        method: error.config.method,
+        data: JSON.parse(error.config.data || '{}'),
+        headers: error.config.headers
+      });
+      
+      toast.info('Saved offline. Changes will sync when reconnected.', {
+        description: `Your ${error.config.method?.toUpperCase()} request is pending.`,
+        duration: 5000
+      });
+      
+      return Promise.resolve({ data: { success: true, offline: true } });
     }
+    // -----------------------
+
+    // Use Global Error Handler
+    handleApiError(error);
 
     if (status === 401) {
       authService.logout();

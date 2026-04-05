@@ -103,7 +103,7 @@ export default function BudgetsPage() {
   ];
 
   return (
-    <div className="space-y-12 pb-20 max-w-7xl mx-auto">
+    <div className="space-y-12 pb-20 w-full">
       {/* Header & Control Center */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>
@@ -190,7 +190,7 @@ export default function BudgetsPage() {
         </CustomModal>
       </div>
 
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         {loading ? (
           <div className="text-center p-32 text-muted-foreground font-medium text-sm animate-pulse">Loading budgets...</div>
         ) : budgets.length === 0 ? (

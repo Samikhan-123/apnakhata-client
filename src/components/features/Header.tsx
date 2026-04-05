@@ -131,12 +131,6 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
                 <span>Account Settings</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild className="h-10 rounded-xl gap-3 cursor-pointer px-3 font-medium text-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors">
-              <Link href="/dashboard/settings?tab=appearance">
-                <HelpCircle className="h-4 w-4" />
-                <span>Help & Support</span>
-              </Link>
-            </DropdownMenuItem>
             <DropdownMenuSeparator className="my-2 bg-border/40" />
             <DropdownMenuItem
               onClick={logout}

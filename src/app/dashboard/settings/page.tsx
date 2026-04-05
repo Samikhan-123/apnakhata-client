@@ -54,7 +54,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="space-y-12 pb-20 max-w-7xl mx-auto">
+    <div className="space-y-12 pb-20 w-full">
       {/* Header */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>

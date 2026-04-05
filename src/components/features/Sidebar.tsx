@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Users,
   Activity,
+  Zap,
   X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -33,7 +34,7 @@ const menuGroups = [
   {
     title: 'Financials',
     items: [
-      { name: 'Ledger', icon: ReceiptText, href: '/dashboard/ledger' },
+      { name: 'Records', icon: ReceiptText, href: '/dashboard/ledger' },
       { name: 'Categories', icon: Tags, href: '/dashboard/categories' },
       { name: 'Budgets', icon: PiggyBank, href: '/dashboard/budgets' },
       { name: 'Auto-Pay', icon: RefreshCcw, href: '/dashboard/recurring' },
@@ -91,8 +92,8 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
   return (
     <aside className={cn(
-      "fixed left-0 top-0 h-screen w-[280px] bg-card border-r border-border/40 z-50 flex flex-col transition-all duration-500 ease-in-out",
-      "lg:translate-x-0", // Always visible on desktop
+      "fixed left-0 top-0 inset-y-0 w-[280px] bg-card border-r border-border/40 z-50 flex flex-col transition-all duration-500 ease-in-out",
+      "lg:translate-x-0 h-full", // Always visible on desktop
       isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full lg:translate-x-0" // Slide on mobile
     )}>
       {/* Brand Section */}
@@ -118,7 +119,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       </div>
 
       {/* Main Navigation */}
-      <div className="flex-1 py-8 px-4 overflow-y-auto no-scrollbar">
+      <div className="flex-1 h-screen py-8 px-4 overflow-y-auto no-scrollbar">
         <div className="space-y-8">
           {groups.map((group) => (
             <div key={group.title}>

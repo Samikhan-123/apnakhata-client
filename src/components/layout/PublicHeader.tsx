@@ -2,13 +2,15 @@
 
 import React from 'react'
 import Link from 'next/link'
-import { LayoutDashboard, ArrowRight, User } from 'lucide-react'
+import { LayoutDashboard, ArrowRight, User, Sun, Moon } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
+import { useTheme } from 'next-themes'
 
 export function PublicHeader() {
   const { user } = useAuth()
+  const { theme, setTheme } = useTheme()
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
@@ -25,6 +27,17 @@ export function PublicHeader() {
 
         {/* Navigation Actions */}
         <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="rounded-xl w-11 h-11 text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all duration-500 relative"
+            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          >
+            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            <span className="sr-only">Toggle theme</span>
+          </Button>
+
           {user ? (
             <Link href="/dashboard">
               <Button className="h-11 px-6 rounded-xl bg-primary text-primary-foreground hover:scale-105 font-bold transition-all shadow-lg shadow-primary/20 gap-2">

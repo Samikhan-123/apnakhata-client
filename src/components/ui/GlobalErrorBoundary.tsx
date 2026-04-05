@@ -2,7 +2,8 @@
 
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { Button } from '@/components/ui/button';
-import { AlertCircle, RefreshCcw, Home } from 'lucide-react';
+import { AlertCircle, RefreshCcw, Home, Send } from 'lucide-react';
+import * as Sentry from "@sentry/nextjs";
 
 interface Props {
   children: ReactNode;
@@ -24,6 +25,7 @@ export class GlobalErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo);
+    Sentry.captureException(error, { extra: { errorInfo } });
   }
 
   render() {
@@ -47,6 +49,15 @@ export class GlobalErrorBoundary extends Component<Props, State> {
               >
                 <RefreshCcw size={14} />
                 Reload Application
+              </Button>
+
+              <Button 
+                variant="outline"
+                onClick={() => Sentry.showReportDialog()}
+                className="h-14 rounded-2xl border-primary/20 font-black uppercase tracking-widest text-[10px] text-primary hover:bg-primary/5 transition-all gap-2"
+              >
+                <Send size={14} />
+                Report Issue
               </Button>
               
               <Button 

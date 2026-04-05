@@ -47,7 +47,7 @@ export default function RecurringPage() {
   const [nextDate, setNextDate] = useState(new Date().toISOString().split('T')[0]);
 
   const handleForceSync = async () => {
-    console.log('[SYNC_DEBUG] Force Sync button clicked!');
+    // console.log('[SYNC_DEBUG] Force Sync button clicked!');
     toast.promise(
       (async () => {
         try {
@@ -164,7 +164,7 @@ export default function RecurringPage() {
   };
 
   return (
-    <div className="space-y-12 pb-20 max-w-7xl mx-auto">
+    <div className="space-y-12 pb-20 w-full">
       {/* Header & Status Center */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>
