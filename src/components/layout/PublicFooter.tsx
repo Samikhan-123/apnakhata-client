@@ -25,7 +25,7 @@ export function PublicFooter() {
         
         <div className="mt-16 text-center">
            <p className="text-muted-foreground/20 font-bold text-xs uppercase tracking-widest">
-             &copy; 2026 Apna Khata. Built with heart for human beings.
+             &copy; {new Date().getFullYear()} Apna Khata. Built with heart for human beings.
            </p>
         </div>
       </div>
