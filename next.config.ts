@@ -7,7 +7,7 @@ const nextConfig: NextConfig = {
       {
         source: '/api/:path*',
         destination: process.env.NODE_ENV === 'production'
-          ? 'https://apnakhata-backend.vercel.app/api/:path*' 
+          ? 'https://apnakhata-server.vercel.app/api/:path*'
           : 'http://localhost:5000/api/:path*',
       },
     ];

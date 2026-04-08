@@ -27,10 +27,10 @@ export default function ContactPage() {
               </div>
               <h3 className="text-2xl font-black tracking-tight mb-4">Direct Support</h3>
               <p className="text-muted-foreground font-bold text-sm mb-8 leading-relaxed">
-                Our dedicated support team is available 24/7 to help you with any technical hurdles.
+                Reach out to me directly for support, feedback, or any technical queries.
               </p>
-              <a href="mailto:support@apnakhata.com" className="text-xl font-black text-foreground hover:text-primary transition-colors">
-                support@apnakhata.com
+              <a href="mailto:samikhan7816@gmail.com" className="text-xl font-black text-foreground hover:text-primary transition-colors">
+                support email
               </a>
             </div>
 
@@ -40,22 +40,22 @@ export default function ContactPage() {
               </div>
               <h3 className="text-2xl font-black tracking-tight mb-4">Community</h3>
               <p className="text-white/60 font-bold text-sm mb-8 leading-relaxed">
-                Join our growing community of financial masters on our official Discord server.
+                Join our Discord community. Network with other financial masters and share feedback.
               </p>
-              <div className="text-xl font-black hover:underline cursor-pointer">
-                Join Discord Community
+              <div className="text-xl font-black opacity-50 cursor-not-allowed">
+                Discord (Coming Soon)
               </div>
             </div>
 
             <div className="bg-card p-12 rounded-[2.5rem] border border-border/40 hover:bg-muted/10 transition-colors col-span-1 md:col-span-2 flex flex-col md:flex-row items-start md:items-center justify-between gap-10">
               <div>
                 <h4 className="text-xl font-black tracking-tight mb-2">Technical Headquarters</h4>
-                <p className="text-muted-foreground font-bold text-sm">Building the future of finance, anywhere.</p>
+                <p className="text-muted-foreground font-bold text-sm">Design & Engineering by Sami Khan.</p>
               </div>
               <div className="flex gap-10">
                 <div className="flex items-center gap-3">
                   <Share2 size={20} className="text-primary" />
-                  <span className="text-sm font-black uppercase tracking-widest opacity-40">@ApnaKhataApp</span>
+                  <span className="text-sm font-black uppercase tracking-widest opacity-40">@samikhan_dev</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Globe size={20} className="text-primary" />

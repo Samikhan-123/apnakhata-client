@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   title: "Apna Khata - Your Personal Money Tracker",
   description: "Effortlessly track your expenses, manage budgets, and achieve financial peace of mind.",
   manifest: "/manifest.json",
-  themeColor: "#10b981",
+  // themeColor: "#10b981",
 };
 
 export const viewport: Viewport = {

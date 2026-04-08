@@ -196,11 +196,10 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Bento Grid Features Section */}
-      <section className="py-32 relative overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-grid-slate-900/[0.02] dark:bg-grid-white/[0.02] pointer-events-none" />
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10" />
-        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-sky-500/10 rounded-full blur-[120px] -z-10" />
+      {/* Bento Grid Features Section - Sapphire Banded */}
+      <section className="py-40 relative overflow-hidden bg-muted/20 border-y border-border/40">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] -z-10" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-sky-500/5 rounded-full blur-[140px] -z-10" />
         
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <motion.div 
@@ -210,12 +209,12 @@ export default function LandingPage() {
             variants={staggerContainer}
             className="text-center mb-24 space-y-4"
           >
-            <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-widest border border-primary/20">
-               <SparklesIcon size={12} /> Technical Excellence
+            <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.3em] border border-primary/20">
+               <SparklesIcon size={12} className="fill-current" /> Built for Reliability
             </motion.div>
             <motion.h2 variants={fadeInUp} className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9]">
-              Engineered for <br />
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-500 font-black italic">Financial Clarity.</span>
+              Accuracy you can <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-sky-500 font-black italic">Count on.</span>
             </motion.h2>
           </motion.div>
 
@@ -224,25 +223,25 @@ export default function LandingPage() {
             whileInView="whileInView"
             viewport={{ once: true }}
             variants={staggerContainer}
-            className="grid grid-cols-1 md:grid-cols-4 gap-6 auto-rows-[300px]"
+            className="grid grid-cols-1 md:grid-cols-4 gap-8 auto-rows-[320px]"
           >
-            {/* Cell 1: Large */}
+            {/* Cell 1: Core Standard (Main) */}
             <motion.div variants={fadeInUp} className="md:col-span-2 md:row-span-2 relative group">
-              <SpotlightCard className="h-full rounded-[2.5rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.1)] hover:shadow-[0_20px_60px_rgba(var(--primary-rgb),0.2)] transition-shadow duration-500">
-                <div className="absolute -inset-[1px] bg-gradient-to-br from-primary/50 to-sky-500/50 rounded-[2.5rem] blur opacity-20 group-hover:opacity-40 transition duration-500" />
-                <div className="relative h-full bg-card/40 dark:bg-slate-950/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] p-12 flex flex-col justify-between shadow-2xl transition-all hover:translate-y-[-4px] hover:border-primary/20">
+              <SpotlightCard className="h-full rounded-[3rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.1)] hover:shadow-[0_20px_60px_rgba(var(--primary-rgb),0.2)] transition-shadow duration-500">
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-primary/50 to-sky-500/50 rounded-[3rem] blur opacity-20 group-hover:opacity-40 transition duration-500" />
+                <div className="relative h-full bg-card/60 dark:bg-slate-950/60 backdrop-blur-3xl border border-white/20 dark:border-white/5 rounded-[3rem] p-12 flex flex-col justify-between shadow-2xl transition-all hover:translate-y-[-4px] hover:border-primary/20">
                   <div className="space-y-8">
                     <div className="w-16 h-16 bg-gradient-to-br from-primary to-indigo-600 rounded-3xl flex items-center justify-center text-white shadow-lg shadow-primary/20 transition-transform group-hover:rotate-6">
                       <Wallet size={32} />
                     </div>
                     <div className="space-y-3">
-                      <h3 className="text-4xl font-black tracking-tight">The Modern Standard</h3>
-                      <p className="text-muted-foreground font-bold text-lg leading-relaxed max-w-sm">No more paper legacy. Just pure, multi-threaded financial tracking that syncs with your digital life.</p>
+                      <h3 className="text-4xl font-black tracking-tight leading-tight">Professional <br/>Ledger Standards</h3>
+                      <p className="text-muted-foreground font-bold text-lg leading-relaxed max-w-sm">Move beyond messy paper trails. Experience a multi-threaded financial engine that keeps every cent accounted for.</p>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-6 p-6 bg-primary/5 dark:bg-white/5 rounded-3xl border border-primary/10 transition-colors group-hover:bg-primary/20">
-                    {['Auto Balance', 'Instant Entry', 'Smart Budgets', 'Reports'].map((f, i) => (
-                      <div key={i} className="flex items-center gap-3 text-sm font-black text-muted-foreground group-hover:text-foreground transition-colors">
+                  <div className="grid grid-cols-2 gap-6 p-6 bg-primary/5 dark:bg-white/5 rounded-3xl border border-primary/10 transition-colors group-hover:border-primary/30">
+                    {['Zero Drift', 'Instant Sync', 'Smart Budgets', 'Reports'].map((f, i) => (
+                      <div key={i} className="flex items-center gap-3 text-xs font-black text-muted-foreground group-hover:text-foreground transition-colors uppercase tracking-widest">
                         <CheckCircle2 className="h-5 w-5 text-primary" /> {f}
                       </div>
                     ))}
@@ -251,47 +250,67 @@ export default function LandingPage() {
               </SpotlightCard>
             </motion.div>
 
-            {/* Cell 2: Security */}
+            {/* Cell 2: Privacy */}
             <motion.div variants={fadeInUp} className="md:col-span-2 relative group">
-              <SpotlightCard className="h-full rounded-[2.5rem] shadow-[0_20px_50px_rgba(16,185,129,0.1)] hover:shadow-[0_20px_60px_rgba(16,185,129,0.2)] transition-shadow duration-500">
-                <div className="absolute -inset-[1px] bg-gradient-to-br from-emerald-500/30 to-transparent rounded-[2.5rem] blur opacity-10 group-hover:opacity-30 transition duration-500" />
-                <div className="relative h-full bg-card/40 dark:bg-slate-950/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] p-10 flex items-center gap-8 shadow-2xl transition-all hover:translate-y-[-4px] hover:border-emerald-500/20">
+              <SpotlightCard className="h-full rounded-[3rem] shadow-[0_20px_50px_rgba(16,185,129,0.1)] hover:shadow-[0_20px_60px_rgba(16,185,129,0.2)] transition-shadow duration-500">
+                <div className="absolute -inset-[1px] bg-gradient-to-br from-emerald-500/30 to-transparent rounded-[3rem] blur opacity-10 group-hover:opacity-30 transition duration-500" />
+                <div className="relative h-full bg-card/60 dark:bg-slate-950/60 backdrop-blur-3xl border border-white/20 dark:border-white/5 rounded-[3rem] p-10 flex items-center gap-8 shadow-2xl transition-all hover:translate-y-[-4px] hover:border-emerald-500/20">
                   <div className="w-20 h-20 bg-emerald-500/10 rounded-3xl flex items-center justify-center text-emerald-500 shrink-0 border border-emerald-500/20 group-hover:scale-105 transition-transform">
-                    <ShieldCheck size={40} />
+                    <ShieldCheck size={44} />
                   </div>
                   <div className="space-y-2">
-                    <h4 className="text-3xl font-black tracking-tight">Bank-Grade Privacy</h4>
-                    <p className="text-muted-foreground font-bold text-base leading-relaxed">Your wealth is your business. Every record is encrypted and localized.</p>
+                    <h4 className="text-3xl font-black tracking-tight">Encrypted Core</h4>
+                    <p className="text-muted-foreground font-bold text-base leading-relaxed">Your wealth is your business. Every record is cryptographically secured.</p>
                   </div>
                 </div>
               </SpotlightCard>
             </motion.div>
 
-            {/* Cell 3 */}
+            {/* Cell 3: Live Pulse (Replacing History) */}
             <motion.div variants={fadeInUp} className="relative group">
-               <SpotlightCard className="h-full rounded-[2.5rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.05)] hover:shadow-[0_20px_60px_rgba(var(--primary-rgb),0.15)] transition-shadow duration-500">
-                  <div className="relative h-full bg-white/40 dark:bg-slate-950/40 backdrop-blur-xl border border-white/20 dark:border-white/5 rounded-[2.5rem] p-8 flex flex-col justify-center space-y-4 shadow-xl transition-all hover:translate-y-[-4px] hover:border-sky-500/30">
-                    <div className="w-14 h-14 bg-sky-500/10 rounded-2xl flex items-center justify-center text-sky-500 group-hover:rotate-12 transition-transform">
-                      <Clock size={28} />
+               <SpotlightCard className="h-full rounded-[3rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.05)] hover:shadow-[0_20px_60px_rgba(var(--primary-rgb),0.15)] transition-shadow duration-500">
+                  <div className="relative h-full bg-white/60 dark:bg-slate-950/60 backdrop-blur-3xl border border-white/20 dark:border-white/5 rounded-[3rem] p-8 flex flex-col justify-center space-y-6 shadow-xl transition-all hover:translate-y-[-4px] hover:border-sky-500/30">
+                    <div className="flex gap-1.5 h-12 items-end">
+                       {[0.4, 0.7, 0.5, 0.9, 0.6, 0.8].map((h, i) => (
+                         <motion.div 
+                          key={i} 
+                          animate={{ height: [`${h * 100}%`, `${(h * 0.7) * 100}%`, `${h * 100}%`] }}
+                          transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }}
+                          className="flex-1 bg-sky-500/20 rounded-t-lg border-t border-sky-500/40"
+                         />
+                       ))}
                     </div>
                     <div>
-                      <h5 className="font-black tracking-tight text-xl mb-1">Deep History</h5>
-                      <p className="text-muted-foreground font-bold text-[10px] uppercase tracking-[0.2em] opacity-60">Archive Sync</p>
+                      <h5 className="font-black tracking-tight text-xl mb-1">Live Analytics</h5>
+                      <p className="text-muted-foreground font-black text-[9px] uppercase tracking-[0.2em] opacity-40">Vectors Enabled</p>
                     </div>
                   </div>
                </SpotlightCard>
             </motion.div>
 
-            {/* Cell 4 */}
+            {/* Cell 4: Founder Spotlight (PERSONALIZED) */}
             <motion.div variants={fadeInUp} className="relative group">
-               <SpotlightCard className="h-full rounded-[2.5rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.05)] hover:shadow-[0_20px_60px_rgba(var(--primary-rgb),0.15)] transition-shadow duration-500">
-                  <div className="relative h-full bg-gradient-to-br from-primary/5 to-transparent border border-primary/20 dark:border-primary/10 rounded-[2.5rem] p-8 flex flex-col justify-between shadow-xl transition-all hover:translate-y-[-4px] hover:bg-primary/5 group">
-                    <div className="flex gap-2">
-                      {[1,2,3,4,5].map(i => <motion.div key={i} animate={{ opacity: [0.2, 0.5, 0.2] }} transition={{ repeat: Infinity, duration: 2, delay: i * 0.2 }} className="h-1 w-6 bg-primary/40 rounded-full" />)}
+               <SpotlightCard className="h-full rounded-[3rem] shadow-[0_20px_50px_rgba(var(--primary-rgb),0.05)] hover:shadow-[0_20px_60px_rgba(var(--primary-rgb),0.15)] transition-shadow duration-500">
+                  <div className="relative h-full bg-gradient-to-br from-primary/10 to-transparent border border-primary/20 dark:border-primary/10 rounded-[3rem] p-8 flex flex-col justify-between shadow-xl transition-all hover:translate-y-[-4px] hover:bg-primary/5 group">
+                    <div className="relative">
+                       {/* Profile Image Container */}
+                       <div className="w-40 h-40 rounded-2xl bg-muted/20 border border-primary/20 overflow-hidden group-hover:border-primary/40 transition-colors relative mb-4 shadow-xl bg-contain">
+                          <img 
+                            src="/images/developer.png" 
+                            alt="Sami Khan" 
+                            className="object-cover w-full h-full grayscale group-hover:grayscale-0 object-center object-top  transition-all duration-700"
+                          />
+                          <div className="absolute inset-0 bg-primary/10 group-hover:opacity-0 transition-opacity" />
+                       </div>
+                       <motion.div 
+                        animate={{ scale: [1, 1.2, 1] }}
+                        transition={{ repeat: Infinity, duration: 2 }}
+                        className="absolute -top-1 -right-1 w-3 h-3 bg-primary rounded-full blur-[2px]" 
+                       />
                     </div>
                     <div>
                       <h5 className="font-black tracking-tight text-xl">Sami Khan</h5>
-                      <p className="text-primary font-black text-[10px] uppercase tracking-widest">Lead Developer & Founder</p>
+                      <p className="text-primary font-black text-[10px] uppercase tracking-widest leading-none mt-1">Founding Developer</p>
                     </div>
                   </div>
                </SpotlightCard>
@@ -300,8 +319,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works - Premium Visuals */}
-      <section className="py-40 bg-background/50 relative overflow-hidden border-y border-border/40">
+      {/* How It Works - Premium Visuals - Sapphire Banded */}
+      <section className="py-40 bg-card/20 relative overflow-hidden border-y border-border/40">
         <BackgroundBeams />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,rgba(var(--primary-rgb),0.05),transparent_50%)]" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
@@ -314,10 +333,10 @@ export default function LandingPage() {
           >
             <div className="space-y-16">
               <div className="space-y-6">
-                <motion.p variants={fadeInUp} className="text-xs font-black uppercase tracking-[0.6em] text-primary">Deployment Strategy</motion.p>
+                <motion.p variants={fadeInUp} className="text-xs font-black uppercase tracking-[0.6em] text-primary">Your Financial Flow</motion.p>
                 <motion.h2 variants={fadeInUp} className="text-5xl md:text-6xl font-black tracking-tighter leading-[0.95]">
-                  Control your economy, <br />
-                  <span className="italic opacity-50 text-muted-foreground">one entry at a time.</span>
+                  Know where your <br />
+                  <span className="italic opacity-50 text-muted-foreground">money actually goes.</span>
                 </motion.h2>
               </div>
               <div className="space-y-12">
@@ -348,9 +367,12 @@ export default function LandingPage() {
                    <div className="space-y-6">
                       <div className="h-16 bg-muted/40 rounded-2xl flex items-center px-6"><div className="w-full h-3 bg-muted/60 rounded-full" /></div>
                       <div className="grid grid-cols-2 gap-4"><div className="h-24 bg-primary/5 rounded-3xl border border-primary/10" /><div className="h-24 bg-sky-500/5 rounded-3xl border border-sky-500/10" /></div>
-                      <div className="h-32 bg-foreground dark:bg-white rounded-3xl flex items-center justify-center group overflow-hidden relative cursor-pointer">
-                         <div className="absolute inset-0 bg-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                         <p className="relative z-10 text-background dark:text-foreground font-black uppercase tracking-widest text-xs group-hover:text-white">Authorize</p>
+                      <div className="h-32 bg-primary/10 border border-primary/20 rounded-3xl flex flex-col items-center justify-center group overflow-hidden relative cursor-default p-6 text-center">
+                         <div className="w-12 h-12 bg-primary text-white rounded-full flex items-center justify-center mb-2 shadow-lg">
+                           <CheckCircle2 size={24} />
+                         </div>
+                         <p className="text-primary font-black uppercase tracking-widest text-[10px]">Sync Complete</p>
+                         <p className="text-muted-foreground font-bold text-[11px] mt-1">Ready for review</p>
                       </div>
                    </div>
                 </div>
@@ -372,9 +394,9 @@ export default function LandingPage() {
             className="grid grid-cols-1 md:grid-cols-3 gap-24"
           >
             {[
-              { icon: TrendingUp, title: 'Growth Vectors', desc: 'Visualize your spending trends with automated trend detection and historical layering.', shadow: 'shadow-primary/20' },
-              { icon: PieChart, title: 'Constraints', desc: 'Set monthly limits for categories. Systemic warnings prevent overdraw.', shadow: 'shadow-sky-500/20' },
-              { icon: ShieldCheck, title: 'Encrypted Core', desc: 'Every ledger entry is hashed and protected using bank-grade security protocols.', shadow: 'shadow-emerald-500/20' }
+              { icon: TrendingUp, title: 'Visual Trends', desc: 'See exactly how your spending changes over time with automated trend detection.', shadow: 'shadow-primary/20' },
+              { icon: PieChart, title: 'Smart Limits', desc: 'Set monthly limits for your categories. Our system sends gentle warnings if you approach them.', shadow: 'shadow-sky-500/20' },
+              { icon: ShieldCheck, title: 'Privacy First', desc: 'Your data belongs to you. We use modern industry standards to keep every record safe.', shadow: 'shadow-emerald-500/20' }
             ].map((trust, i) => (
               <motion.div key={i} variants={fadeInUp} className="space-y-8 group hover:translate-y-[-8px] transition-all">
                 <div className={cn("w-20 h-20 bg-card border border-border rounded-[1.5rem] flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-white transition-all duration-500", trust.shadow)}>
@@ -400,7 +422,7 @@ export default function LandingPage() {
           <motion.div initial="initial" whileInView="whileInView" viewport={{ once: true }} variants={staggerContainer} className="grid gap-6">
             {[
               { q: 'Is my data secure?', a: 'Yes. We use industry-standard encryption and never store your raw password.' },
-              { q: 'Can I export my data?', a: 'Currently in development. Soon you will be able to export as PDF/Excel.' },
+              { q: 'Can I export my data?', a: 'yes. you can export your data as PDF/Excel.' },
               { q: 'Is it free to use?', a: 'Apna Khata offers a robust free tier for personal use. Professional tools for all.' }
             ].map((faq, idx) => (
               <motion.div key={idx} variants={fadeInUp} className="group bg-card/50 border border-border/50 rounded-3xl p-10 hover:bg-card/80 transition-all hover:border-primary/50 cursor-pointer shadow-[0_10px_30px_rgba(var(--primary-rgb),0.05)] hover:shadow-[0_20px_50px_rgba(var(--primary-rgb),0.2)]">

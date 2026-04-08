@@ -115,9 +115,9 @@ api.interceptors.response.use(
         data: JSON.parse(error.config.data || '{}'),
         headers: error.config.headers
       });
-      
+      // ${error.config.method?.toUpperCase()}
       toast.info('Saved offline. Changes will sync when reconnected.', {
-        description: `Your ${error.config.method?.toUpperCase()} request is pending.`,
+        description: `Your request is pending.`,
         duration: 5000
       });
       
