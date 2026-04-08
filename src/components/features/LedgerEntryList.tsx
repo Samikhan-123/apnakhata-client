@@ -122,7 +122,7 @@ export const LedgerEntryList = ({ ledgerEntries, onDelete }: { ledgerEntries: an
                   }
 
                   return (
-                    <div className="h-11 w-11 flex items-center justify-center text-muted-foreground/30" title={isSalary ? "Previous months' salaries cannot be changed." : "Income entries cannot be deleted."}>
+                    <div className="h-11 w-11 flex items-center justify-center text-muted-foreground/30" title="Income entries from previous months cannot be modified.">
                       <Lock className="h-4 w-4" />
                     </div>
                   );

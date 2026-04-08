@@ -216,7 +216,7 @@ export default function BudgetsPage() {
             ))}
           </div>
         ) : error ? (
-          <ErrorState 
+          <ErrorState
             title="Budgets Unavailable"
             message={error}
             onRetry={fetchData}
