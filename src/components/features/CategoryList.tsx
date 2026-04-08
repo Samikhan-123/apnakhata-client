@@ -12,6 +12,7 @@ import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { toast } from 'sonner';
 import { capitalize } from '@/lib/utils';
 import { CategoryForm } from './CategoryForm';
+import { ErrorState } from '@/components/ui/ErrorState';
 import {
   Dialog,
   DialogContent,
@@ -26,13 +27,16 @@ export function CategoryList() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingCategory, setEditingCategory] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchCategories = async () => {
+    setLoading(true);
+    setError(null);
     try {
       const response = await categoryService.getAll();
       setCategories(response || []);
-    } catch (error) {
-      console.error('Failed to fetch categories:', error);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
     } finally {
       setLoading(false);
     }
@@ -57,11 +61,37 @@ export function CategoryList() {
     fetchCategories();
   }, []);
 
-  if (loading) return <div className="text-center p-12 text-muted-foreground animate-pulse font-bold uppercase tracking-widest text-[10px]">Syncing Categories...</div>;
+  if (loading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+          <div key={i} className="glass-card rounded-[2rem] p-5 flex items-center gap-5 border-border/20">
+            {/* Using a pulsing div since we already have animate-pulse on the container if we wanted, but let's use the Skeleton component */}
+            <div className="h-14 w-14 rounded-2xl bg-muted/30 animate-pulse" />
+            <div className="flex-1 space-y-2">
+              <div className="h-4 w-24 bg-muted/30 rounded animate-pulse" />
+              <div className="h-3 w-16 bg-muted/20 rounded animate-pulse" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <ErrorState 
+        title="Unable to Load Categories"
+        message={error}
+        onRetry={fetchCategories}
+        className="py-20"
+      />
+    );
+  }
 
   if (categories.length === 0) {
     return (
-      <div className="glass-card rounded-[2.5rem] p-20 text-center border-dashed border-2 border-primary/10">
+      <div className="glass-card rounded-[2.5rem] p-24 text-center border-dashed border-2 border-primary/10">
         <LucideIcons.Tags className="h-12 w-12 text-primary/30 mx-auto mb-6" />
         <h3 className="text-xl font-black tracking-tighter">No Categories Yet</h3>
         <p className="text-muted-foreground font-medium mt-2 max-w-xs mx-auto text-sm">Create categories to start organizing your ledger entries professionally.</p>
@@ -102,8 +132,11 @@ export function CategoryList() {
                   <LucideIcons.Edit3 className="h-4 w-4" />
                 </Button>
               ) : (
-                <div className="h-10 w-10 flex items-center justify-center text-muted-foreground/20" title="System categories are locked">
-                  <Lock className="h-4 w-4" />
+                <div 
+                  className="h-10 w-10 flex items-center justify-center text-primary/40 bg-primary/5 rounded-xl border border-primary/10" 
+                  title="System categories are locked"
+                >
+                  <Lock className="h-4 w-4 shrink-0" />
                 </div>
               )}
             </div>

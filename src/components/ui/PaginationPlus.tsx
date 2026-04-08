@@ -70,7 +70,7 @@ export function PaginationPlus({
   return (
     <div className={cn("flex flex-col md:flex-row items-center justify-between gap-8 pt-10 border-t border-border/20 px-2", className)}>
       <div className="flex flex-col items-center md:items-start gap-1 group">
-         <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">Data Navigation</p>
+         {/* <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">Data Navigation</p> */}
          <p className="text-xs font-bold text-muted-foreground/60 transition-colors group-hover:text-primary/60">
             {totalResults ? (
                <>Showing <span className="text-foreground font-black tabular-nums">{startResult}</span> to <span className="text-foreground font-black tabular-nums">{endResult}</span> of <span className="text-primary font-black tabular-nums">{totalResults}</span> records</>

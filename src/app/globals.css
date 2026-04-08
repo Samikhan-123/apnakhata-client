@@ -32,18 +32,19 @@
 
 @layer base {
   :root {
-    /* Sophisticated Light Palette (Slate & Sapphire) */
-    --background: 220 33% 98%;
+    /* Light Palette (Sapphire White) */
+    --background: 225 30% 99%;
     --foreground: 224 71% 4%;
-    --card: 220 33% 98%;
+    --card: 125 30% 99%;
     --card-foreground: 224 71% 4%;
-    --popover: 220 33% 98%;
+    --popover: 225 30% 99%;
     --popover-foreground: 224 71% 4%;
     --primary: 243 75% 59%; /* Rich Indigo */
     --primary-foreground: 0 0% 100%;
+    --primary-rgb: 79, 70, 229;
     --secondary: 220 14.3% 95.9%;
     --secondary-foreground: 220.9 39.3% 11%;
-    --muted: 220 14.3% 95.9%;
+    --muted: 20 14.3% 95.9%;
     --muted-foreground: 220 8.9% 46.1%;
     --accent: 243 75% 59% / 0.1;
     --accent-foreground: 243 75% 59%;
@@ -63,14 +64,14 @@
   }
 
   .dark {
-    /* Deep Stealth Palette - Refined */
-    --background: 224 71% 2%;
+    /* Deep Sapphire Stealth Palette */
+    --background: 222 47% 4%; /* #030711 */
     --foreground: 210 40% 98%;
-    --card: 224 71% 4%;
+    --card: 222 47% 6%;
     --card-foreground: 210 40% 98%;
-    --popover: 224 71% 2%;
+    --popover: 222 47% 4%;
     --popover-foreground: 210 40% 98%;
-    --primary: 243 75% 65%;
+    --primary: 243 75% 65%; 
     --primary-foreground: 0 0% 100%;
     --secondary: 215 27.9% 10%;
     --secondary-foreground: 210 40% 98%;
@@ -101,7 +102,7 @@
   }
 }
 
-/* --- Professional Utilities --- */
+/* --- Utilities --- */
 @layer components {
   .glass-card {
     @apply backdrop-blur-md bg-[rgba(var(--glass-bg))] border border-[rgba(var(--glass-border))] shadow-sm;
@@ -117,6 +118,11 @@
   /* Premium Responsive Container */
   .dashboard-container {
     @apply max-w-full px-4 sm:px-8 lg:px-8 py-10;
+  }
+
+  .bg-orchid-texture {
+    background-image: url('/images/black-orchid.png');
+    background-repeat: no-repeat;
   }
 }
 
@@ -168,4 +174,25 @@
 
 .animate-spin-slow {
   animation: spinSlow 8s linear infinite;
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
 }

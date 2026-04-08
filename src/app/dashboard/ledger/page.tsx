@@ -15,11 +15,9 @@ import { cn } from '@/lib/utils';
 import { format } from 'date-fns';
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
-import {
-  Dialog,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { CustomModal } from '@/components/ui/CustomModal';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { LedgerSkeleton } from '@/components/ui/LedgerSkeleton';
 
 export default function LedgerPage() {
   const { formatCurrency } = useCurrency();
@@ -31,9 +29,11 @@ export default function LedgerPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [overview, setOverview] = useState<any>(null);
   const [allTimeOverview, setAllTimeOverview] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async (currentFilters: any = {}, page: number = 1) => {
     setLoading(true);
+    setError(null);
     try {
       const [{ data, pagination: pag }, overviewData, allTimeOverview] = await Promise.all([
         ledgerEntryService.getAll({ ...currentFilters, page, limit: pagination.limit }),
@@ -48,8 +48,8 @@ export default function LedgerPage() {
       const total = pag?.total || 0;
       const totalPages = Math.ceil(total / pagination.limit);
       setPagination({ ...pag, total, totalPages });
-    } catch (error) {
-      console.error('Failed to fetch ledger entries:', error);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ export default function LedgerPage() {
       const cats = await categoryService.getAll();
       setCategories(cats || []);
     } catch (error) {
-      console.error('Failed to fetch metadata:', error);
+      // console.error('Failed to fetch metadata:', error);
     }
   };
 
@@ -76,7 +76,7 @@ export default function LedgerPage() {
     try {
       await ledgerEntryService.downloadCSV(filters);
     } catch (error) {
-      console.error('Export failed:', error);
+      // console.error('Export failed:', error);
     }
   };
 
@@ -89,6 +89,7 @@ export default function LedgerPage() {
     : format(new Date(), 'MMMM yyyy');
 
   const isFiltered = !!(filters.startDate || filters.endDate || filters.categoryId !== 'all' || filters.type !== 'all');
+
 
   return (
     <div className="space-y-10 pb-20">
@@ -110,6 +111,7 @@ export default function LedgerPage() {
             <Plus className="h-5 w-5" />
             <span>Add Transaction</span>
           </Button>
+
           <CustomModal
             isOpen={isFormOpen}
             onClose={setIsFormOpen}
@@ -131,28 +133,40 @@ export default function LedgerPage() {
 
       {/* Dynamic Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {[
-          { label: 'Available Balance', value: overview?.remainingBalance || 0, icon: Wallet, color: 'primary' },
-          { label: 'Income Received', value: overview?.totalIncome || 0, icon: ArrowUpCircle, color: 'emerald' },
-          { label: 'Total Spent', value: overview?.totalExpense || 0, icon: ArrowDownCircle, color: 'rose' },
-        ].map((stat, i) => (
-          <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>
-            <div className="premium-card rounded-2xl p-5 flex flex-col justify-between group h-full">
-              <div className="flex justify-between items-start mb-3">
-                <div className={cn(
-                  "p-2.5 rounded-lg border",
-                  stat.color === 'primary' ? 'bg-primary/5 text-primary border-primary/10' :
-                    stat.color === 'emerald' ? 'bg-emerald-500/5 text-emerald-600 border-emerald-500/10' :
-                      'bg-rose-500/5 text-rose-600 border-rose-500/10'
-                )}>
-                  <stat.icon className="h-4 w-4" />
-                </div>
-                <span className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wide">{stat.label}</span>
+        {loading ? (
+          [1, 2, 3].map((i) => (
+            <div key={i} className="premium-card rounded-2xl p-5 h-28 flex flex-col justify-between border-border/20 animate-pulse">
+              <div className="flex justify-between items-start">
+                <div className="h-9 w-9 bg-muted/30 rounded-lg" />
+                <div className="h-3 w-16 bg-muted/20 rounded-md" />
               </div>
-              <div className="text-xl font-bold tracking-tight tabular-nums text-foreground">{formatCurrency(stat.value)}</div>
+              <div className="h-6 w-24 bg-muted/30 rounded-md" />
             </div>
-          </SlideIn>
-        ))}
+          ))
+        ) : (
+          [
+            { label: 'Available Balance', value: overview?.remainingBalance || 0, icon: Wallet, color: 'primary' },
+            { label: 'Income Received', value: overview?.totalIncome || 0, icon: ArrowUpCircle, color: 'emerald' },
+            { label: 'Total Spent', value: overview?.totalExpense || 0, icon: ArrowDownCircle, color: 'rose' },
+          ].map((stat, i) => (
+            <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>
+              <div className="premium-card rounded-2xl p-5 flex flex-col justify-between group h-full">
+                <div className="flex justify-between items-start mb-3">
+                  <div className={cn(
+                    "p-2.5 rounded-lg border",
+                    stat.color === 'primary' ? 'bg-primary/5 text-primary border-primary/10' :
+                      stat.color === 'emerald' ? 'bg-emerald-500/5 text-emerald-600 border-emerald-500/10' :
+                        'bg-rose-500/5 text-rose-600 border-rose-500/10'
+                  )}>
+                    <stat.icon className="h-4 w-4" />
+                  </div>
+                  <span className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wide">{stat.label}</span>
+                </div>
+                <div className="text-xl font-bold tracking-tight tabular-nums text-foreground">{formatCurrency(stat.value)}</div>
+              </div>
+            </SlideIn>
+          ))
+        )}
       </div>
 
       <LedgerFilters
@@ -189,21 +203,48 @@ export default function LedgerPage() {
             </Tabs>
           </div>
 
-          <LedgerEntryList
-            ledgerEntries={ledgerEntries}
-            onDelete={async (id) => {
-              await ledgerEntryService.delete(id);
-              fetchData(filters, pagination.page);
-            }}
-          />
+          {loading ? (
+            <div className="space-y-4">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="p-5 rounded-2xl bg-muted/20 border border-transparent flex items-center justify-between gap-4 animate-pulse">
+                  <div className="flex items-center gap-4">
+                    <div className="h-12 w-12 bg-muted/30 rounded-xl" />
+                    <div className="space-y-2">
+                      <div className="h-4 w-40 bg-muted/30 rounded-md" />
+                      <div className="h-3 w-24 bg-muted/20 rounded-md" />
+                    </div>
+                  </div>
+                  <div className="h-7 w-20 bg-muted/30 rounded-lg" />
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <ErrorState 
+              title="Failed to Load Ledger"
+              message={error}
+              onRetry={() => fetchData(filters, pagination.page)}
+              className="py-20"
+            />
+          ) : (
+            <LedgerEntryList
+              ledgerEntries={ledgerEntries}
+              onDelete={async (id) => {
+                await ledgerEntryService.delete(id);
+                fetchData(filters, pagination.page);
+              }}
+            />
+          )}
+
           {/* Pagination for ledger entries */}
-          <PaginationPlus
-            currentPage={pagination.page}
-            totalPages={pagination.totalPages}
-            totalResults={pagination.total}
-            limit={pagination.limit}
-            onPageChange={handlePageChange}
-          />
+          {!error && (
+            <PaginationPlus
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              totalResults={pagination.total}
+              limit={pagination.limit}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </FadeIn>
     </div>

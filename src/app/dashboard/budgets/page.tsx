@@ -24,6 +24,7 @@ import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { CustomModal } from '@/components/ui/CustomModal';
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
+import { ErrorState } from '@/components/ui/ErrorState';
 
 export default function BudgetsPage() {
   const [budgets, setBudgets] = useState<any[]>([]);
@@ -34,6 +35,7 @@ export default function BudgetsPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const [error, setError] = useState<string | null>(null);
   const { currency, formatCurrency } = useCurrency();
 
   // Form State
@@ -42,6 +44,7 @@ export default function BudgetsPage() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const [budgetData, catData] = await Promise.all([
         budgetService.getAll(selectedMonth, selectedYear),
@@ -52,8 +55,8 @@ export default function BudgetsPage() {
       if (catData && catData.length > 0 && !selectedCategoryId) {
         setSelectedCategoryId(catData[0].id);
       }
-    } catch (error) {
-      // console.error('Failed to fetch budget data:', error);
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
     } finally {
       setLoading(false);
     }
@@ -192,7 +195,33 @@ export default function BudgetsPage() {
 
       <div className="w-full">
         {loading ? (
-          <div className="text-center p-32 text-muted-foreground font-medium text-sm animate-pulse">Loading budgets...</div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="premium-card rounded-2xl p-8 space-y-8 border-border/20 min-h-[220px]">
+                <div className="flex items-start gap-4">
+                  <div className="h-12 w-12 rounded-xl bg-muted/30 animate-pulse" />
+                  <div className="space-y-2">
+                    <div className="h-5 w-24 bg-muted/30 rounded animate-pulse" />
+                    <div className="h-3 w-32 bg-muted/20 rounded animate-pulse" />
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <div className="flex justify-between">
+                    <div className="h-6 w-20 bg-muted/30 rounded animate-pulse" />
+                    <div className="h-6 w-20 bg-muted/20 rounded animate-pulse" />
+                  </div>
+                  <div className="h-2 w-full bg-muted/20 rounded-full animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <ErrorState 
+            title="Budgets Unavailable"
+            message={error}
+            onRetry={fetchData}
+            className="py-20"
+          />
         ) : budgets.length === 0 ? (
           <div className="premium-card rounded-3xl p-24 text-center border-dashed">
             <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-primary/10">

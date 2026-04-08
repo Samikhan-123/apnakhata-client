@@ -24,7 +24,7 @@ export default function UserManagementPage() {
         setUsers(response.data);
       }
     } catch (error) {
-      console.error('Failed to fetch users:', error);
+      // Handled by interceptor
     } finally {
       setLoading(false);
     }

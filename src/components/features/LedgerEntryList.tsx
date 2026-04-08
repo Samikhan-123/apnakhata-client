@@ -5,13 +5,7 @@ import { Trash2, ShoppingCart, DollarSign, Tag, Calendar as CalendarIcon, ArrowU
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LedgerEntryForm } from './LedgerEntryForm';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription
-} from '@/components/ui/dialog';
+import { CustomModal } from '@/components/ui/CustomModal';
 import { cn, capitalize } from "@/lib/utils";
 import { format } from 'date-fns';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -98,8 +92,7 @@ export const LedgerEntryList = ({ ledgerEntries, onDelete }: { ledgerEntries: an
               {/* Actions */}
               <div className="ml-8 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-all duration-500 lg:translate-x-4 lg:group-hover:translate-x-0">
                 {(() => {
-                  const isSalary = entry.description.toLowerCase().includes('salary');
-                  const editable = !isIncome || (isSalary && isCurrentMonth(entry.date));
+                  const editable = isIncome ? isCurrentMonth(entry.date) : true;
 
                   if (editable) {
                     return (
@@ -161,28 +154,20 @@ export const LedgerEntryList = ({ ledgerEntries, onDelete }: { ledgerEntries: an
         description="Are you sure you want to remove this record? This action cannot be reversed."
       />
 
-      <Dialog
-        open={!!editingEntry}
-        onOpenChange={(open) => !open && setEditingEntry(null)}
+      <CustomModal
+        isOpen={!!editingEntry}
+        onClose={() => setEditingEntry(null)}
+        title="Edit Transaction"
+        description="Update the details of your record below."
       >
-        <DialogContent className="sm:max-w-[500px] p-0 border-none bg-background rounded-3xl overflow-hidden shadow-2xl">
-          <div className="p-8">
-            <DialogHeader className="mb-8 text-center">
-              <DialogTitle className="text-2xl font-bold tracking-tight">Edit Transaction</DialogTitle>
-              <DialogDescription className="text-muted-foreground font-medium text-sm">
-                Update the details of your record below.
-              </DialogDescription>
-            </DialogHeader>
-            <LedgerEntryForm
-              initialData={editingEntry}
-              onRefresh={() => {
-                setEditingEntry(null);
-                window.location.reload();
-              }}
-            />
-          </div>
-        </DialogContent>
-      </Dialog>
+        <LedgerEntryForm
+          initialData={editingEntry}
+          onRefresh={() => {
+            setEditingEntry(null);
+            window.location.reload();
+          }}
+        />
+      </CustomModal>
     </div>
   );
 };

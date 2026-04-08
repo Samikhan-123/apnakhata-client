@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { ledgerEntryService } from '../../services/ledger-entry.service';
 import { categoryService } from '../../services/category.service';
+import { budgetService } from '../../services/budget.service';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -30,6 +31,8 @@ const formSchema = z.object({
       path: ['categoryId']
     });
   }
+  
+  // Flexible income support: No restrictions on income descriptions
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -48,6 +51,7 @@ export const LedgerEntryForm = ({
   initialData
 }: LedgerEntryFormProps) => {
   const [categories, setCategories] = useState<any[]>([]);
+  const [budgets, setBudgets] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { currency } = useCurrency();
 
@@ -65,7 +69,7 @@ export const LedgerEntryForm = ({
     defaultValues: {
       type: initialData?.type || (isIncomeRequired ? 'INCOME' : 'EXPENSE'),
       amount: initialData?.amount ? String(initialData.amount) : '',
-      description: initialData?.description || (isIncomeRequired ? 'salary' : ''),
+      description: initialData?.description || (isIncomeRequired ? 'Salary' : ' '),
       categoryId: initialData?.categoryId || null
     }
   });
@@ -84,32 +88,47 @@ export const LedgerEntryForm = ({
   const amountValue = watch('amount');
   const descriptionValue = watch('description');
 
+  // Budget Awareness Logic
+  const activeBudget = type === 'EXPENSE' && selectedCategoryId 
+    ? budgets.find(b => b.categoryId === selectedCategoryId)
+    : null;
+
+  const remainingBudget = activeBudget 
+    ? Number(activeBudget.limit) - Number(activeBudget.spent)
+    : null;
+
+  const isExceedingBudget = remainingBudget !== null && Number(amountValue) > remainingBudget;
+
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        const catData = await categoryService.getAll();
+        const [catData, budgetData] = await Promise.all([
+          categoryService.getAll(),
+          budgetService.getAll() // Fetches current month budgets
+        ]);
         setCategories(catData || []);
+        setBudgets(budgetData || []);
       } catch (error) {
-        // console.error('Failed to fetch categories:', error);
+        // console.error('Failed to fetch data:', error);
       }
     };
-    fetchCategories();
+    fetchData();
   }, []);
 
   // Sync types and descriptions
   useEffect(() => {
     if (type === 'INCOME') {
       setValue('categoryId', null);
-      // Auto-set first option if empty or invalid
-      if (!descriptionValue || !['salary', 'business', 'freelance'].includes(descriptionValue)) {
-        setValue('description', 'salary');
-      }
+      // Auto-set TO salary if empty or invalid
+      // if (!descriptionValue) {
+      //   setValue('description', 'Salary');
+      // }
     }
   }, [type, setValue, descriptionValue]);
 
   const onSubmit = async (values: FormValues) => {
     // Frontend Balance Validations
-    if (values.type === 'EXPENSE') {
+    if (values.type === 'EXPENSE' && !initialData) {
       if (totalIncome <= 0) {
         toast.error("Process Income First! You need funds before adding an expense.");
         return;
@@ -235,33 +254,14 @@ export const LedgerEntryForm = ({
               {type === 'INCOME' ? <Workflow className="h-3.5 w-3.5 text-primary" /> : <AlignLeft className="h-3.5 w-3.5 text-primary" />} 
               {type === 'INCOME' ? 'Where from?' : 'What for?'}
             </Label>
-            {type === 'INCOME' ? (
-              <Select 
-                value={descriptionValue} 
-                onValueChange={(val) => setValue('description', val)}
-              >
-                <SelectTrigger className={cn(
-                  "h-16 px-6 rounded-[1.25rem] border-none bg-muted/30 focus:bg-background font-bold text-base transition-all",
-                  errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
-                )}>
-                  <SelectValue placeholder="Select Source" />
-                </SelectTrigger>
-                <SelectContent className="rounded-2xl border-border/40 bg-background/80 backdrop-blur-xl">
-                  <SelectItem value="salary" className="rounded-xl font-bold py-3 uppercase tracking-tighter text-[11px]">Salary</SelectItem>
-                  <SelectItem value="business" className="rounded-xl font-bold py-3 uppercase tracking-tighter text-[11px]">Business</SelectItem>
-                  <SelectItem value="freelance" className="rounded-xl font-bold py-3 uppercase tracking-tighter text-[11px]">Freelance</SelectItem>
-                </SelectContent>
-              </Select>
-            ) : (
-              <Input 
-                {...register('description')}
-                className={cn(
-                  "h-16 px-6 rounded-[1.25rem] border-none bg-muted/30 focus:bg-background font-bold text-base transition-all placeholder:text-muted-foreground/20",
-                  errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
-                )}
-                placeholder="What was this for?"
-              />
-            )}
+            <Input 
+              {...register('description')}
+              className={cn(
+                "h-16 px-6 rounded-[1.25rem] border-none bg-muted/30 focus:bg-background font-bold text-base transition-all placeholder:text-muted-foreground/20",
+                errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
+              )}
+              placeholder={type === 'INCOME' ? "e.g., Salary" : "What was this for?"}
+            />
             {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.description.message}</p>}
           </div>
 
@@ -296,6 +296,43 @@ export const LedgerEntryForm = ({
                   );
                 })}
               </div>
+
+              {/* Smart Budget Awareness Indicator */}
+              {activeBudget && (
+                <div className={cn(
+                  "p-4 rounded-2xl border animate-in fade-in slide-in-from-bottom-2 duration-300",
+                  isExceedingBudget 
+                    ? "bg-rose-500/5 border-rose-500/20 text-rose-600" 
+                    : "bg-primary/5 border-primary/20 text-primary"
+                )}>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse", isExceedingBudget ? "bg-rose-500" : "bg-primary")} />
+                      <span className="text-[10px] font-black uppercase tracking-widest">
+                        {capitalize(categories.find(c => c.id === selectedCategoryId)?.name || '')} Budget
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-black tabular-nums">
+                      {remainingBudget?.toLocaleString()} {currency} Left
+                    </span>
+                  </div>
+                  
+                  <div className="h-1.5 w-full bg-muted/30 rounded-full overflow-hidden">
+                    <div 
+                      className={cn("h-full transition-all duration-500", isExceedingBudget ? "bg-rose-500" : "bg-primary")}
+                      style={{ width: `${Math.min((Number(activeBudget.spent) / Number(activeBudget.limit)) * 100, 100)}%` }}
+                    />
+                  </div>
+
+                  {isExceedingBudget && (
+                    <p className="mt-2 text-[9px] font-bold italic flex items-center gap-1">
+                      <AlertCircle size={10} /> 
+                      Warning: This entry will exceed your {capitalize(categories.find(c => c.id === selectedCategoryId)?.name || '')} budget.
+                    </p>
+                  )}
+                </div>
+              )}
+
               {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">Please select a category</p>}
             </div>
           )}
@@ -306,7 +343,7 @@ export const LedgerEntryForm = ({
           disabled={loading}
           className="w-full h-20 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-primary/20 hover:bg-primary transition-all active:scale-95 border-none"
         >
-          {loading ? 'Saving...' : (initialData ? 'Update Record' : 'Add to Ledger')}
+          {loading ? 'Saving...' : (initialData ? 'Update Record' : 'Add to Records')}
         </Button>
       </form>
     </div>

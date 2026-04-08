@@ -25,6 +25,7 @@ import { cn, capitalize } from '@/lib/utils';
 import { toast } from 'sonner';
 import { CustomModal } from '@/components/ui/CustomModal';
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
+import { ErrorState } from '@/components/ui/ErrorState';
 import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
 
 export default function RecurringPage() {
@@ -34,6 +35,7 @@ export default function RecurringPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { currency, formatCurrency } = useCurrency();
 
   // Form State
@@ -77,6 +79,7 @@ export default function RecurringPage() {
 
   const fetchData = async () => {
     setLoading(true);
+    setError(null);
     try {
       const [patternData, catData] = await Promise.all([
         recurringService.getAll(),
@@ -88,8 +91,8 @@ export default function RecurringPage() {
       if (catData?.length > 0 && !selectedCategoryId) {
         setSelectedCategoryId(catData[0].id);
       }
-    } catch (error) {
-      // Handled by global interceptor
+    } catch (err: any) {
+      setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
     } finally {
       setLoading(false);
     }
@@ -168,7 +171,7 @@ export default function RecurringPage() {
       {/* Header & Status Center */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Automated</h1>
+          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Automated Tasks</h1>
           <p className="text-muted-foreground font-medium mt-2 text-lg max-w-lg">
             Manage your automated payments and regular income entries in one place.
           </p>
@@ -237,8 +240,8 @@ export default function RecurringPage() {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl border-none shadow-2xl">
-                        <SelectItem value="TEN_SECONDS" className="rounded-lg font-bold">Every 10 Seconds (Test)</SelectItem>
-                        <SelectItem value="DAILY" className="rounded-lg font-bold">Daily</SelectItem>
+                        {/* <SelectItem value="TEN_SECONDS" className="rounded-lg font-bold">Every 10 Seconds (Test)</SelectItem> */}
+                        {/* <SelectItem value="DAILY" className="rounded-lg font-bold">Daily</SelectItem> */}
                         <SelectItem value="WEEKLY" className="rounded-lg font-bold">Weekly</SelectItem>
                         <SelectItem value="MONTHLY" className="rounded-lg font-bold">Monthly</SelectItem>
                         <SelectItem value="YEARLY" className="rounded-lg font-bold">Yearly</SelectItem>
@@ -327,7 +330,30 @@ export default function RecurringPage() {
         </div>
 
         {loading ? (
-          <div className="text-center p-32 text-muted-foreground font-medium text-sm animate-pulse">Loading tasks...</div>
+          <div className="space-y-4">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="premium-card rounded-2xl p-6 lg:p-8 flex items-center justify-between border-border/20">
+                <div className="flex items-center gap-6">
+                  <div className="h-12 w-12 rounded-xl bg-muted/30 animate-pulse" />
+                  <div className="space-y-2">
+                    <div className="h-5 w-40 bg-muted/30 rounded animate-pulse" />
+                    <div className="h-3 w-24 bg-muted/20 rounded animate-pulse" />
+                  </div>
+                </div>
+                <div className="flex flex-col items-end gap-3">
+                  <div className="h-8 w-32 bg-muted/30 rounded animate-pulse" />
+                  <div className="h-4 w-20 bg-muted/20 rounded animate-pulse" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : error ? (
+          <ErrorState 
+            title="Unable to Load Tasks"
+            message={error}
+            onRetry={fetchData}
+            className="py-20"
+          />
         ) : patterns.length === 0 ? (
           <div className="premium-card rounded-3xl p-24 text-center border-dashed">
             <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-primary/10">
@@ -360,6 +386,9 @@ export default function RecurringPage() {
                           <h4 className="font-bold text-lg tracking-tight truncate">{capitalize(pattern.description)}</h4>
                           <span className="px-2 py-0.5 rounded-lg bg-primary/5 text-[9px] font-bold text-primary/60 uppercase tracking-wider border border-primary/10">
                             {pattern.frequency}
+                          </span>
+                          <span className="px-2 py-0.5 rounded-lg bg-emerald-500/5 text-[9px] font-bold text-emerald-600 uppercase tracking-wider border border-emerald-500/10">
+                            {pattern.hits || 0} Syncs
                           </span>
                         </div>
                         <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-wider truncate">

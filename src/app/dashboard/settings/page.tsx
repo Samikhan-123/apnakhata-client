@@ -115,10 +115,12 @@ export default function SettingsPage() {
                         <div className="h-20 w-20 rounded-2xl bg-primary/5 border border-primary/10 flex items-center justify-center text-primary group cursor-pointer">
                            <User size={32} className="group-hover:scale-110 transition-transform duration-500" />
                         </div>
-                        <div>
-                           <h4 className="text-lg font-bold tracking-tight">{user?.name || 'User'}</h4>
-                           <p className="text-[13px] font-medium text-muted-foreground/60">Member since 2024</p>
-                        </div>
+                         <div>
+                            <h4 className="text-lg font-bold tracking-tight">{user?.name || 'User'}</h4>
+                            <p className="text-[13px] font-medium text-muted-foreground/60">
+                               Member since {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }) : '2024'}
+                            </p>
+                         </div>
                      </div>
 
                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

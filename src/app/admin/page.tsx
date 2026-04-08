@@ -32,7 +32,7 @@ export default function AdminDashboardPage() {
           setStats(response.data);
         }
       } catch (error) {
-        console.error('Failed to fetch admin stats:', error);
+        // Handled by interceptor, but we can log for debug
       } finally {
         setLoading(false);
       }

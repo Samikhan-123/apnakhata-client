@@ -43,7 +43,7 @@ export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
         const cats = await categoryService.getAll();
         setCount(cats.length);
       } catch (err) {
-        console.error('Failed to fetch count:', err);
+        // console.error('Failed to fetch count:', err);
       }
     };
     fetchCount();
@@ -52,7 +52,7 @@ export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!initialData && count >= 20) {
-      setError('Category limit reached (Max 20). Please delete an existing category first.');
+      setError('Category limit reached (Max 20). Categories are permanent classifiers and cannot be removed to maintain financial history.');
       return;
     }
     setLoading(true);

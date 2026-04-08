@@ -69,7 +69,7 @@ export default function LoginPage() {
       <div className="grid lg:grid-cols-2 min-h-screen pt-20">
         {/* Left Side - Hero/Showcase */}
         <div className="hidden lg:flex flex-col justify-center p-24 bg-muted/20 relative overflow-hidden group">
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2011&auto=format&fit=crop')] bg-cover bg-center opacity-5 group-hover:scale-105 transition-transform duration-1000" />
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?q=80&w=2011&auto=format&fit=crop')] bg-cover bg-center opacity-8 group-hover:scale-105 transition-transform duration-1000" />
           
           <div className="relative z-10 space-y-10">
             <div className="space-y-4">
@@ -90,10 +90,10 @@ export default function LoginPage() {
                   <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30">Private & Secure</p>
                </div>
                <div className="h-10 w-px bg-border/40" />
-               <div className="space-y-1">
-                  <p className="text-4xl font-black text-foreground tracking-tighter italic text-primary">Sleek</p>
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30">Human Design</p>
-               </div>
+                <div className="space-y-1">
+                  <p className="text-4xl font-black text-foreground tracking-tighter italic text-primary">Precise</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30">User Centric</p>
+                </div>
             </div>
           </div>
 

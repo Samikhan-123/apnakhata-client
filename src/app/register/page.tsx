@@ -75,6 +75,7 @@ export default function RegisterPage() {
       <div className="grid lg:grid-cols-2 min-h-screen pt-20">
         {/* Left Side - Hero */}
         <div className="hidden lg:flex flex-col justify-center p-24 bg-muted/20 relative overflow-hidden group">
+           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop')] bg-cover bg-center opacity-8 group-hover:scale-105 transition-transform duration-1000" />
            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
            
            <div className="relative z-10 space-y-12">
@@ -86,7 +87,7 @@ export default function RegisterPage() {
                     wealth club.
                  </h1>
                  <p className="text-lg text-muted-foreground font-bold max-w-sm leading-relaxed">
-                    Personalized, private, and human-first. Start tracking like a pro today.
+                    Personalized, private, and privacy-first. Start tracking like a pro today.
                  </p>
               </div>
 
@@ -114,7 +115,7 @@ export default function RegisterPage() {
           >
             <div className="space-y-3">
               <h2 className="text-4xl font-black tracking-tighter text-foreground">Create Account</h2>
-              <p className="text-muted-foreground font-bold text-base leading-snug">Start your journey to financial peace with the simplest human-first tracker.</p>
+              <p className="text-muted-foreground font-bold text-base leading-snug">Start your journey to financial peace with the simplest intuitive expense tracker.</p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

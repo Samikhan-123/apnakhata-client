@@ -20,6 +20,7 @@ import { ReportFilters } from '@/components/features/ReportFilters';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
 import { useCurrency } from '@/context/CurrencyContext';
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
+import { ErrorState } from '@/components/ui/ErrorState';
 import { AnimatePresence } from "framer-motion";
 import {
   BarChart,
@@ -54,6 +55,7 @@ export default function ReportsPage() {
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const { formatCurrency } = useCurrency();
   
   // Default to current month for a professional, focused initial experience
@@ -72,12 +74,17 @@ export default function ReportsPage() {
 
   const fetchStats = async (currentFilters: any = {}, isInitial = false) => {
     try {
-      if (isInitial) setLoading(true);
-      else setIsRefreshing(true);
+      if (isInitial) {
+        setLoading(true);
+        setError(null);
+      } else {
+        setIsRefreshing(true);
+      }
 
       const data = await ledgerEntryService.getStats(currentFilters);
       setStats(data);
-    } catch (error) {
+    } catch (err: any) {
+      if (isInitial) setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
     } finally {
       setLoading(false);
       setIsRefreshing(false);
@@ -187,9 +194,31 @@ export default function ReportsPage() {
   }, [tips.length]);
 
   if (loading) return (
-    <div className="h-[60vh] flex flex-col items-center justify-center gap-6">
-      <div className="w-16 h-16 border-4 border-primary/10 border-t-primary rounded-[2rem] animate-spin" />
-      <p className="text-[10px] font-black uppercase tracking-[0.4em] text-muted-foreground animate-pulse">Loading Reports...</p>
+    <div className="space-y-12 pb-20 animate-in fade-in duration-500">
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
+        <div className="space-y-3">
+          <div className="h-10 w-64 bg-muted/30 rounded-xl animate-pulse" />
+          <div className="h-5 w-96 bg-muted/20 rounded-lg animate-pulse" />
+        </div>
+        <div className="h-20 w-48 bg-muted/30 rounded-3xl animate-pulse" />
+      </div>
+      <div className="h-24 w-full bg-muted/20 rounded-3xl animate-pulse" />
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+        <div className="lg:col-span-8 h-[480px] bg-muted/20 rounded-[2.5rem] animate-pulse" />
+        <div className="lg:col-span-4 h-[480px] bg-muted/20 rounded-[2.5rem] animate-pulse" />
+      </div>
+      <div className="h-[400px] w-full bg-muted/20 rounded-[2.5rem] animate-pulse" />
+    </div>
+  );
+
+  if (error) return (
+    <div className="min-h-[60vh] flex items-center justify-center p-6">
+      <ErrorState 
+        title="Reports Unavailable"
+        message={error}
+        onRetry={() => fetchStats(filters, true)}
+        className="max-w-xl w-full"
+      />
     </div>
   );
 
