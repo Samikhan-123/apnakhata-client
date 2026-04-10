@@ -9,10 +9,39 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Apna Khata - Your Personal Money Tracker",
-  description: "Effortlessly track your expenses, manage budgets, and achieve financial peace of mind.",
+  title: {
+    default: "Apna Khata - Financial Clarity & Secure Mastery",
+    template: "%s | Apna Khata"
+  },
+  description: "Master your personal finances with a secure, elegant, and beautifully simple ledger. Achieve financial clarity for you and your family with Apna Khata.",
+  keywords: ["financial clarity", "secure money management", "personal ledger", "family wealth", "honest tracking", "modern finance sanctuary"],
   manifest: "/manifest.json",
-  // themeColor: "#10b981",
+  openGraph: {
+    title: "Apna Khata - Elegant & Secure Money Management",
+    description: "Experience the safe haven of financial clarity. Simple, secure, and thoughtfully designed for your personal mastery.",
+    url: "https://apnakhata-client.vercel.app",
+    siteName: "Apna Khata",
+    images: [
+      {
+        url: "/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Apna Khata - Financial Clarity",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Apna Khata - Financial Clarity & Secure Mastery",
+    description: "Your personal financial haven. Simple, secure, and made for clarity.",
+    images: ["/og-image.png"],
+  },
+  icons: {
+    icon: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
+  }
 };
 
 export const viewport: Viewport = {

@@ -10,44 +10,44 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({
   baseURL: API_URL,
+  withCredentials: true, // Crucial for cookie-based auth
 });
 
 
 export const authService = {
   async login(credentials: any) {
     const { data: response } = await api.post('/auth/login', credentials);
-    if (response.success && response.token) {
-      Cookies.set('token', response.token, { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+    if (response.success) {
       Cookies.set('isVerified', response.user.isVerified ? 'true' : 'false', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
       Cookies.set('user', JSON.stringify(response.user), { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+      Cookies.set('isLoggedIn', 'true', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
     }
     return response;
   },
 
   async googleLogin(idToken: string) {
     const { data: response } = await api.post('/auth/google', { idToken });
-    if (response.success && response.token) {
-      Cookies.set('token', response.token, { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+    if (response.success) {
       Cookies.set('isVerified', response.user.isVerified ? 'true' : 'false', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
       Cookies.set('user', JSON.stringify(response.user), { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+      Cookies.set('isLoggedIn', 'true', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
     }
     return response;
   },
 
   async register(userData: any) {
     const { data: response } = await api.post('/auth/register', userData);
-    if (response.success && response.token) {
-      Cookies.set('token', response.token, { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+    if (response.success) {
       Cookies.set('isVerified', 'false', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
       Cookies.set('user', JSON.stringify(response.user), { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+      Cookies.set('isLoggedIn', 'true', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
     }
     return response;
   },
 
   async verifyEmail(email: string, otp: string) {
     const { data: response } = await api.post('/auth/verify-email', { email, otp });
-    if (response.success && response.token) {
-      Cookies.set('token', response.token, { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+    if (response.success) {
       Cookies.set('isVerified', 'true', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
       Cookies.set('user', JSON.stringify(response.user), { expires: 30, secure: true, sameSite: 'strict', path: '/' });
     }
@@ -69,15 +69,26 @@ export const authService = {
     return response;
   },
 
-  logout() {
-    Cookies.remove('token', { path: '/' });
+  async logout() {
+    try {
+      await api.post('/auth/logout');
+    } catch (error) {
+      // console.error('Logout failed on server', error);
+    }
     Cookies.remove('isVerified', { path: '/' });
     Cookies.remove('user', { path: '/' });
+    Cookies.remove('isLoggedIn', { path: '/' });
+    
+    // Also remove legacy token if exists from previous system
+    Cookies.remove('token', { path: '/' });
+
+    if (typeof window !== 'undefined') {
+       window.location.href = '/login';
+    }
   },
 
   getCurrentUser() {
-    if (!Cookies.get('token')) {
-      this.logout();
+    if (!Cookies.get('isLoggedIn')) {
       return null;
     }
     const user = Cookies.get('user');
@@ -90,13 +101,8 @@ export const authService = {
   }
 };
 
-api.interceptors.request.use((config) => {
-  const token = Cookies.get('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
+// Remove the request interceptor that adds Authorization header
+// Cookies with withCredentials: true will handle this automatically
 
 api.interceptors.response.use(
   (response) => response,
@@ -115,7 +121,6 @@ api.interceptors.response.use(
         data: JSON.parse(error.config.data || '{}'),
         headers: error.config.headers
       });
-      // ${error.config.method?.toUpperCase()}
       toast.info('Saved offline. Changes will sync when reconnected.', {
         description: `Your request is pending.`,
         duration: 5000
@@ -129,7 +134,10 @@ api.interceptors.response.use(
     handleApiError(error);
 
     if (status === 401) {
-      authService.logout();
+      // Use direct cleanup to avoid infinite loop
+      Cookies.remove('isVerified', { path: '/' });
+      Cookies.remove('user', { path: '/' });
+      Cookies.remove('isLoggedIn', { path: '/' });
       if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
         window.location.href = '/login';
       }
