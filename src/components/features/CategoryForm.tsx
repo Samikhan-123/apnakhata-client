@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { categorySchema, CategoryInput } from '@/lib/validations';
 import * as LucideIcons from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { categoryService } from '@/services/category.service';
 import { toast } from 'sonner';
@@ -24,58 +26,68 @@ interface CategoryFormProps {
 }
 
 export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
-  const [name, setName] = useState(initialData?.name || '');
-  const [selectedIcon, setSelectedIcon] = useState(initialData?.icon || 'ShoppingBag');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [count, setCount] = useState(0);
 
-  React.useEffect(() => {
-    if (initialData) {
-      setName(initialData.name);
-      setSelectedIcon(initialData.icon);
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors }
+  } = useForm<CategoryInput>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      name: initialData?.name || '',
+      icon: initialData?.icon || 'ShoppingBag'
     }
-  }, [initialData]);
+  });
 
-  React.useEffect(() => {
+  const selectedIcon = watch('icon');
+
+  useEffect(() => {
+    if (initialData) {
+      setValue('name', initialData.name);
+      setValue('icon', initialData.icon);
+    }
+  }, [initialData, setValue]);
+
+  useEffect(() => {
     const fetchCount = async () => {
       try {
         const cats = await categoryService.getAll();
         setCount(cats.length);
-      } catch (err) {
-        // console.error('Failed to fetch count:', err);
-      }
+      } catch (err) {}
     };
     fetchCount();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = async (data: CategoryInput) => {
     if (!initialData && count >= 20) {
-      setError('Category limit reached (Max 20). Categories are permanent classifiers and cannot be removed to maintain financial history.');
+      toast.error('Category limit reached (Max 20).');
       return;
     }
     setLoading(true);
-    setError(null);
     try {
       if (initialData?.id) {
-        await categoryService.update(initialData.id, { name, icon: selectedIcon });
-        toast.success('Category updated successfully');
+        await categoryService.update(initialData.id, data);
+        toast.success('Category updated');
       } else {
-        await categoryService.create({ name, icon: selectedIcon });
-        toast.success('Category created successfully');
+        await categoryService.create(data);
+        toast.success('Category created');
       }
-      if (!initialData) setName('');
+      if (!initialData) reset();
       onSuccess?.();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to process category');
+      // Handled by interceptor
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8">
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       <div className="space-y-3">
         <div className="flex justify-between items-end px-1">
           <Label htmlFor="category-name" className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em]">
@@ -91,11 +103,13 @@ export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
         <Input 
           id="category-name"
           placeholder="e.g., Luxury Dining"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="rounded-2xl border-none bg-muted/40 h-14 text-base font-bold focus-visible:ring-primary/20 transition-all placeholder:text-muted-foreground/30"
-          required
+          {...register('name')}
+          className={cn(
+            "rounded-2xl border-none bg-muted/40 h-14 text-base font-bold focus-visible:ring-primary/20 transition-all placeholder:text-muted-foreground/30",
+            errors.name && "ring-2 ring-rose-500/20 bg-rose-500/5"
+          )}
         />
+        {errors.name && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.name.message}</p>}
       </div>
 
       <div className="space-y-4">
@@ -111,7 +125,7 @@ export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
               <button
                 key={iconName}
                 type="button"
-                onClick={() => setSelectedIcon(iconName)}
+                onClick={() => setValue('icon', iconName)}
                 className={cn(
                   "flex items-center justify-center h-14 w-full rounded-2xl transition-all duration-300",
                   isSelected 
@@ -124,17 +138,12 @@ export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
             );
           })}
         </div>
+        {errors.icon && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.icon.message}</p>}
       </div>
-
-      {error && (
-        <div className="p-4 rounded-2xl bg-rose-50 border border-rose-100 text-rose-600 text-xs font-bold animate-in fade-in slide-in-from-top-2">
-          {error}
-        </div>
-      )}
 
       <Button 
         type="submit" 
-        className="w-full h-16 rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
+        className="w-full h-14 sm:h-16 rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
         disabled={loading || count >= 20}
       >
         {loading ? 'Saving...' : 'Save Category'}

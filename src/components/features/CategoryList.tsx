@@ -124,8 +124,11 @@ export function CategoryList() {
               {!category.isSystem ? (
                 <Button 
                   variant="ghost" 
-                  size="icon"
-                  className="rounded-2xl h-10 w-10 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all active:scale-90"
+                   size="icon"
+                   className={cn(
+                    "rounded-2xl h-10 w-10 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all active:scale-90",
+                    "opacity-100 lg:opacity-0 lg:group-hover:opacity-100" // Visible on mobile, hover on desktop
+                  )}
                   onClick={() => setEditingCategory(category)}
                   title="Edit Category"
                 >
@@ -133,10 +136,10 @@ export function CategoryList() {
                 </Button>
               ) : (
                 <div 
-                  className="h-10 w-10 flex items-center justify-center text-primary/40 bg-primary/5 rounded-xl border border-primary/10" 
+                  className="h-10 w-10 flex items-center justify-center text-primary/40 bg-primary/5 rounded-xl border border-primary/10 shrink-0" 
                   title="System categories are locked"
                 >
-                  <Lock className="h-4 w-4 shrink-0" />
+                  <Lock className="h-4 w-4" />
                 </div>
               )}
             </div>

@@ -28,8 +28,8 @@ export default function CategoriesPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <SlideIn duration={0.5}>
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Categories</h1>
-          <p className="text-muted-foreground font-medium mt-2 text-lg max-w-lg">
+          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Categories</h1>
+          <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-lg">
             Organize your finances by grouping transactions into meaningful collections.
           </p>
         </SlideIn>
@@ -38,7 +38,7 @@ export default function CategoriesPage() {
           <SlideIn delay={0.2} duration={0.5}>
             <Button
               onClick={() => setIsDialogOpen(true)}
-              className="h-11 px-8 rounded-xl gap-2 font-bold shadow-sm bg-primary hover:bg-primary/90 active:scale-95 transition-all text-sm"
+              className="w-full md:w-auto h-11 px-8 rounded-xl gap-2 font-bold shadow-sm bg-primary hover:bg-primary/90 active:scale-95 transition-all text-sm"
             >
               <Plus className="h-5 w-5" />
               <span>Add Category</span>

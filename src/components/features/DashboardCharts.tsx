@@ -32,7 +32,7 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
   }
 
   return (
-    <div className="h-full w-full relative group min-h-[400px]">
+    <div className="h-full w-full relative group min-h-[400px] overflow-hidden">
       <ResponsiveContainer width="100%" height="100%" minHeight={400}>
         <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
           <defs>

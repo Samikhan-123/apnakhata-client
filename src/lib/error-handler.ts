@@ -30,7 +30,17 @@ export const sanitizeErrorMessage = (message: string): string => {
  */
 export const handleApiError = (error: any, options: { silent?: boolean; customMessage?: string } = {}) => {
   const status = error.response?.status;
-  let message = error.response?.data?.message || error.message || 'An unexpected error occurred';
+  const backendErrors = error.response?.data?.errors;
+  
+  // Try to get a specific validation message if available
+  let message = error.response?.data?.message;
+  
+  if (Array.isArray(backendErrors) && backendErrors.length > 0) {
+    const firstErr = backendErrors[0];
+    message = `${firstErr.path.join('.')}: ${firstErr.message}`;
+  }
+  
+  message = message || error.message || 'An unexpected error occurred';
   
   message = sanitizeErrorMessage(message);
   const displayMessage = options.customMessage ? `${options.customMessage}: ${message}` : message;

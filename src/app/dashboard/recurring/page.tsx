@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { recurringTaskSchema, RecurringTaskInput } from '@/lib/validations';
 import { recurringService } from '@/services/recurring.service';
 import { categoryService } from '@/services/category.service';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -17,7 +20,6 @@ import {
   Trash2, 
   ArrowUpRight, 
   ArrowDownLeft, 
-  Sparkles 
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { format } from 'date-fns';
@@ -26,7 +28,6 @@ import { toast } from 'sonner';
 import { CustomModal } from '@/components/ui/CustomModal';
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 import { ErrorState } from '@/components/ui/ErrorState';
-import { Dialog, DialogTrigger } from '@radix-ui/react-dialog';
 
 export default function RecurringPage() {
   const [patterns, setPatterns] = useState<any[]>([]);
@@ -38,47 +39,52 @@ export default function RecurringPage() {
   const [error, setError] = useState<string | null>(null);
   const { currency, formatCurrency } = useCurrency();
 
-  // Form State
-  const [description, setDescription] = useState('');
-  const [amount, setAmount] = useState('');
-  const [type, setType] = useState<'EXPENSE' | 'INCOME'>('EXPENSE');
-  const [frequency, setFrequency] = useState<'TEN_SECONDS' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY'>('MONTHLY');
-  const [selectedCategoryId, setSelectedCategoryId] = useState('');
-  
-  // Combine Date & Time for ISO state
-  const [nextDate, setNextDate] = useState(new Date().toISOString().split('T')[0]);
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    watch,
+    reset,
+    formState: { errors }
+  } = useForm<RecurringTaskInput>({
+    resolver: zodResolver(recurringTaskSchema),
+    defaultValues: {
+      type: 'EXPENSE',
+      frequency: 'MONTHLY',
+      amount: '',
+      description: '',
+      nextExecution: new Date().toISOString().split('T')[0]
+    }
+  });
+
+  const type = watch('type');
+  const amount = watch('amount');
+  const description = watch('description');
+  const frequency = watch('frequency');
 
   const handleForceSync = async () => {
-    // console.log('[SYNC_DEBUG] Force Sync button clicked!');
     toast.promise(
       (async () => {
         try {
-          // console.log('[SYNC_DEBUG] Triggering recurringService.processManual()...');
           const response = await recurringService.processManual();
-          // console.log('[SYNC_DEBUG] Service Response:', response);
-          
-          // The server response doesn't have a 'success' boolean, it has successCount and message
           if (response.successCount === 0 && response.count > 0 && !response.message?.includes('Successfully synced')) {
             throw new Error(response.message || 'Sync failed');
           }
-
-          await fetchData(); // Refresh patterns
+          await fetchData(true);
           return response.message || `Successfully synced ${response.successCount} tasks.`;
-        } catch (err: any) {
-          // console.error('[SYNC_DEBUG] Error during sync:', err);
-          throw err;
-        }
+        } catch (err: any) { throw err; }
       })(),
       {
         loading: 'Syncing recurring tasks...',
         success: (msg: string) => msg,
-        error: null, // Handled by global interceptor
+        error: null,
       }
     );
   };
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (silent: boolean = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const [patternData, catData] = await Promise.all([
@@ -88,8 +94,8 @@ export default function RecurringPage() {
       setPatterns(patternData || []);
       setCategories(catData || []);
 
-      if (catData?.length > 0 && !selectedCategoryId) {
-        setSelectedCategoryId(catData[0].id);
+      if (catData?.length > 0) {
+        setValue('categoryId', catData[0].id);
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
@@ -102,39 +108,25 @@ export default function RecurringPage() {
     fetchData();
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!description || !amount) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-
+  const onSubmit = async (data: RecurringTaskInput) => {
     try {
-      const executionDateTime = new Date(`${nextDate}T12:00:00`); // Default to 12 PM daytime
+      const executionDateTime = new Date(`${data.nextExecution}T12:00:00`);
       
       await recurringService.create({
-        description: description.toLowerCase(),
-        amount: Number(amount),
-        type,
-        frequency,
-        categoryId: type === 'INCOME' ? undefined : (selectedCategoryId || undefined),
+        ...data,
+        description: data.description.toLowerCase(),
+        amount: Number(data.amount),
+        categoryId: data.type === 'INCOME' ? undefined : (data.categoryId || undefined),
         nextExecution: executionDateTime.toISOString()
       });
       
-      toast.success("Automated task added successfully");
+      toast.success("Automated task added");
       setIsModalOpen(false);
-      resetForm();
-      fetchData();
+      reset();
+      fetchData(true);
     } catch (error) {
       // Handled by global interceptor
     }
-  };
-
-  const resetForm = () => {
-     setDescription('');
-     setAmount('');
-     setType('EXPENSE');
-     setFrequency('MONTHLY');
   };
 
   const handleDelete = async () => {
@@ -143,7 +135,7 @@ export default function RecurringPage() {
     try {
       await recurringService.delete(deleteId);
       toast.success("Task removed");
-      fetchData();
+      fetchData(true);
     } catch (error) {
       // Handled by global interceptor
     } finally {
@@ -157,8 +149,6 @@ export default function RecurringPage() {
     const action = type === 'INCOME' ? 'added to your income' : 'counted as an expense';
     
     switch (frequency) {
-      case 'TEN_SECONDS': return `${val} will be ${action} every 10 seconds (for testing).`;
-      case 'DAILY': return `${val} will be ${action} every single day.`;
       case 'WEEKLY': return `${val} will be ${action} every week.`;
       case 'MONTHLY': return `${val} will be ${action} on this day every month.`;
       case 'YEARLY': return `${val} will be ${action} once a year.`;
@@ -171,15 +161,15 @@ export default function RecurringPage() {
       {/* Header & Status Center */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Automated Tasks</h1>
-          <p className="text-muted-foreground font-medium mt-2 text-lg max-w-lg">
+          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Automated Tasks</h1>
+          <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-lg">
             Manage your automated payments and regular income entries in one place.
           </p>
         </SlideIn>
 
         <SlideIn delay={0.2} duration={0.5}>
-          <div className="flex items-center gap-8 premium-card p-4 px-6 rounded-3xl border-border/40">
-            <div className="flex items-center gap-4">
+          <div className="flex items-center justify-between flex-col sm:flex-row sm:gap-8  premium-card p-4 px-6 rounded-3xl border-border/40">
+            <div className="flex items-center justify-between gap-4">
               <div className="h-12 w-12 bg-primary/5 text-primary rounded-xl flex items-center justify-center border border-primary/10">
                 <Timer size={24} />
               </div>
@@ -192,7 +182,7 @@ export default function RecurringPage() {
           
             <Button 
               onClick={() => setIsModalOpen(true)}
-              className="h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2"
+              className="w-full md:w-auto h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2"
             >
               <Plus size={18} />
               <span>Add Task</span>
@@ -207,18 +197,31 @@ export default function RecurringPage() {
             description="Setup a regular payment or automated income."
             maxWidth="550px"
           >
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Type</Label>
-                  <Select value={type} onValueChange={(val: any) => { setType(val); setDescription(''); }}>
-                    <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent className="rounded-xl border-none shadow-2xl">
-                      <SelectItem value="EXPENSE" className="rounded-lg font-bold">Expense</SelectItem>
-                      <SelectItem value="INCOME" className="rounded-lg font-bold">Income</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <Controller
+                    name="type"
+                    control={control}
+                    render={({ field }) => (
+                      <Select 
+                        value={field.value} 
+                        onValueChange={(val: any) => { 
+                          field.onChange(val); 
+                          setValue('description', ''); 
+                        }}
+                      >
+                        <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="rounded-xl border-none shadow-2xl">
+                          <SelectItem value="EXPENSE" className="rounded-lg font-bold">Expense</SelectItem>
+                          <SelectItem value="INCOME" className="rounded-lg font-bold">Income</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
+                  />
+                  {errors.type && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.type.message}</p>}
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
@@ -227,66 +230,88 @@ export default function RecurringPage() {
                     <Input
                       type="number"
                       placeholder="0.00"
-                      className="h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6"
-                      value={amount}
-                      onChange={(e) => setAmount(e.target.value)}
-                      required
+                      {...register('amount')}
+                      className={cn(
+                        "h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6",
+                        errors.amount && "ring-2 ring-rose-500/20 bg-rose-500/5"
+                      )}
                     />
+                    {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.amount.message}</p>}
                   </div>
                   <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Frequency</Label>
-                    <Select value={frequency} onValueChange={(val: any) => setFrequency(val)}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl border-none shadow-2xl">
-                        {/* <SelectItem value="TEN_SECONDS" className="rounded-lg font-bold">Every 10 Seconds (Test)</SelectItem> */}
-                        {/* <SelectItem value="DAILY" className="rounded-lg font-bold">Daily</SelectItem> */}
-                        <SelectItem value="WEEKLY" className="rounded-lg font-bold">Weekly</SelectItem>
-                        <SelectItem value="MONTHLY" className="rounded-lg font-bold">Monthly</SelectItem>
-                        <SelectItem value="YEARLY" className="rounded-lg font-bold">Yearly</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="frequency"
+                      control={control}
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl border-none shadow-2xl">
+                            <SelectItem value="WEEKLY" className="rounded-lg font-bold">Weekly</SelectItem>
+                            <SelectItem value="MONTHLY" className="rounded-lg font-bold">Monthly</SelectItem>
+                            <SelectItem value="YEARLY" className="rounded-lg font-bold">Yearly</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.frequency && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.frequency.message}</p>}
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Description</Label>
                   {type === 'INCOME' ? (
-                    <Select value={description} onValueChange={setDescription}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                        <SelectValue placeholder="Select Source" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl border-none shadow-2xl">
-                         <SelectItem value="salary" className="rounded-lg font-bold">Salary</SelectItem>
-                         <SelectItem value="business" className="rounded-lg font-bold">Business</SelectItem>
-                         <SelectItem value="freelance" className="rounded-lg font-bold">Freelance</SelectItem>
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="description"
+                      control={control}
+                      render={({ field }) => (
+                        <Select value={field.value} onValueChange={field.onChange}>
+                          <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                            <SelectValue placeholder="Select Source" />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl border-none shadow-2xl">
+                             <SelectItem value="salary" className="rounded-lg font-bold">Salary</SelectItem>
+                             <SelectItem value="business" className="rounded-lg font-bold">Business</SelectItem>
+                             <SelectItem value="freelance" className="rounded-lg font-bold">Freelance</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
                   ) : (
                     <Input
                       placeholder="e.g., Monthly Rent"
-                      className="h-14 rounded-2xl bg-muted/40 border-none font-bold px-6"
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      required
+                      {...register('description')}
+                      className={cn(
+                        "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6",
+                        errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
+                      )}
                     />
                   )}
+                  {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.description.message}</p>}
                 </div>
 
                 {type === 'EXPENSE' && (
                   <div className="space-y-3">
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Category</Label>
-                    <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                        <SelectValue placeholder="Choose Category" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl border-none shadow-2xl">
-                        {categories.map(cat => (
-                          <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Controller
+                      name="categoryId"
+                      control={control}
+                      render={({ field }) => (
+                        <Select value={field.value || ''} onValueChange={field.onChange}>
+                          <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                            <SelectValue placeholder="Choose Category" />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-xl border-none shadow-2xl">
+                            {categories.map(cat => (
+                              <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    />
+                    {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.categoryId.message}</p>}
                   </div>
                 )}
 
@@ -294,11 +319,13 @@ export default function RecurringPage() {
                     <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">First Payment Date</Label>
                     <Input
                       type="date"
-                      className="h-14 rounded-2xl bg-muted/40 border-none font-bold px-6"
-                      value={nextDate}
-                      onChange={(e) => setNextDate(e.target.value)}
-                      required
+                      {...register('nextExecution')}
+                      className={cn(
+                        "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6",
+                        errors.nextExecution && "ring-2 ring-rose-500/20 bg-rose-500/5"
+                      )}
                     />
+                    {errors.nextExecution && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.nextExecution.message}</p>}
                 </div>
 
                 <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">

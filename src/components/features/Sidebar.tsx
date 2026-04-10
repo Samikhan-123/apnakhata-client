@@ -92,16 +92,16 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
   return (
     <aside className={cn(
-      "fixed left-0 top-0 inset-y-0 w-[280px] bg-card border-r border-border/40 z-50 flex flex-col transition-all duration-500 ease-in-out",
+      "fixed left-0 top-0 inset-y-0 w-[280px] bg-card border-r border-border/40 z-50 flex flex-col transition-all duration-300 ease-in-out",
       "lg:translate-x-0 h-full", // Always visible on desktop
       isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full lg:translate-x-0" // Slide on mobile
     )}>
       {/* Brand Section */}
       <div className="h-20 flex items-center justify-between px-8 border-b border-border/40">
         <div className="flex items-center gap-3 group cursor-pointer">
-          <div className="w-10 h-10 bg-primary/5 rounded-2xl flex items-center justify-center border border-primary/10 transition-all group-hover:scale-110 duration-300 shadow-sm overflow-hidden p-1.5">
-            <img src="/icon1.png" alt="Apna Khata" className="w-full h-full object-contain group-hover:rotate-12 transition-transform" />
-          </div>
+          {/* <div className="w-10 h-10 bg-primary/5 flex items-center justify-center border border-primary/10 transition-all duration-300 "> */}
+            <img src="/icon1.png" alt="Apna Khata" className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform" />
+          {/* </div> */}
           <span className="text-xl font-black tracking-tight text-foreground">
             Apna<span className="text-primary tracking-tighter ml-0.5">Khata</span>
           </span>

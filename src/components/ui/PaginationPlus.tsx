@@ -68,10 +68,9 @@ export function PaginationPlus({
   const endResult = Math.min(currentPage * limit, totalResults || 0);
 
   return (
-    <div className={cn("flex flex-col md:flex-row items-center justify-between gap-8 pt-10 border-t border-border/20 px-2", className)}>
+    <div className={cn("flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 pt-10 border-t border-border/20 px-2", className)}>
       <div className="flex flex-col items-center md:items-start gap-1 group">
-         {/* <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/30">Data Navigation</p> */}
-         <p className="text-xs font-bold text-muted-foreground/60 transition-colors group-hover:text-primary/60">
+         <p className="text-xs font-bold text-muted-foreground/60 transition-colors group-hover:text-primary/60 text-center md:text-left">
             {totalResults ? (
                <>Showing <span className="text-foreground font-black tabular-nums">{startResult}</span> to <span className="text-foreground font-black tabular-nums">{endResult}</span> of <span className="text-primary font-black tabular-nums">{totalResults}</span> records</>
             ) : (
@@ -80,18 +79,18 @@ export function PaginationPlus({
          </p>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2 max-w-full overflow-x-auto no-scrollbar pb-2 md:pb-0">
         <Button
           variant="ghost"
           disabled={currentPage === 1}
           onClick={() => onPageChange(currentPage - 1)}
-          className="h-12 px-5 rounded-2xl hover:bg-primary/10 hover:text-primary transition-all disabled:opacity-20 flex items-center gap-2 font-black uppercase tracking-widest text-[10px]"
+          className="h-10 sm:h-12 px-3 sm:px-5 rounded-xl sm:rounded-2xl hover:bg-primary/10 hover:text-primary transition-all disabled:opacity-20 flex items-center gap-1.5 font-black uppercase tracking-widest text-[9px] sm:text-[10px]"
         >
           <ChevronLeft className="h-4 w-4" />
-          Prev
+          <span className="hidden xs:inline">Prev</span>
         </Button>
 
-        <div className="flex items-center gap-1 bg-muted/20 p-1.5 rounded-[1.5rem] border border-border/40">
+        <div className="flex items-center gap-0.5 sm:gap-1 bg-muted/20 p-1 rounded-2xl sm:rounded-[1.5rem] border border-border/40">
           {renderPageButtons()}
         </div>
 
@@ -99,15 +98,15 @@ export function PaginationPlus({
           variant="ghost"
           disabled={currentPage === totalPages}
           onClick={() => onPageChange(currentPage + 1)}
-          className="h-12 px-5 rounded-2xl hover:bg-primary/10 hover:text-primary transition-all disabled:opacity-20 flex items-center gap-2 font-black uppercase tracking-widest text-[10px]"
+          className="h-10 sm:h-12 px-3 sm:px-5 rounded-xl sm:rounded-2xl hover:bg-primary/10 hover:text-primary transition-all disabled:opacity-20 flex items-center gap-1.5 font-black uppercase tracking-widest text-[9px] sm:text-[10px]"
         >
-          Next
+          <span className="hidden xs:inline">Next</span>
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>
 
       {/* Go to Page Input */}
-      <div className="flex items-center gap-4 bg-muted/20 pl-6 pr-2 py-2 rounded-[1.8rem] border border-border/40 group focus-within:border-primary/50 transition-all">
+      <div className="flex items-center gap-3 sm:gap-4 bg-muted/20 pl-4 sm:pl-6 pr-1.5 sm:pr-2 py-1.5 sm:py-2 rounded-2xl sm:rounded-[1.8rem] border border-border/40 group focus-within:border-primary/50 transition-all">
         <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Go to Page</span>
         <div className="flex items-center gap-2">
           <Input 

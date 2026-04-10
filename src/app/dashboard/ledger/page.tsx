@@ -17,22 +17,26 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 import { CustomModal } from '@/components/ui/CustomModal';
 import { ErrorState } from '@/components/ui/ErrorState';
-import { LedgerSkeleton } from '@/components/ui/LedgerSkeleton';
+// import { LedgerSkeleton } from '@/components/ui/LedgerSkeleton';
 
 export default function LedgerPage() {
   const { formatCurrency } = useCurrency();
+  const now = new Date();
+  const defaultStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+  const defaultEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).toISOString();
+
   const [ledgerEntries, setLedgerEntries] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState<any>({});
+  const [filters, setFilters] = useState<any>({ startDate: defaultStart, endDate: defaultEnd });
   const [pagination, setPagination] = useState<any>({ page: 1, limit: 15, total: 0 });
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [overview, setOverview] = useState<any>(null);
   const [allTimeOverview, setAllTimeOverview] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async (currentFilters: any = {}, page: number = 1) => {
-    setLoading(true);
+  const fetchData = useCallback(async (currentFilters: any = {}, page: number = 1, silent: boolean = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const [{ data, pagination: pag }, overviewData, allTimeOverview] = await Promise.all([
@@ -92,21 +96,21 @@ export default function LedgerPage() {
 
 
   return (
-    <div className="space-y-10 pb-20">
+    <div className=" space-y-10  pb-20">
       <SlideIn duration={0.5}>
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-          <div>
-            <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">
+          <div className="space-y-1">
+            <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">
               {isFiltered ? 'Financial Records' : 'Records'}
             </h1>
-            <p className="text-muted-foreground font-medium mt-2 text-lg">
+            <p className="text-muted-foreground font-medium text-base sm:text-lg">
               {isFiltered ? `Viewing records for ${periodText}` : `Your complete transaction history for ${periodText}`}
             </p>
           </div>
 
           <Button
             onClick={() => setIsFormOpen(true)}
-            className="h-11 px-8 rounded-xl gap-2 font-bold shadow-sm bg-primary hover:bg-primary/90 active:scale-95 transition-all text-sm"
+            className="w-auto md:w-auto h-11 px-8 rounded-xl gap-2 font-bold shadow-sm bg-primary hover:bg-primary/90 active:scale-95 transition-all text-sm"
           >
             <Plus className="h-5 w-5" />
             <span>Add Transaction</span>
@@ -196,9 +200,9 @@ export default function LedgerPage() {
               className="bg-muted/20 p-1 rounded-xl border border-border/20"
             >
               <TabsList className="bg-transparent border-none">
-                <TabsTrigger value="all" className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-semibold text-xs tracking-tight px-6 h-8">All Activity</TabsTrigger>
-                <TabsTrigger value="INCOME" className="rounded-lg data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-semibold text-xs tracking-tight px-6 h-8">Income</TabsTrigger>
-                <TabsTrigger value="EXPENSE" className="rounded-lg data-[state=active]:bg-rose-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-semibold text-xs tracking-tight px-6 h-8">Expense</TabsTrigger>
+                <TabsTrigger value="all" className="rounded-lg data-[state=active]:bg-background data-[state=active]:shadow-sm font-semibold text-[10px] sm:text-xs tracking-tight px-3 sm:px-6 h-8">All Activity</TabsTrigger>
+                <TabsTrigger value="INCOME" className="rounded-lg data-[state=active]:bg-emerald-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-semibold text-[10px] sm:text-xs tracking-tight px-3 sm:px-6 h-8">Income</TabsTrigger>
+                <TabsTrigger value="EXPENSE" className="rounded-lg data-[state=active]:bg-rose-500 data-[state=active]:text-white data-[state=active]:shadow-sm font-semibold text-[10px] sm:text-xs tracking-tight px-3 sm:px-6 h-8">Expense</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -219,7 +223,7 @@ export default function LedgerPage() {
               ))}
             </div>
           ) : error ? (
-            <ErrorState 
+            <ErrorState
               title="Failed to Load Ledger"
               message={error}
               onRetry={() => fetchData(filters, pagination.page)}
@@ -230,8 +234,9 @@ export default function LedgerPage() {
               ledgerEntries={ledgerEntries}
               onDelete={async (id) => {
                 await ledgerEntryService.delete(id);
-                fetchData(filters, pagination.page);
+                fetchData(filters, pagination.page, true);
               }}
+              onRefresh={() => fetchData(filters, pagination.page, true)}
             />
           )}
 

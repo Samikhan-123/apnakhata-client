@@ -33,6 +33,14 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
   const [search, setSearch] = React.useState(currentFilters?.search || '');
   const [categoryId, setCategoryId] = React.useState<string>(currentFilters?.categoryId || 'all');
   const [type, setType] = React.useState<string>(currentFilters?.type || 'all');
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleApply = React.useCallback((newDate?: DateRange, newSearch?: string, newCat?: string, newType?: string) => {
     const filters: any = {};
@@ -95,7 +103,7 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
   return (
     <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center gap-4 premium-card p-5 md:p-6 rounded-3xl">
 
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <Popover>
           <PopoverTrigger asChild>
             <Button
@@ -128,7 +136,7 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
               defaultMonth={date?.from}
               selected={date}
               onSelect={setDate}
-              numberOfMonths={2}
+              numberOfMonths={isMobile ? 1 : 2}
               className="p-4"
             />
           </PopoverContent>

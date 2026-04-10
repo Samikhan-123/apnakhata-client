@@ -81,7 +81,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center gap-1 md:gap-4">
+      <div className="flex items-center gap-1 sm:gap-4">
         {/* Theme Toggle */}
         <Button
           variant="ghost"

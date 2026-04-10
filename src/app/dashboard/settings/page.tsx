@@ -236,7 +236,7 @@ export default function SettingsPage() {
                      </div>
                   </Card>
 
-                   <Card className="rounded-[2rem] border-border/40 shadow-sm p-8 bg-card">
+                       <Card className="rounded-[2rem] border-border/40 shadow-sm p-8 bg-card opacity-30 cursor-not-allowed">
                       <div className="flex items-center gap-4 mb-8">
                         <div className="h-10 w-10 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/10 text-primary">
                            <Database size={20} />
@@ -253,7 +253,7 @@ export default function SettingsPage() {
                               <h5 className="font-bold text-base tracking-tight">Export History</h5>
                               <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider">Download CSV file</p>
                            </div>
-                           <Button variant="ghost" className="h-10 w-10 rounded-lg p-0 hover:bg-primary/10 hover:text-primary transition-all">
+                           <Button disabled={true} variant="ghost" className="h-10 w-10 rounded-lg p-0 hover:bg-primary/10 hover:text-primary transition-all">
                               <Download size={18} />
                            </Button>
                         </div>
@@ -263,7 +263,7 @@ export default function SettingsPage() {
                               <h5 className="font-bold text-base tracking-tight text-rose-600">Clear All Data</h5>
                               <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider">Permanent removal</p>
                            </div>
-                           <Button 
+                           <Button disabled={true}
                              variant="ghost" 
                              className="h-10 w-10 rounded-lg p-0 text-rose-600 hover:bg-rose-500 hover:text-white transition-all"
                              onClick={() => setIsPurgeOpen(true)}

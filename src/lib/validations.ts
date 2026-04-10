@@ -19,3 +19,45 @@ export const loginSchema = z.object({
 
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
+
+// --- Transactional Schemas ---
+
+export const ledgerEntrySchema = z.object({
+  amount: z.string().min(1, 'Value required').refine((val) => !isNaN(Number(val)) && Number(val) > 0, 'Must be positive'),
+  description: z.string().min(3, 'Minimum 3 characters').max(50, 'Too long'),
+  type: z.enum(['INCOME', 'EXPENSE']),
+  categoryId: z.string().optional().nullable(),
+  date: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.type === 'EXPENSE' && !data.categoryId) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Required",
+      path: ['categoryId']
+    });
+  }
+});
+
+export const categorySchema = z.object({
+  name: z.string().min(2, 'Minimum 2 characters').max(50, 'Too long'),
+  icon: z.string().min(1, 'Icon required'),
+});
+
+export const budgetSchema = z.object({
+  categoryId: z.string().min(1, 'Category required'),
+  limit: z.string().min(1, 'Budget limit is required').refine((val) => !isNaN(Number(val)) && Number(val) > 0, 'Must be positive'),
+});
+
+export const recurringTaskSchema = z.object({
+  description: z.string().min(3, 'Minimum 3 characters').max(100, 'Too long'),
+  amount: z.string().min(1, 'Value required').refine((val) => !isNaN(Number(val)) && Number(val) > 0, 'Must be positive'),
+  type: z.enum(['INCOME', 'EXPENSE']),
+  frequency: z.enum(['WEEKLY', 'MONTHLY', 'YEARLY']),
+  categoryId: z.string().optional().nullable(),
+  nextExecution: z.string().min(1, 'Start date is required'),
+});
+
+export type LedgerEntryInput = z.infer<typeof ledgerEntrySchema>;
+export type CategoryInput = z.infer<typeof categorySchema>;
+export type BudgetInput = z.infer<typeof budgetSchema>;
+export type RecurringTaskInput = z.infer<typeof recurringTaskSchema>;

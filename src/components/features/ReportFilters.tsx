@@ -77,10 +77,10 @@ export const ReportFilters = ({ onFilterChange, currentFilters }: ReportFiltersP
   const isFiltered = !!(date?.from);
 
   return (
-    <div className="flex flex-col space-y-6 lg:space-y-0 lg:flex-row lg:items-center gap-6 premium-card p-6 md:p-8 rounded-[2.5rem]">
+    <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center gap-4 premium-card p-5 md:p-8 rounded-[2rem] md:rounded-[2.5rem]">
       <div className="flex flex-wrap items-center gap-4 w-full">
         {/* Quick Presets - High Interaction */}
-        <div className="flex items-center gap-2 p-1 bg-muted/20 rounded-2xl border border-border/10 shrink-0">
+        <div className="flex items-center gap-1.5 p-1 bg-muted/20 rounded-2xl border border-border/10 shrink-0 overflow-x-auto no-scrollbar">
           <Button 
             variant="ghost" 
             size="sm"
@@ -88,7 +88,7 @@ export const ReportFilters = ({ onFilterChange, currentFilters }: ReportFiltersP
               const now = new Date();
               setDate({ from: now, to: now });
             }}
-            className="px-4 h-9 rounded-xl text-[10px] font-black uppercase tracking-tighter hover:bg-background transition-all"
+            className="px-3 sm:px-4 h-8 sm:h-9 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-tighter hover:bg-background transition-all"
           >
             Today
           </Button>
@@ -99,9 +99,9 @@ export const ReportFilters = ({ onFilterChange, currentFilters }: ReportFiltersP
               const now = new Date();
               setDate({ from: new Date(now.getFullYear(), now.getMonth(), 1), to: now });
             }}
-            className="px-4 h-9 rounded-xl text-[10px] font-black uppercase tracking-tighter hover:bg-background transition-all"
+            className="px-3 sm:px-4 h-8 sm:h-9 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-tighter hover:bg-background transition-all"
           >
-            This Month
+            Month
           </Button>
           <Button 
             variant="ghost" 
@@ -110,9 +110,9 @@ export const ReportFilters = ({ onFilterChange, currentFilters }: ReportFiltersP
               const now = new Date();
               setDate({ from: new Date(now.getFullYear(), 0, 1), to: now });
             }}
-            className="px-4 h-9 rounded-xl text-[10px] font-black uppercase tracking-tighter hover:bg-background transition-all"
+            className="px-3 sm:px-4 h-8 sm:h-9 rounded-xl text-[9px] sm:text-[10px] font-black uppercase tracking-tighter hover:bg-background transition-all"
           >
-            This Year
+            Year
           </Button>
         </div>
 

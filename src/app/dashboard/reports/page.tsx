@@ -235,8 +235,8 @@ export default function ReportsPage() {
       {/* Header & Impact Bar */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Financial Reports</h1>
-          <p className="text-muted-foreground font-medium mt-2 text-lg max-w-lg">
+          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Financial Reports</h1>
+          <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-lg">
             Understand your spending patterns and financial health with clear, visual reports.
           </p>
         </SlideIn>
@@ -416,12 +416,12 @@ export default function ReportsPage() {
               <h3 className="text-2xl font-bold tracking-tight">Category Summary</h3>
               <p className="text-muted-foreground font-medium text-sm mt-1">Breakdown of where your money went this month.</p>
             </div>
-            <div className="flex gap-4">
-              <div className="p-5 premium-card rounded-2xl min-w-[170px] bg-emerald-500/5 border-emerald-500/10">
+            <div className="flex flex-col sm:flex-row gap-4">
+              <div className="p-5 premium-card rounded-2xl min-w-[170px] bg-emerald-500/5 border-emerald-500/10 flex-1">
                 <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-wider mb-1">Monthly Income</p>
                 <p className="text-2xl font-bold text-emerald-600 tabular-nums">{formatCurrency(lastMonthTrend.income)}</p>
               </div>
-              <div className="p-5 premium-card rounded-2xl min-w-[170px] bg-rose-500/5 border-rose-500/10">
+              <div className="p-5 premium-card rounded-2xl min-w-[170px] bg-rose-500/5 border-rose-500/10 flex-1">
                 <p className="text-[11px] font-bold text-muted-foreground/60 uppercase tracking-wider mb-1">Monthly Expenses</p>
                 <p className="text-2xl font-bold text-rose-600 tabular-nums">{formatCurrency(lastMonthTrend.expense)}</p>
               </div>

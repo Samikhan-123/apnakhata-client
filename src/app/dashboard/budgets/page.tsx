@@ -1,6 +1,9 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { budgetSchema, BudgetInput } from '@/lib/validations';
 import { budgetService } from '@/services/budget.service';
 import { categoryService } from '@/services/category.service';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -15,11 +18,9 @@ import {
   Trash2,
   Calendar as CalendarIcon,
   TrendingUp,
-  AlertCircle
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { cn, capitalize } from '@/lib/utils';
-// import { Dialog, DialogTrigger } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { CustomModal } from '@/components/ui/CustomModal';
@@ -38,12 +39,23 @@ export default function BudgetsPage() {
   const [error, setError] = useState<string | null>(null);
   const { currency, formatCurrency } = useCurrency();
 
-  // Form State
-  const [selectedCategoryId, setSelectedCategoryId] = useState('');
-  const [limit, setLimit] = useState('');
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    reset,
+    formState: { errors }
+  } = useForm<BudgetInput>({
+    resolver: zodResolver(budgetSchema),
+    defaultValues: {
+      categoryId: '',
+      limit: ''
+    }
+  });
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (silent: boolean = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const [budgetData, catData] = await Promise.all([
@@ -52,8 +64,10 @@ export default function BudgetsPage() {
       ]);
       setBudgets(budgetData || []);
       setCategories(catData || []);
-      if (catData && catData.length > 0 && !selectedCategoryId) {
-        setSelectedCategoryId(catData[0].id);
+
+      // Auto-select first category if none selected
+      if (catData && catData.length > 0) {
+        setValue('categoryId', catData[0].id);
       }
     } catch (err: any) {
       setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
@@ -66,20 +80,17 @@ export default function BudgetsPage() {
     fetchData();
   }, [selectedMonth, selectedYear]);
 
-  const handleSetBudget = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!selectedCategoryId || !limit) return;
-
+  const onSubmit = async (data: BudgetInput) => {
     try {
       await budgetService.setBudget({
-        categoryId: selectedCategoryId,
-        limit: Number(limit),
+        ...data,
+        limit: Number(data.limit),
         month: selectedMonth,
         year: selectedYear
       });
-      setLimit('');
+      reset({ categoryId: data.categoryId, limit: '' });
       setIsModalOpen(false);
-      fetchData();
+      fetchData(true);
       toast.success('Budget saved');
     } catch (error) {
       // Handled by global interceptor
@@ -90,7 +101,7 @@ export default function BudgetsPage() {
     setIsDeleting(true);
     try {
       await budgetService.delete(id);
-      fetchData();
+      fetchData(true);
       toast.success('Budget removed');
     } catch (error) {
       // Handled by global interceptor
@@ -110,8 +121,8 @@ export default function BudgetsPage() {
       {/* Header & Control Center */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Budgets</h1>
-          <p className="text-muted-foreground font-medium mt-2 text-lg max-w-lg">
+          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Budgets</h1>
+          <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-lg">
             Track your spending limits and stay within your financial goals.
           </p>
         </SlideIn>
@@ -140,39 +151,46 @@ export default function BudgetsPage() {
         </SlideIn>
       </div>
 
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+        <div className="flex items-center gap-2 ">
           <div className="w-1.5 h-1.5 rounded-full bg-primary" />
           <span className="text-xs font-bold text-muted-foreground/50 uppercase tracking-wide">Live Tracking</span>
         </div>
 
         <Button
           onClick={() => setIsModalOpen(true)}
-          className="h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2"
+          className="w-full md:w-auto h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2"
         >
           <Plus size={18} />
           <span>New Budget</span>
         </Button>
-        {/* popup modal */}
+
         <CustomModal
           isOpen={isModalOpen}
           onClose={setIsModalOpen}
           title="Plan Spending"
           description={`Choose a category and set your spending goal for ${months[selectedMonth - 1]}.`}
         >
-          <form onSubmit={handleSetBudget} className="space-y-6">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             <div className="space-y-3">
               <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 px-1">Category</Label>
-              <Select value={selectedCategoryId} onValueChange={setSelectedCategoryId}>
-                <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                  <SelectValue placeholder="Select Category" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-none shadow-2xl">
-                  {categories.map(cat => (
-                    <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <Controller
+                name="categoryId"
+                control={control}
+                render={({ field }) => (
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                      <SelectValue placeholder="Select Category" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-none shadow-2xl">
+                      {categories.map(cat => (
+                        <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.categoryId.message}</p>}
             </div>
 
             <div className="space-y-3">
@@ -180,10 +198,13 @@ export default function BudgetsPage() {
               <Input
                 type="number"
                 placeholder="0.00"
-                value={limit}
-                onChange={(e) => setLimit(e.target.value)}
-                className="h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6"
+                {...register('limit')}
+                className={cn(
+                  "h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6",
+                  errors.limit && "ring-2 ring-rose-500/20 bg-rose-500/5"
+                )}
               />
+              {errors.limit && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.limit.message}</p>}
             </div>
 
             <Button type="submit" className="w-full h-18 bg-primary text-primary-foreground hover:scale-[1.02] rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-2xl active:scale-95">

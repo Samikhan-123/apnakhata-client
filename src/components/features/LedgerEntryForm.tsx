@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { ledgerEntrySchema, LedgerEntryInput } from '@/lib/validations';
 import { ledgerEntryService } from '../../services/ledger-entry.service';
 import { categoryService } from '../../services/category.service';
 import { budgetService } from '../../services/budget.service';
@@ -12,30 +12,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { AlertCircle, PlusCircle, ArrowUpRight, ArrowDownLeft, Banknote, Tags, Workflow, AlignLeft } from 'lucide-react';
+// import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertCircle, PlusCircle, ArrowUpRight, ArrowDownLeft, Banknote, Tags, Workflow, AlignLeft, Calendar as CalendarIcon } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { cn, capitalize } from "@/lib/utils";
 import { toast } from "sonner";
+import { format } from 'date-fns';
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
-const formSchema = z.object({
-  amount: z.string().min(1, 'Value required').refine((val) => !isNaN(Number(val)) && Number(val) > 0, 'Must be positive'),
-  description: z.string().min(1, 'Required'),
-  type: z.enum(['INCOME', 'EXPENSE']),
-  categoryId: z.string().optional().nullable(),
-}).superRefine((data, ctx) => {
-  if (data.type === 'EXPENSE' && !data.categoryId) {
-    ctx.addIssue({
-      code: z.ZodIssueCode.custom,
-      message: "Required",
-      path: ['categoryId']
-    });
-  }
-  
-  // Flexible income support: No restrictions on income descriptions
-});
-
-type FormValues = z.infer<typeof formSchema>;
 
 interface LedgerEntryFormProps {
   onRefresh: () => void;
@@ -64,13 +49,14 @@ export const LedgerEntryForm = ({
     watch,
     reset,
     formState: { errors }
-  } = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  } = useForm<LedgerEntryInput>({
+    resolver: zodResolver(ledgerEntrySchema),
     defaultValues: {
       type: initialData?.type || (isIncomeRequired ? 'INCOME' : 'EXPENSE'),
       amount: initialData?.amount ? String(initialData.amount) : '',
       description: initialData?.description || (isIncomeRequired ? 'Salary' : ' '),
-      categoryId: initialData?.categoryId || null
+      categoryId: initialData?.categoryId || null,
+      date: initialData?.date || new Date().toISOString()
     }
   });
 
@@ -80,6 +66,7 @@ export const LedgerEntryForm = ({
       setValue('amount', String(initialData.amount));
       setValue('description', initialData.description);
       setValue('categoryId', initialData.categoryId);
+      setValue('date', initialData.date);
     }
   }, [initialData, setValue]);
 
@@ -126,7 +113,7 @@ export const LedgerEntryForm = ({
     }
   }, [type, setValue, descriptionValue]);
 
-  const onSubmit = async (values: FormValues) => {
+  const onSubmit = async (values: LedgerEntryInput) => {
     // Frontend Balance Validations
     if (values.type === 'EXPENSE' && !initialData) {
       if (totalIncome <= 0) {
@@ -195,16 +182,16 @@ export const LedgerEntryForm = ({
           <RadioGroup 
             value={type} 
             onValueChange={(val: any) => setValue('type', val)}
-            className="grid grid-cols-2 gap-4"
+            className="grid grid-cols-2 gap-3 sm:gap-4"
           >
             <div>
               <RadioGroupItem value="INCOME" id="income" className="peer sr-only" />
               <Label
                 htmlFor="income"
-                className="flex items-center justify-center gap-3 rounded-[1.25rem] border-2 border-muted bg-muted/20 p-4 hover:bg-muted/40 peer-data-[state=checked]:border-emerald-500 peer-data-[state=checked]:bg-emerald-500/5 transition-all cursor-pointer group shadow-sm"
+                className="flex items-center justify-center gap-2 sm:gap-3 rounded-xl sm:rounded-[1.25rem] border-2 border-muted bg-muted/20 p-3 sm:p-4 hover:bg-muted/40 peer-data-[state=checked]:border-emerald-500 peer-data-[state=checked]:bg-emerald-500/5 transition-all cursor-pointer group shadow-sm"
               >
-                <ArrowUpRight className={cn("h-5 w-5 transition-all", type === 'INCOME' ? "text-emerald-500 shrink-0" : "text-muted-foreground/40")} />
-                <span className={cn("text-[10px] font-black uppercase tracking-widest", type === 'INCOME' ? "text-emerald-500" : "text-muted-foreground/40")}>Income</span>
+                <ArrowUpRight className={cn("h-4 w-4 sm:h-5 sm:w-5 transition-all", type === 'INCOME' ? "text-emerald-500 shrink-0" : "text-muted-foreground/40")} />
+                <span className={cn("text-[9px] sm:text-[10px] font-black uppercase tracking-widest", type === 'INCOME' ? "text-emerald-500" : "text-muted-foreground/40")}>Income</span>
               </Label>
             </div>
             <div>
@@ -212,14 +199,14 @@ export const LedgerEntryForm = ({
               <Label
                 htmlFor="expense"
                 className={cn(
-                  "flex items-center justify-center gap-3 rounded-[1.25rem] border-2 border-muted bg-muted/20 p-4 transition-all cursor-pointer group shadow-sm",
+                  "flex items-center justify-center gap-2 sm:gap-3 rounded-xl sm:rounded-[1.25rem] border-2 border-muted bg-muted/20 p-3 sm:p-4 transition-all cursor-pointer group shadow-sm",
                   isIncomeRequired && !initialData
                     ? "opacity-40 cursor-not-allowed bg-muted/5 border-dashed" 
                     : "hover:bg-muted/40 peer-data-[state=checked]:border-rose-500 peer-data-[state=checked]:bg-rose-500/5"
                 )}
               >
-                <ArrowDownLeft className={cn("h-5 w-5 transition-all", type === 'EXPENSE' ? "text-rose-500" : "text-muted-foreground/40")} />
-                <span className={cn("text-[10px] font-black uppercase tracking-widest", type === 'EXPENSE' ? "text-rose-500" : "text-muted-foreground/40")}>Expense</span>
+                <ArrowDownLeft className={cn("h-4 w-4 sm:h-5 sm:w-5 transition-all", type === 'EXPENSE' ? "text-rose-500" : "text-muted-foreground/40")} />
+                <span className={cn("text-[9px] sm:text-[10px] font-black uppercase tracking-widest", type === 'EXPENSE' ? "text-rose-500" : "text-muted-foreground/40")}>Expense</span>
               </Label>
             </div>
           </RadioGroup>
@@ -239,13 +226,64 @@ export const LedgerEntryForm = ({
                 type="number" 
                 {...register('amount')}
                 className={cn(
-                  "h-20 pl-16 pr-8 rounded-[2rem] border-none bg-muted/30 focus:bg-background focus:ring-primary/10 text-3xl font-black tabular-nums transition-all placeholder:text-muted-foreground/10",
+                  "h-16 sm:h-20 pl-16 pr-8 rounded-2xl sm:rounded-[2rem] border-none bg-muted/30 focus:bg-background focus:ring-primary/10 text-2xl sm:text-3xl font-black tabular-nums transition-all placeholder:text-muted-foreground/10",
                   errors.amount && "ring-2 ring-rose-500/20 bg-rose-500/5"
                 )}
                 placeholder="0.00"
               />
             </div>
             {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.amount.message}</p>}
+          </div>
+
+          {/* Date Selector */}
+          <div className="space-y-4">
+            <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/40 px-1 flex items-center gap-2">
+              <CalendarIcon className="h-3.5 w-3.5 text-primary" /> Transaction Date
+            </Label>
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "h-14 sm:h-16 w-full px-6 rounded-xl sm:rounded-[1.25rem] border-none bg-muted/30 hover:bg-muted/40 font-bold text-base transition-all justify-start",
+                    !watch('date') && "text-muted-foreground/40"
+                  )}
+                >
+                  {watch('date') ? format(new Date(watch('date')!), "PPP") : <span>Pick a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 rounded-3xl border border-border mt-2 shadow-2xl" align="start">
+                <Calendar
+                  mode="single"
+                  selected={watch('date') ? new Date(watch('date')!) : undefined}
+                  onSelect={(date) => setValue('date', date?.toISOString())}
+                  disabled={(date) => {
+                    const now = new Date();
+                    const today = now.getDate();
+                    const currentMonth = now.getMonth();
+                    const currentYear = now.getFullYear();
+                    
+                    const targetMonth = date.getMonth();
+                    const targetYear = date.getFullYear();
+
+                    // Disable future dates
+                    if (date > now) return true;
+
+                    // Current Month
+                    if (targetMonth === currentMonth && targetYear === currentYear) return false;
+
+                    // Previous Month (2-Day Grace Period)
+                    const isPrevMonth = (targetYear === currentYear && targetMonth === currentMonth - 1) ||
+                                        (targetYear === currentYear - 1 && targetMonth === 11 && currentMonth === 0);
+                    if (isPrevMonth) return today > 2;
+
+                    return true; // Older always locked
+                  }}
+                  initialFocus
+                  className="p-4"
+                />
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Description / Income Source */}
@@ -257,7 +295,7 @@ export const LedgerEntryForm = ({
             <Input 
               {...register('description')}
               className={cn(
-                "h-16 px-6 rounded-[1.25rem] border-none bg-muted/30 focus:bg-background font-bold text-base transition-all placeholder:text-muted-foreground/20",
+                "h-14 sm:h-16 px-6 rounded-xl sm:rounded-[1.25rem] border-none bg-muted/30 focus:bg-background font-bold text-base transition-all placeholder:text-muted-foreground/20",
                 errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
               )}
               placeholder={type === 'INCOME' ? "e.g., Salary" : "What was this for?"}
@@ -341,7 +379,7 @@ export const LedgerEntryForm = ({
         <Button 
           type="submit" 
           disabled={loading}
-          className="w-full h-20 rounded-[2rem] font-black uppercase tracking-[0.3em] text-xs shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-primary/20 hover:bg-primary transition-all active:scale-95 border-none"
+          className="w-full h-16 sm:h-20 rounded-2xl sm:rounded-[2rem] font-black uppercase tracking-[0.3em] text-[10px] sm:text-xs shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-primary/20 hover:bg-primary transition-all active:scale-95 border-none"
         >
           {loading ? 'Saving...' : (initialData ? 'Update Record' : 'Add to Records')}
         </Button>

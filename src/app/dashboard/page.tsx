@@ -24,8 +24,8 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
+  const fetchData = useCallback(async (silent: boolean = false) => {
+    if (!silent) setLoading(true);
     setError(null);
     try {
       const statsData = await ledgerEntryService.getStats();
@@ -53,7 +53,7 @@ export default function DashboardPage() {
 
   return (
     // main container
-    <div className="space-y-12 pb-20 w-full dashboard ">
+    <div className="space-y-12 pb-20 w-full overflow-hidden ">
       <SlideIn duration={0.5}>
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
@@ -75,7 +75,7 @@ export default function DashboardPage() {
       </SlideIn>
 
       {error ? (
-        <ErrorState 
+        <ErrorState
           title="Overview Unavailable"
           message={error}
           onRetry={fetchData}
@@ -158,8 +158,9 @@ export default function DashboardPage() {
                 ledgerEntries={ledgerEntries}
                 onDelete={async (id) => {
                   await ledgerEntryService.delete(id);
-                  fetchData();
+                  fetchData(true);
                 }}
+                onRefresh={() => fetchData(true)}
               />
             </div>
           </FadeIn>
