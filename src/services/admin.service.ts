@@ -19,5 +19,10 @@ export const adminService = {
   getUserDetail: async (id: string) => {
     const { data: response } = await api.get(`/admin/users/${id}`);
     return response;
+  },
+
+  getAuditLogs: async (page: number = 1, limit: number = 15) => {
+    const { data } = await api.get(`/admin/audit-logs?page=${page}&limit=${limit}`);
+    return data;
   }
 };

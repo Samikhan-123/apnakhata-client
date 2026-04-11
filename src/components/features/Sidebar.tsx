@@ -70,6 +70,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         items: [
           { name: 'Admin Dashboard', icon: ShieldCheck, href: '/admin' },
           { name: 'User Management', icon: Users, href: '/admin/users' },
+          { name: 'Audit Trail', icon: History, href: '/admin/audit-logs' },
         ]
       },
       {
@@ -86,6 +87,7 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         title: 'Administration',
         items: [
           { name: 'Admin Dashboard', icon: ShieldCheck, href: '/admin' },
+          { name: 'Audit Trail', icon: History, href: '/admin/audit-logs' },
         ]
       });
     }
