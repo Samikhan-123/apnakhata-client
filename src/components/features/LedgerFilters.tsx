@@ -34,6 +34,7 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
   const [categoryId, setCategoryId] = React.useState<string>(currentFilters?.categoryId || 'all');
   const [type, setType] = React.useState<string>(currentFilters?.type || 'all');
   const [isMobile, setIsMobile] = React.useState(false);
+  const isSyncingFromProps = React.useRef(false);
 
   React.useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -68,6 +69,8 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
 
   // Sync internal state with props only when they actually change to prevent loops
   React.useEffect(() => {
+    isSyncingFromProps.current = true;
+    
     const propType = currentFilters?.type || 'all';
     if (propType !== type) setType(propType);
 
@@ -88,16 +91,23 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
         to: currentFilters.endDate ? new Date(currentFilters.endDate) : undefined 
       } : undefined);
     }
+
+    // Reset syncing flag after a short delay to allow effects to run
+    setTimeout(() => {
+      isSyncingFromProps.current = false;
+    }, 50);
   }, [currentFilters]);
 
   // Sync internal state with props
   const isFiltered = !!(date?.from || date?.to || search || (categoryId && categoryId !== 'all') || (type && type !== 'all'));
 
   // Auto-apply on select changes for "Sleek" feel
-  // We use stringified versions to prevent object reference loops
   const dateKey = `${date?.from?.getTime()}-${date?.to?.getTime()}`;
   React.useEffect(() => {
-    handleApply();
+    // Only apply if it's a REAL user interaction, not a prop sync
+    if (!isSyncingFromProps.current) {
+      handleApply();
+    }
   }, [type, categoryId, dateKey]);
 
   return (

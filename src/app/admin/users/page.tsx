@@ -2,26 +2,47 @@
 
 import React, { useEffect, useState } from 'react';
 import { adminService } from '@/services/admin.service';
-import { Users, Shield, UserCheck, UserX, Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Users, Shield, UserCheck, UserX, Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Ban, Activity, ChevronRight, HelpCircle } from 'lucide-react';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { PaginationPlus } from '@/components/ui/PaginationPlus';
 
 export default function UserManagementPage() {
+  const router = useRouter();
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [paginationData, setPaginationData] = useState<any>(null);
+  const [confirmConfig, setConfirmConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    description: string;
+    onConfirm: () => void;
+    loading: boolean;
+  }>({
+    isOpen: false,
+    title: '',
+    description: '',
+    onConfirm: () => {},
+    loading: false
+  });
 
   useEffect(() => {
-    fetchUsers();
-  }, []);
+    fetchUsers(currentPage);
+  }, [currentPage]);
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (page: number = 1) => {
+    setLoading(true);
     try {
-      const response = await adminService.getUsers();
+      const response = await adminService.getUsers(page);
       if (response.success) {
         setUsers(response.data);
+        setPaginationData(response.pagination);
       }
     } catch (error) {
       // Handled by interceptor
@@ -30,16 +51,55 @@ export default function UserManagementPage() {
     }
   };
 
-  const handleToggleVerification = async (id: string, currentStatus: boolean) => {
-    try {
-      const response = await adminService.updateUser(id, { isVerified: !currentStatus });
-      if (response.success) {
-        toast.success(`User ${!currentStatus ? 'verified' : 'unverified'} successfully`);
-        fetchUsers();
+  const handleToggleStatus = (user: any) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: user.isActive ? "Deactivate Account?" : "Activate Account?",
+      description: `Are you sure you want to ${user.isActive ? 'ban' : 'activate'} ${user.email}? ${user.isActive ? 'This user will lose access to the platform immediately.' : 'Access will be restored.'}`,
+      loading: false,
+      onConfirm: async () => {
+        setConfirmConfig(prev => ({ ...prev, loading: true }));
+        try {
+          const response = await adminService.updateUser(user.id, { isActive: !user.isActive });
+          if (response.success) {
+            toast.success(`User account ${!user.isActive ? 'activated' : 'deactivated'} successfully`);
+            fetchUsers(currentPage);
+          }
+        } catch (error) {
+          toast.error('Failed to update account status');
+        } finally {
+          setConfirmConfig(prev => ({ ...prev, isOpen: false, loading: false }));
+        }
       }
-    } catch (error) {
-      toast.error('Failed to update user');
+    });
+  };
+
+  const handleToggleVerification = (user: any) => {
+    if (user.googleId) {
+       toast.error("Google-authenticated users are managed by Google and cannot be unverified manually.");
+       return;
     }
+
+    setConfirmConfig({
+      isOpen: true,
+      title: user.isVerified ? "Remove Verification?" : "Verify User?",
+      description: `Are you sure you want to ${user.isVerified ? 'unverify' : 'verify'} ${user.email}?`,
+      loading: false,
+      onConfirm: async () => {
+        setConfirmConfig(prev => ({ ...prev, loading: true }));
+        try {
+          const response = await adminService.updateUser(user.id, { isVerified: !user.isVerified });
+          if (response.success) {
+            toast.success(`User ${!user.isVerified ? 'verified' : 'unverified'} successfully`);
+            fetchUsers(currentPage);
+          }
+        } catch (error) {
+          toast.error('Failed to update verification status');
+        } finally {
+          setConfirmConfig(prev => ({ ...prev, isOpen: false, loading: false }));
+        }
+      }
+    });
   };
 
   const filteredUsers = users.filter(u => 
@@ -109,14 +169,25 @@ export default function UserManagementPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <div className={cn(
-                        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border",
-                        user.isVerified 
-                          ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
-                          : "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                      )}>
-                        {user.isVerified ? <CheckCircle2 className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
-                        {user.isVerified ? 'Verified' : 'Pending'}
+                      <div className="flex flex-col gap-1.5">
+                        <div className={cn(
+                          "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border",
+                          user.isVerified 
+                            ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" 
+                            : "bg-amber-500/10 text-amber-600 border-amber-500/20"
+                        )}>
+                          {user.isVerified ? <CheckCircle2 className="h-3 w-3" /> : <AlertCircle className="h-3 w-3" />}
+                          {user.isVerified ? 'Verified' : 'Pending'}
+                        </div>
+                        <div className={cn(
+                          "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter border",
+                          user.isActive
+                            ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
+                            : "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                        )}>
+                          {user.isActive ? <CheckCircle2 className="h-3 w-3" /> : <Ban className="h-3 w-3" />}
+                          {user.isActive ? 'Active' : 'Banned'}
+                        </div>
                       </div>
                     </td>
                     <td className="px-8 py-6">
@@ -137,14 +208,43 @@ export default function UserManagementPage() {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                       <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="rounded-xl hover:bg-muted group-hover:scale-105 transition-all"
-                        onClick={() => handleToggleVerification(user.id, user.isVerified)}
-                       >
-                         {user.isVerified ? <UserX className="h-4 w-4 text-destructive" /> : <UserCheck className="h-4 w-4 text-emerald-600" />}
-                       </Button>
+                       <div className="flex items-center gap-2">
+                         <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className={cn(
+                            "rounded-xl hover:bg-muted group-hover:scale-105 transition-all",
+                            user.googleId && "opacity-20 grayscale cursor-not-allowed"
+                          )}
+                          onClick={() => !user.googleId && handleToggleVerification(user)}
+                          title={user.googleId ? "Google Users cannot be unverified" : (user.isVerified ? "Unverify User" : "Verify User")}
+                          disabled={!!user.googleId}
+                         >
+                           {user.isVerified ? <UserX className="h-4 w-4 text-amber-600" /> : <UserCheck className="h-4 w-4 text-emerald-600" />}
+                         </Button>
+
+                         <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="rounded-xl hover:bg-muted group-hover:scale-105 transition-all"
+                          onClick={() => handleToggleStatus(user)}
+                          title={user.isActive ? "Ban User" : "Activate User"}
+                         >
+                           {user.isActive ? <Ban className="h-4 w-4 text-rose-600" /> : <CheckCircle2 className="h-4 w-4 text-blue-600" />}
+                         </Button>
+
+                         <div className="w-px h-4 bg-border/40 mx-1" />
+
+                         <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground hover:text-primary"
+                          onClick={() => router.push(`/admin/users/${user.id}`)}
+                          title="View Detailed Profile"
+                         >
+                           <ChevronRight className="h-4 w-4" />
+                         </Button>
+                       </div>
                     </td>
                   </tr>
                 ))}
@@ -153,6 +253,25 @@ export default function UserManagementPage() {
           </div>
         </div>
       </FadeIn>
+
+      {paginationData && paginationData.totalPages > 1 && (
+        <PaginationPlus 
+          currentPage={currentPage}
+          totalPages={paginationData.totalPages}
+          totalResults={paginationData.totalCount}
+          limit={paginationData.limit}
+          onPageChange={setCurrentPage}
+        />
+      )}
+
+      <ConfirmDialog 
+        isOpen={confirmConfig.isOpen}
+        onClose={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))}
+        onConfirm={confirmConfig.onConfirm}
+        title={confirmConfig.title}
+        description={confirmConfig.description}
+        loading={confirmConfig.loading}
+      />
     </div>
   );
 }

@@ -17,7 +17,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 import { CustomModal } from '@/components/ui/CustomModal';
 import { ErrorState } from '@/components/ui/ErrorState';
-// import { LedgerSkeleton } from '@/components/ui/LedgerSkeleton';
+import { LedgerSkeleton } from '@/components/ui/LedgerSkeleton';
 
 export default function LedgerPage() {
   const { formatCurrency } = useCurrency();
@@ -94,6 +94,18 @@ export default function LedgerPage() {
 
   const isFiltered = !!(filters.startDate || filters.endDate || filters.categoryId !== 'all' || filters.type !== 'all');
 
+  const handleFilterChange = useCallback((newFilters: any) => {
+    setFilters((prev: any) => {
+      // Deep equal check to avoid re-render loops
+      if (JSON.stringify(prev) === JSON.stringify(newFilters)) return prev;
+      return newFilters;
+    });
+  }, []);
+
+
+  if (loading) {
+    return <LedgerSkeleton />;
+  }
 
   return (
     <div className=" space-y-10  pb-20">
@@ -137,44 +149,32 @@ export default function LedgerPage() {
 
       {/* Dynamic Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {loading ? (
-          [1, 2, 3].map((i) => (
-            <div key={i} className="premium-card rounded-2xl p-5 h-28 flex flex-col justify-between border-border/20 animate-pulse">
-              <div className="flex justify-between items-start">
-                <div className="h-9 w-9 bg-muted/30 rounded-lg" />
-                <div className="h-3 w-16 bg-muted/20 rounded-md" />
-              </div>
-              <div className="h-6 w-24 bg-muted/30 rounded-md" />
-            </div>
-          ))
-        ) : (
-          [
-            { label: 'Available Balance', value: overview?.remainingBalance || 0, icon: Wallet, color: 'primary' },
-            { label: 'Income Received', value: overview?.totalIncome || 0, icon: ArrowUpCircle, color: 'emerald' },
-            { label: 'Total Spent', value: overview?.totalExpense || 0, icon: ArrowDownCircle, color: 'rose' },
-          ].map((stat, i) => (
-            <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>
-              <div className="premium-card rounded-2xl p-5 flex flex-col justify-between group h-full">
-                <div className="flex justify-between items-start mb-3">
-                  <div className={cn(
-                    "p-2.5 rounded-lg border",
-                    stat.color === 'primary' ? 'bg-primary/5 text-primary border-primary/10' :
-                      stat.color === 'emerald' ? 'bg-emerald-500/5 text-emerald-600 border-emerald-500/10' :
-                        'bg-rose-500/5 text-rose-600 border-rose-500/10'
-                  )}>
-                    <stat.icon className="h-4 w-4" />
-                  </div>
-                  <span className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wide">{stat.label}</span>
+        {[
+          { label: 'Available Balance', value: overview?.remainingBalance || 0, icon: Wallet, color: 'primary' },
+          { label: 'Income Received', value: overview?.totalIncome || 0, icon: ArrowUpCircle, color: 'emerald' },
+          { label: 'Total Spent', value: overview?.totalExpense || 0, icon: ArrowDownCircle, color: 'rose' },
+        ].map((stat, i) => (
+          <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>
+            <div className="premium-card rounded-2xl p-5 flex flex-col justify-between group h-full">
+              <div className="flex justify-between items-start mb-3">
+                <div className={cn(
+                  "p-2.5 rounded-lg border",
+                  stat.color === 'primary' ? 'bg-primary/5 text-primary border-primary/10' :
+                    stat.color === 'emerald' ? 'bg-emerald-500/5 text-emerald-600 border-emerald-500/10' :
+                      'bg-rose-500/5 text-rose-600 border-rose-500/10'
+                )}>
+                  <stat.icon className="h-4 w-4" />
                 </div>
-                <div className="text-xl font-bold tracking-tight tabular-nums text-foreground">{formatCurrency(stat.value)}</div>
+                <span className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wide">{stat.label}</span>
               </div>
-            </SlideIn>
-          ))
-        )}
+              <div className="text-xl font-bold tracking-tight tabular-nums text-foreground">{formatCurrency(stat.value)}</div>
+            </div>
+          </SlideIn>
+        ))}
       </div>
 
       <LedgerFilters
-        onFilterChange={setFilters}
+        onFilterChange={handleFilterChange}
         categories={categories}
         onExport={handleExport}
         currentFilters={filters}
@@ -188,6 +188,9 @@ export default function LedgerPage() {
               value={filters.type || 'all'}
               onValueChange={(val) => {
                 setFilters((prev: any) => {
+                  const newType = val === 'all' ? undefined : val;
+                  if (prev.type === newType) return prev; // Avoid same-value update
+
                   const newFilters = { ...prev };
                   if (val === 'all') {
                     delete newFilters.type;
@@ -207,22 +210,7 @@ export default function LedgerPage() {
             </Tabs>
           </div>
 
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="p-5 rounded-2xl bg-muted/20 border border-transparent flex items-center justify-between gap-4 animate-pulse">
-                  <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 bg-muted/30 rounded-xl" />
-                    <div className="space-y-2">
-                      <div className="h-4 w-40 bg-muted/30 rounded-md" />
-                      <div className="h-3 w-24 bg-muted/20 rounded-md" />
-                    </div>
-                  </div>
-                  <div className="h-7 w-20 bg-muted/30 rounded-lg" />
-                </div>
-              ))}
-            </div>
-          ) : error ? (
+          {error ? (
             <ErrorState
               title="Failed to Load Ledger"
               message={error}

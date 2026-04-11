@@ -10,7 +10,7 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground font-sans antialiased overflow-x-hidden">
+    <div className="flex min-h-screen bg-background text-foreground font-sans antialiased">
       {/* Sidebar - Responsive */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
@@ -22,7 +22,7 @@ export const MainLayout = ({ children }: { children: React.ReactNode }) => {
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
 
         <main className="flex-1 flex flex-col scroll-smooth">
-          <div className="flex-1 w-full max-w-[1440px] mx-auto  sm:px-6 lg:px-8 py-6 md:py-10 sm">
+          <div className="flex-1 w-full max-w-[1440px] mx-auto  sm:px-6 lg:px-8 py-6 md:py-10">
             {children}
           </div>
 

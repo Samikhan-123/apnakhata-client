@@ -28,6 +28,12 @@ function VerifyEmailContent() {
   useEffect(() => {
     if (authLoading) return;
 
+    // Direct redirect if already verified
+    if (user?.isVerified) {
+      router.replace('/dashboard')
+      return;
+    }
+
     const emailParam = searchParams.get('email')
     if (emailParam) {
       setEmail(emailParam)

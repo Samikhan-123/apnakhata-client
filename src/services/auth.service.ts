@@ -146,6 +146,14 @@ api.interceptors.response.use(
     handleApiError(error);
 
     if (status === 401) {
+      const message = error.response?.data?.message || '';
+      if (message.includes('deactivated')) {
+        toast.error('Account Deactivated', {
+          description: 'Your account has been deactivated. Please contact support.',
+          duration: 6000
+        });
+      }
+
       // Use direct cleanup to avoid infinite loop
       Cookies.remove('isVerified', { path: '/' });
       Cookies.remove('user', { path: '/' });

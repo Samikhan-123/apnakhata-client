@@ -61,7 +61,7 @@ export function ConfirmDialog({
           <Button
             variant="destructive"
             onClick={onConfirm}
-            className="flex-1 rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/20 border-none"
+            className="flex-1 p-4 rounded-2xl h-14 font-bold text-black uppercase tracking-widest text-[10px] bg-rose-500 hover:bg-rose-600 shadow-lg shadow-rose-500/20 border-none"
             disabled={loading}
           >
             {loading ? "Processing..." : confirmText}

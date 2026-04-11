@@ -1,32 +1,23 @@
-import axios from 'axios';
-import Cookies from 'js-cookie';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-
-const getAuthHeader = () => {
-  const token = Cookies.get('token');
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+import api from './auth.service';
 
 export const adminService = {
   getStats: async () => {
-    const response = await axios.get(`${API_URL}/admin/stats`, {
-      headers: getAuthHeader(),
-    });
-    return response.data;
+    const { data: response } = await api.get('/admin/stats');
+    return response;
   },
 
-  getUsers: async () => {
-    const response = await axios.get(`${API_URL}/admin/users`, {
-      headers: getAuthHeader(),
-    });
-    return response.data;
+  getUsers: async (page: number = 1, limit: number = 10) => {
+    const { data } = await api.get(`/admin/users?page=${page}&limit=${limit}`);
+    return data;
   },
 
-  updateUser: async (id: string, data: { role?: string, isVerified?: boolean }) => {
-    const response = await axios.patch(`${API_URL}/admin/users/${id}`, data, {
-      headers: getAuthHeader(),
-    });
-    return response.data;
+  updateUser: async (id: string, data: { role?: string, isVerified?: boolean, isActive?: boolean }) => {
+    const { data: response } = await api.patch(`/admin/users/${id}`, data);
+    return response;
+  },
+
+  getUserDetail: async (id: string) => {
+    const { data: response } = await api.get(`/admin/users/${id}`);
+    return response;
   }
 };
