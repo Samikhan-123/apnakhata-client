@@ -101,16 +101,16 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side - Login Form */}
-        <div className="flex items-center justify-center p-8 relative">
+        <div className="flex items-center justify-center p-4 md:p-8 relative overflow-y-auto">
           <FadeIn 
-            className="w-full max-w-md flex flex-col gap-10 premium-card p-10 md:p-14 rounded-[3.5rem] border-border/40 shadow-2xl shadow-primary/5"
+            className="w-full max-w-md flex flex-col gap-4 md:gap-10 premium-card p-6 md:p-14 rounded-[2rem] md:rounded-[3.5rem] border-border/40 shadow-2xl shadow-primary/5 py-8 md:py-12"
           >
             <div className="space-y-3">
-              <h2 className="text-4xl font-black tracking-tighter text-foreground"> Login</h2>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground"> Login</h2>
               <p className="text-muted-foreground font-bold text-base leading-snug">Log in to reach your savings goals and manage your wealth.</p>
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
               <HeightChange isVisible={!!serverError}>
                 <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10 text-rose-600 text-xs font-bold flex items-center gap-3 mb-5">
                   <div className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />

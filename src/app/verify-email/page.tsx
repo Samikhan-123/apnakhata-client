@@ -95,24 +95,24 @@ function VerifyEmailContent() {
     <div className="min-h-screen bg-background font-sans">
       <PublicHeader />
 
-      <div className="flex items-center justify-center min-h-screen pt-20 px-6">
+      <div className="flex items-center justify-center min-h-screen pt-20 px-4 md:px-6">
         <FadeIn
-          className="w-full max-w-xl premium-card rounded-[4rem] p-12 md:p-20 border-border/40 shadow-2xl shadow-primary/5 relative overflow-hidden"
+          className="w-full max-w-xl premium-card rounded-[2.5rem] md:rounded-[4rem] p-6 md:p-20 border-border/40 shadow-2xl shadow-primary/5 relative overflow-hidden"
         >
           {/* Background Accent */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-[60px]" />
           
-          <div className="flex flex-col items-center text-center mb-14 relative z-10">
-            <div className="w-24 h-24 rounded-[2.5rem] bg-primary/5 flex items-center justify-center border border-primary/10 mb-10 animate-bounce-slow">
-              <Mail className="h-10 w-10 text-primary" />
+          <div className="flex flex-col items-center text-center mb-8 md:mb-14 relative z-10">
+            <div className="w-20 h-20 md:w-24 md:h-24 rounded-[2rem] md:rounded-[2.5rem] bg-primary/5 flex items-center justify-center border border-primary/10 mb-6 md:mb-10 animate-bounce-slow">
+              <Mail className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
-            <h1 className="text-5xl font-black tracking-tighter text-foreground mb-4">Check your mail</h1>
-            <p className="text-muted-foreground font-bold text-lg max-w-xs mx-auto leading-relaxed">
+            <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-foreground mb-4">Check your mail</h1>
+            <p className="text-muted-foreground font-bold text-base md:text-lg max-w-xs mx-auto leading-relaxed">
               We've sent a 6-digit security code to <span className="text-primary italic">{email}</span>
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-12 relative z-10">
+          <form onSubmit={handleSubmit} className="space-y-8 md:space-y-12 relative z-10">
              <HeightChange isVisible={!!error || !!success || !!resendSuccess}>
                 <div className="mb-8">
                   {error && (

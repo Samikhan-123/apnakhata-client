@@ -16,14 +16,23 @@ const api = axios.create({
   withCredentials: true, // Crucial for cookie-based auth
 });
 
+// Helper for consistent client-side cookie options
+const getCookieOptions = () => ({
+  expires: 30,
+  secure: typeof window !== 'undefined' && window.location.protocol === 'https:',
+  sameSite: 'lax' as const,
+  path: '/'
+});
+
 
 export const authService = {
   async login(credentials: any) {
     const { data: response } = await api.post('/auth/login', credentials);
     if (response.success) {
-      Cookies.set('isVerified', response.user.isVerified ? 'true' : 'false', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
-      Cookies.set('user', JSON.stringify(response.user), { expires: 30, secure: true, sameSite: 'strict', path: '/' });
-      Cookies.set('isLoggedIn', 'true', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+      const options = getCookieOptions();
+      Cookies.set('isVerified', response.user.isVerified ? 'true' : 'false', options);
+      Cookies.set('user', JSON.stringify(response.user), options);
+      Cookies.set('isLoggedIn', 'true', options);
     }
     return response;
   },
@@ -31,9 +40,10 @@ export const authService = {
   async googleLogin(idToken: string) {
     const { data: response } = await api.post('/auth/google', { idToken });
     if (response.success) {
-      Cookies.set('isVerified', response.user.isVerified ? 'true' : 'false', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
-      Cookies.set('user', JSON.stringify(response.user), { expires: 30, secure: true, sameSite: 'strict', path: '/' });
-      Cookies.set('isLoggedIn', 'true', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+      const options = getCookieOptions();
+      Cookies.set('isVerified', response.user.isVerified ? 'true' : 'false', options);
+      Cookies.set('user', JSON.stringify(response.user), options);
+      Cookies.set('isLoggedIn', 'true', options);
     }
     return response;
   },
@@ -41,9 +51,10 @@ export const authService = {
   async register(userData: any) {
     const { data: response } = await api.post('/auth/register', userData);
     if (response.success) {
-      Cookies.set('isVerified', 'false', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
-      Cookies.set('user', JSON.stringify(response.user), { expires: 30, secure: true, sameSite: 'strict', path: '/' });
-      Cookies.set('isLoggedIn', 'true', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+      const options = getCookieOptions();
+      Cookies.set('isVerified', 'false', options);
+      Cookies.set('user', JSON.stringify(response.user), options);
+      Cookies.set('isLoggedIn', 'true', options);
     }
     return response;
   },
@@ -51,8 +62,9 @@ export const authService = {
   async verifyEmail(email: string, otp: string) {
     const { data: response } = await api.post('/auth/verify-email', { email, otp });
     if (response.success) {
-      Cookies.set('isVerified', 'true', { expires: 30, secure: true, sameSite: 'strict', path: '/' });
-      Cookies.set('user', JSON.stringify(response.user), { expires: 30, secure: true, sameSite: 'strict', path: '/' });
+      const options = getCookieOptions();
+      Cookies.set('isVerified', 'true', options);
+      Cookies.set('user', JSON.stringify(response.user), options);
     }
     return response;
   },

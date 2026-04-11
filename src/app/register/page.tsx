@@ -109,12 +109,12 @@ export default function RegisterPage() {
         </div>
 
         {/* Right Side - Register Form */}
-        <div className="flex items-center justify-center p-8 relative overflow-y-auto">
+        <div className="flex items-center justify-center p-4 md:p-8 relative overflow-y-auto">
           <FadeIn 
-            className="w-full max-w-md flex flex-col gap-10 premium-card p-10 md:p-14 rounded-[3.5rem] border-border/40 shadow-2xl shadow-primary/5 py-12"
+            className="w-full max-w-md flex flex-col gap-6 md:gap-10 premium-card p-6 md:p-14 rounded-[2.5rem] md:rounded-[3.5rem] border-border/40 shadow-2xl shadow-primary/5 py-10 md:py-12"
           >
             <div className="space-y-3">
-              <h2 className="text-4xl font-black tracking-tighter text-foreground">Create Account</h2>
+              <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">Create Account</h2>
               <p className="text-muted-foreground font-bold text-base leading-snug">Start your journey to financial peace with the simplest intuitive expense tracker.</p>
             </div>
 

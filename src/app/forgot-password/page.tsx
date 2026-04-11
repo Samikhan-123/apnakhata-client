@@ -44,9 +44,9 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-background font-sans">
       <PublicHeader />
       
-      <div className="flex items-center justify-center min-h-screen pt-20 px-6">
+      <div className="flex items-center justify-center min-h-screen pt-20 px-4 md:px-6">
         <FadeIn 
-          className="w-full max-w-md flex flex-col gap-8 bg-card p-10 rounded-[3rem] border border-border/40 shadow-2xl shadow-primary/5"
+          className="w-full max-w-md flex flex-col gap-6 md:gap-8 bg-card p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-border/40 shadow-2xl shadow-primary/5"
         >
           <div className="space-y-4 text-center">
             <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
