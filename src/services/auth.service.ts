@@ -6,7 +6,10 @@ import { db, offlineService } from './offline.service';
 import { handleApiError } from '@/lib/error-handler';
 import { logger } from '@/lib/logger';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+const isProduction = typeof window !== 'undefined' && 
+  (window.location.hostname !== 'localhost' && !window.location.hostname.includes('127.0.0.1'));
+
+const API_URL = isProduction ? '/api' : (process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api');
 
 const api = axios.create({
   baseURL: API_URL,
