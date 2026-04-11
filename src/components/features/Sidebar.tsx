@@ -17,7 +17,8 @@ import {
   Users,
   Activity,
   Zap,
-  X
+  X,
+  Download
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -90,6 +91,13 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     }
   }
 
+  const [isStandalone, setIsStandalone] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    setIsStandalone(!!checkStandalone);
+  }, []);
+
   return (
     <aside className={cn(
       "fixed left-0 top-0 inset-y-0 w-[280px] bg-card border-r border-border/40 z-50 flex flex-col transition-all duration-300 ease-in-out",
@@ -149,6 +157,27 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           ))}
         </div>
       </div>
+      
+      {/* Install Prompt Trigger (Sidebar) */}
+      {!isStandalone && (
+        <div className="p-6 border-t border-border/40">
+          <div 
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent('trigger-pwa-install'));
+              if (window.innerWidth < 1024) onClose();
+            }}
+            className="flex items-center gap-3.5 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold text-sm cursor-pointer group hover:bg-primary/10 text-muted-foreground hover:text-primary border border-transparent hover:border-primary/10"
+          >
+            <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <Download size={16} className="text-primary" />
+            </div>
+            <div className="flex flex-col">
+              <span className="leading-tight">Install App</span>
+              <span className="text-[10px] text-muted-foreground/40 font-black uppercase tracking-widest mt-0.5">Mobile Native</span>
+            </div>
+          </div>
+        </div>
+      )}
 
     </aside>
   );

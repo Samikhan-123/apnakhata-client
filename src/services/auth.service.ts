@@ -150,7 +150,11 @@ api.interceptors.response.use(
       Cookies.remove('isVerified', { path: '/' });
       Cookies.remove('user', { path: '/' });
       Cookies.remove('isLoggedIn', { path: '/' });
-      if (typeof window !== 'undefined' && window.location.pathname !== '/login') {
+      
+      const publicPaths = ['/', '/login', '/register', '/verify-email', '/forgot-password', '/reset-password'];
+      const isPublicPath = typeof window !== 'undefined' && publicPaths.includes(window.location.pathname);
+
+      if (typeof window !== 'undefined' && !isPublicPath) {
         window.location.href = '/login';
       }
     }

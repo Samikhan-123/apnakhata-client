@@ -53,6 +53,8 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
+import { PWAInstallPrompt } from "@/components/features/PWAInstallPrompt";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -63,6 +65,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <ServiceWorkerRegistration />
+          <PWAInstallPrompt />
           {children}
         </Providers>
       </body>
