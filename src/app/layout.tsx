@@ -9,6 +9,7 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://apnakhata-client.vercel.app'),
   title: {
     default: "Apna Khata - Financial Clarity & Secure Mastery",
     template: "%s | Apna Khata"
