@@ -85,9 +85,6 @@ export const authService = {
     // Also remove legacy token if exists from previous system
     Cookies.remove('token', { path: '/' });
 
-    if (typeof window !== 'undefined') {
-       window.location.href = '/login';
-    }
   },
 
   getCurrentUser() {

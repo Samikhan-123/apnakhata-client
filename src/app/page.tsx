@@ -106,7 +106,12 @@ function MagicSparkles() {
   );
 }
 
+import { useAuth } from '@/context/AuthContext';
+
+// ... (in LandingPage component)
 export default function LandingPage() {
+  const { user } = useAuth();
+  
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20 overflow-x-hidden relative">
       {/* Pro Grain Overlay */}
@@ -116,16 +121,14 @@ export default function LandingPage() {
 
       {/* Hero Section - Professional & Theme-Aware */}
       <section className="pt-32 pb-24 md:pt-48 md:pb-32 relative bg-background overflow-hidden border-b border-border/40">
-        {/* Advanced Backdrop Strategy */}
+        {/* ... (backdrop) */}
         <div className="absolute inset-0 z-0 pointer-events-none">
           <RetroGrid />
           <BackgroundBeams />
           
-          {/* Subtle Atmosphere Orbs */}
           <div className="absolute top-[10%] left-[10%] w-[50rem] h-[50rem] bg-primary/5 dark:bg-primary/20 rounded-full blur-[160px] opacity-40 animate-float" />
           <div className="absolute bottom-[20%] right-[10%] w-[40rem] h-[40rem] bg-sky-500/5 dark:bg-sky-500/10 rounded-full blur-[140px] opacity-30" />
           
-          {/* Centered Focus Glow */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.03)_0%,transparent_70%)]" />
         </div>
         
@@ -146,7 +149,7 @@ export default function LandingPage() {
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-6xl md:text-[8.5rem] font-black tracking-tighter leading-[0.82] mb-10 relative"
+            className="text-4xl sm:text-6xl md:text-[8.5rem] font-black tracking-tighter leading-[0.9] md:leading-[0.82] mb-10 relative"
           >
             <span className="relative z-10">Forget the paper. </span><br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-500 to-sky-500 italic relative z-10 py-2">
@@ -161,7 +164,7 @@ export default function LandingPage() {
             whileInView="whileInView"
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="max-w-3xl mx-auto text-muted-foreground text-lg md:text-xl font-bold leading-relaxed mb-16 backdrop-blur-[2px] py-4"
+            className="max-w-3xl mx-auto text-muted-foreground text-base md:text-xl font-bold leading-relaxed mb-16 backdrop-blur-[2px] py-4"
           >
             No more messy paper lines or forgetting where your money went. Just add your monthly income, track daily expenses, and let Apna Khata handle the rest.
           </motion.p>
@@ -174,16 +177,27 @@ export default function LandingPage() {
              transition={{ delay: 0.4 }}
              className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
-            <Link href="/register">
-              <Button size="lg" className="h-16 px-10 rounded-2xl bg-foreground text-background hover:bg-primary hover:text-white text-base font-black transition-all shadow-[0_20px_50px_rgba(var(--primary-rgb),0.2)] active:scale-95 group relative overflow-hidden">
-                <MagicSparkles />
-                <span className="relative z-10 flex items-center">
-                  Join the Premium Experience
-                  <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" />
-              </Button>
-            </Link>
+            {user ? (
+               <Link href="/dashboard">
+                <Button size="lg" className="h-16 px-10 rounded-2xl bg-primary text-white hover:bg-primary/90 text-base font-black transition-all shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)] active:scale-95 group relative overflow-hidden">
+                  <span className="relative z-10 flex items-center">
+                    Return to Dashboard
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                </Button>
+              </Link>
+            ) : (
+              <Link href="/register">
+                <Button size="lg" className="h-16 px-10 rounded-2xl bg-foreground text-background hover:bg-primary hover:text-white text-base font-black transition-all shadow-[0_20px_50px_rgba(var(--primary-rgb),0.2)] active:scale-95 group relative overflow-hidden">
+                  <MagicSparkles />
+                  <span className="relative z-10 flex items-center">
+                    Join the Premium Experience
+                    <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
+                  </span>
+                  <div className="absolute inset-0 z-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shimmer" />
+                </Button>
+              </Link>
+            )}
             <div className="flex flex-col items-center sm:items-start opacity-60">
                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Trusted by developers</p>
                <p className="text-xs font-bold text-muted-foreground leading-none mt-1">Start tracking in seconds</p>
@@ -225,10 +239,10 @@ export default function LandingPage() {
             <motion.div variants={fadeInUp} className="md:col-span-2 md:row-span-2 relative group">
               <SpotlightCard className="h-full rounded-[3.5rem] shadow-2xl transition-all duration-500 overflow-hidden">
                 <div className="absolute -inset-[1px] bg-gradient-to-br from-primary/50 to-sky-500/50 rounded-[3.5rem] blur opacity-10 group-hover:opacity-30 transition duration-500" />
-                <div className="relative h-full bg-card dark:bg-slate-950 text-foreground dark:text-white p-12 flex flex-col justify-between overflow-hidden border border-border/50">
+                <div className="relative h-full bg-card dark:bg-slate-950 text-foreground dark:text-white p-6 md:p-12 flex flex-col justify-between overflow-hidden border border-border/50">
                   {/* Background Icon Detail */}
-                  <div className="absolute top-0 right-0 p-12 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
-                    <Banknote size={240} strokeWidth={1} />
+                  <div className="absolute top-0 right-0 p-6 md:p-12 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:scale-110 group-hover:rotate-6 transition-transform duration-700">
+                    <Banknote size={120} className="md:w-[240px] md:h-[240px]" strokeWidth={1} />
                   </div>
 
                   <div className="space-y-8 relative z-10">
@@ -255,10 +269,10 @@ export default function LandingPage() {
             {/* Cell 2: Privacy - Emerald Theme */}
             <motion.div variants={fadeInUp} className="md:col-span-2 relative group">
               <SpotlightCard className="h-full rounded-[3.5rem] transition-all duration-500 overflow-hidden border border-border/50">
-                <div className="relative h-full bg-card dark:bg-emerald-950 text-foreground dark:text-emerald-50 p-10 flex items-center gap-8">
+                <div className="relative h-full bg-card dark:bg-emerald-950 text-foreground dark:text-emerald-50 p-6 md:p-10 flex items-center gap-4 md:gap-8">
                   {/* Background Icon Detail */}
                   <div className="absolute -right-10 -bottom-10 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
-                    <Lock size={200} strokeWidth={1} />
+                    <Lock size={120} className="md:w-[200px] md:h-[200px]" strokeWidth={1} />
                   </div>
                   
                   <div className="w-24 h-24 bg-emerald-500/10 rounded-[2rem] flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 border border-emerald-500/20 group-hover:rotate-3 transition-all relative z-10">
@@ -275,10 +289,10 @@ export default function LandingPage() {
             {/* Cell 3: Live Analytics - Amber/Gold Theme */}
             <motion.div variants={fadeInUp} className="relative group">
                <SpotlightCard className="h-full rounded-[3.5rem] transition-all duration-500 overflow-hidden border border-border/50">
-                  <div className="relative h-full bg-card dark:bg-slate-900 p-8 flex flex-col justify-between group">
+                  <div className="relative h-full bg-card dark:bg-slate-900 p-6 md:p-8 flex flex-col justify-between group">
                     {/* Background Icon Detail */}
-                    <div className="absolute top-0 right-0 p-6 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-700">
-                      <Activity size={140} strokeWidth={1} />
+                    <div className="absolute top-0 right-0 p-4 md:p-6 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-700">
+                      <Activity size={100} className="md:w-[140px] md:h-[140px]" strokeWidth={1} />
                     </div>
 
                     <div className="flex gap-2 h-20 items-end relative z-10">
@@ -302,10 +316,10 @@ export default function LandingPage() {
             {/* Cell 4: Founder Spotlight - Amethyst/Primary Theme */}
             <motion.div variants={fadeInUp} className="relative group">
                <SpotlightCard className="h-full rounded-[3.5rem] transition-all duration-500 overflow-hidden border border-border/50">
-                  <div className="relative h-full bg-card dark:bg-indigo-950 p-8 flex flex-col justify-between group">
+                  <div className="relative h-full bg-card dark:bg-indigo-950 p-6 md:p-8 flex flex-col justify-between group">
                     {/* Background Icon Detail */}
                     <div className="absolute bottom-0 right-0 p-4 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:scale-125 transition-transform duration-700">
-                      <Code size={160} strokeWidth={1} />
+                      <Code size={100} className="md:w-[160px] md:h-[160px]" strokeWidth={1} />
                     </div>
 
                     <div className="relative z-10">
@@ -436,10 +450,10 @@ export default function LandingPage() {
               { icon: ShieldCheck, title: 'Privacy First', desc: 'Your data belongs to you. We use modern industry standards to keep every record safe.', theme: 'bg-emerald-500/5 text-emerald-500', bgIcon: Lock }
             ].map((trust, i) => (
               <motion.div key={i} variants={fadeInUp} className="group relative">
-                <div className="premium-card p-12 rounded-[3.5rem] h-full flex flex-col justify-between border-border/50 bg-card/40 backdrop-blur-3xl overflow-hidden hover:bg-card transition-all duration-700">
+                <div className="premium-card p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] h-full flex flex-col justify-between border-border/50 bg-card/40 backdrop-blur-3xl overflow-hidden hover:bg-card transition-all duration-700">
                    {/* Huge Background Icon */}
-                   <div className="absolute -right-8 -bottom-8 opacity-[0.02] dark:opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
-                     <trust.bgIcon size={240} />
+                   <div className="absolute -right-4 -bottom-4 md:-right-8 md:-bottom-8 opacity-[0.02] dark:opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
+                     <trust.bgIcon size={120} className="md:w-[240px] md:h-[240px]" />
                    </div>
 
                    <div className={cn("w-20 h-20 rounded-[1.5rem] flex items-center justify-center border border-current/10 mb-10 transition-all duration-700 group-hover:scale-110 group-hover:rotate-3", trust.theme)}>

@@ -20,7 +20,7 @@ export function PublicHeader() {
           <div className="w-10 h-10 drop-shadow-xl">
             <img src="/icon1.png" alt="Apna Khata" className="w-full h-full object-contain" />
           </div>
-          <span className="text-2xl font-black tracking-tighter text-foreground">
+          <span className="text-2xl font-black tracking-tighter text-foreground hidden sm:block">
             Apna <span className="text-primary tracking-tighter">Khata</span>
           </span>
         </Link>
@@ -40,9 +40,9 @@ export function PublicHeader() {
 
           {user ? (
             <Link href="/dashboard">
-              <Button className="h-11 px-6 rounded-xl bg-primary text-primary-foreground hover:scale-105 font-bold transition-all shadow-lg shadow-primary/20 gap-2">
+              <Button className="h-11 px-4 md:px-6 rounded-xl bg-primary text-primary-foreground hover:scale-105 font-bold transition-all shadow-lg shadow-primary/20 gap-2">
                 <LayoutDashboard size={18} />
-                <span>Go to Dashboard</span>
+                <span className="hidden sm:inline">Dashboard</span>
               </Button>
             </Link>
           ) : (
@@ -53,7 +53,7 @@ export function PublicHeader() {
                   </Button>
                </Link>
                <Link href="/register">
-                  <Button className="h-11 px-6 rounded-xl bg-foreground text-background hover:bg-primary hover:text-primary-foreground font-bold transition-all shadow-xl shadow-foreground/5 gap-2">
+                  <Button className="hidden md:flex h-11 px-6 rounded-xl bg-foreground text-background hover:bg-primary hover:text-primary-foreground font-bold transition-all shadow-xl shadow-foreground/5 gap-2">
                     <span>Get Started</span>
                     <ArrowRight size={16} />
                   </Button>
