@@ -26,22 +26,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     const initAuth = async () => {
-      const storedUser = authService.getCurrentUser();
-      if (storedUser) {
-        setUser(storedUser);
-        try {
-          const response = await authService.getMe();
-          if (response.success && response.user) {
-            setUser(response.user);
-            // Sync cookie with updated data
-            const Cookies = (await import('js-cookie')).default;
-            Cookies.set('user', JSON.stringify(response.user), { expires: 7, secure: true, sameSite: 'strict', path: '/' });
-          }
-        } catch (error) {
-          // If token invalid, logout is handled by interceptor
+      try {
+        // Proactively check server for session
+        const response = await authService.getMe();
+        if (response.success && response.user) {
+          setUser(response.user);
         }
+      } catch (error) {
+        // If no session, check local storage for a partial state
+        const storedUser = authService.getCurrentUser();
+        if (storedUser) {
+          setUser(storedUser);
+        }
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     initAuth();
   }, []);
