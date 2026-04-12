@@ -37,10 +37,12 @@ export default function AdminLayout({
   }
 
   return (
-    <MainLayout>
+    <MainLayout isFixed={false}>
       <GlobalErrorBoundary>
-        <FadeIn className="m-4 md:m-8 p-6 md:p-10 glass-card border border-border/20 rounded-[3rem] min-h-[calc(100vh-8rem)] shadow-2xl shadow-slate-200/5 overflow-hidden">
-          {children}
+        <FadeIn className="p-4 md:p-8 glass-card h-auto min-h-[500px] w-full border border-border/20 rounded-[2rem] md:rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden transition-all duration-500">
+          <div className="flex-1 min-h-0 flex flex-col">
+            {children}
+          </div>
         </FadeIn>
       </GlobalErrorBoundary>
     </MainLayout>

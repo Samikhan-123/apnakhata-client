@@ -6,23 +6,26 @@ import { Header } from './Header';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
-export const MainLayout = ({ children }: { children: React.ReactNode }) => {
+export const MainLayout = ({ children, isFixed = false }: { children: React.ReactNode, isFixed?: boolean }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground font-sans antialiased">
+    <div className="flex min-h-screen bg-background text-foreground font-sans antialiased overflow-x-hidden">
       {/* Sidebar - Responsive */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Content Area */}
       <div className={cn(
-        "flex flex-col flex-1 transition-all duration-500 ease-in-out min-h-screen",
+        "flex flex-col flex-1 transition-all duration-500 ease-in-out min-h-screen overflow-x-hidden",
         "lg:pl-[280px]" // Desktop Offset
       )}>
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
 
-        <main className="flex-1 flex flex-col scroll-smooth">
-          <div className="flex-1 w-full max-w-[1440px] mx-auto  sm:px-6 lg:px-8 py-6 md:py-10">
+        <main className="flex-1 flex flex-col scroll-smooth overflow-x-hidden">
+          <div className={cn(
+            "flex-1 w-full max-w-[1440px] mx-auto sm:px-6 lg:px-8",
+            isFixed ? "py-4 md:py-6" : "py-6 md:py-10"
+          )}>
             {children}
           </div>
 

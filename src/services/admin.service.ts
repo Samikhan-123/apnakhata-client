@@ -21,8 +21,14 @@ export const adminService = {
     return response;
   },
 
-  getAuditLogs: async (page: number = 1, limit: number = 15) => {
-    const { data } = await api.get(`/admin/audit-logs?page=${page}&limit=${limit}`);
+  getAuditLogs: async (page: number = 1, limit: number = 15, filters: any = {}) => {
+    const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) params.append(key, value as string);
+    });
+
+    const { data } = await api.get(`/admin/audit-logs?${params.toString()}`);
     return data;
   }
 };
