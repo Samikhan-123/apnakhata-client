@@ -30,5 +30,10 @@ export const adminService = {
 
     const { data } = await api.get(`/admin/audit-logs?${params.toString()}`);
     return data;
+  },
+
+  getFinancialStats: async () => {
+    const { data } = await api.get('/admin/financial-stats');
+    return data;
   }
 };
