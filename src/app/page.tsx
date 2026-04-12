@@ -151,9 +151,9 @@ export default function LandingPage() {
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="text-4xl sm:text-6xl md:text-[8.5rem] font-black tracking-tighter leading-[0.9] md:leading-[0.82] mb-10 relative"
           >
-            <span className="relative z-10">Forget the paper. </span><br />
+            <span className="relative z-10">Don't worry about the paper. </span><br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-500 to-sky-500 italic relative z-10 py-2">
-               Own your history.
+               Take charge of your past.
                <div className="absolute -bottom-2 left-0 w-full h-1 bg-primary/20 blur-sm rounded-full" />
             </span>
           </motion.h1>

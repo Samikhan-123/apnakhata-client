@@ -134,14 +134,14 @@ export const LedgerEntryForm = ({
           amount: Number(values.amount),
           categoryId: values.type === 'INCOME' ? null : values.categoryId
         });
-        toast.success('Transaction updated');
+        toast.success('Record updated');
       } else {
         await ledgerEntryService.create({
           ...values,
           amount: Number(values.amount),
           categoryId: values.type === 'INCOME' ? null : values.categoryId
         });
-        toast.success('Transaction saved');
+        toast.success('Record saved');
       }
       onRefresh();
       if (!initialData) {
@@ -238,7 +238,7 @@ export const LedgerEntryForm = ({
           {/* Date Selector */}
           <div className="space-y-4">
             <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/40 px-1 flex items-center gap-2">
-              <CalendarIcon className="h-3.5 w-3.5 text-primary" /> Transaction Date
+              <CalendarIcon className="h-3.5 w-3.5 text-primary" /> Record Date
             </Label>
             <Popover>
               <PopoverTrigger asChild>

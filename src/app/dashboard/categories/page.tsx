@@ -30,7 +30,7 @@ export default function CategoriesPage() {
         <SlideIn duration={0.5}>
           <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Categories</h1>
           <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-lg">
-            Organize your finances by grouping transactions into meaningful collections.
+            Organize your finances by grouping Records into meaningful collections.
           </p>
         </SlideIn>
 

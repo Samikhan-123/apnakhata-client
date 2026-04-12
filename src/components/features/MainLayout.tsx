@@ -60,8 +60,9 @@ export const MainLayout = ({ children, isFixed = false }: { children: React.Reac
 
           <footer className="mt-auto px-8 py-10 opacity-40 hover:opacity-100 transition-opacity">
             <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em]">
-              <p>&copy; {new Date().getFullYear()} Apna Khata • Crafted with Logic & Care</p>
+              <p>&copy; {new Date().getFullYear()} Apna Khata • Built for human simplicity.</p>
               <div className="flex gap-6">
+                <Link href="/guide" className="hover:text-primary transition-colors cursor-pointer">User Guide</Link>
                 <Link href="/premium-experience" className="hover:text-primary transition-colors cursor-pointer">Premium Experience</Link>
                 <Link href="/manifesto" className="hover:text-primary transition-colors cursor-pointer">Manifesto</Link>
                 <Link href="/contact" className="hover:text-primary transition-colors cursor-pointer">Contact</Link>

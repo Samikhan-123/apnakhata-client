@@ -4,6 +4,8 @@ The Precise, premium frontend for **Apna Khata**, an enterprise-grade personal e
 
 ![Apna Khata Logo](/public/icon1.png)
 
+**Live Demo**: [apnakhata.online](https://apnakhata.online)
+
 ## ✨ Key Features
 
 - **Strategic Admin Command Center**: A high-authority management interface for platform administrators and moderators, featuring real-time system metrics and user registry control.

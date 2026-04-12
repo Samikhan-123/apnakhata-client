@@ -9,7 +9,7 @@ const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://apnakhata-client.vercel.app'),
+  metadataBase: new URL('https://apnakhata.online'),
   title: {
     default: "Apna Khata - Financial Clarity & Secure Mastery",
     template: "%s | Apna Khata"
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Apna Khata - Elegant & Secure Money Management",
     description: "Experience the safe haven of financial clarity. Simple, secure, and thoughtfully designed for your personal mastery.",
-    url: "https://apnakhata-client.vercel.app",
+    url: "https://apnakhata.online",
     siteName: "Apna Khata",
     images: [
       {

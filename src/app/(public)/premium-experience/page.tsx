@@ -61,7 +61,7 @@ export default function PremiumExperience() {
             ))}
           </div>
 
-          <div className="bg-foreground text-background p-12 md:p-20 rounded-[3rem] text-center space-y-8 shadow-2xl relative overflow-hidden">
+          {/* <div className="bg-foreground text-background p-12 md:p-20 rounded-[3rem] text-center space-y-8 shadow-2xl relative overflow-hidden">
             <div className="absolute top-0 right-0 p-10 opacity-10">
                <Zap size={120} className="rotate-12" />
             </div>
@@ -81,7 +81,7 @@ export default function PremiumExperience() {
             <p className="text-[10px] font-black uppercase tracking-widest text-background/30 relative z-10">
                No credit card required for initial setup. Professional grade.
             </p>
-          </div>
+          </div> */}
         </div>
       </main>
 

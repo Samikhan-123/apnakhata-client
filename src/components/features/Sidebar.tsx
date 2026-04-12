@@ -38,7 +38,7 @@ const menuGroups = [
       { name: 'Records', icon: ReceiptText, href: '/dashboard/ledger' },
       { name: 'Categories', icon: Tags, href: '/dashboard/categories' },
       { name: 'Budgets', icon: PiggyBank, href: '/dashboard/budgets' },
-      { name: 'Auto-Pay', icon: RefreshCcw, href: '/dashboard/recurring' },
+      { name: 'Auto-Pilot', icon: RefreshCcw, href: '/dashboard/recurring' },
     ]
   },
   {

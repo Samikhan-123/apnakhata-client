@@ -319,7 +319,7 @@ export default function UserDetailPage() {
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: 'Total Transactions', value: user._count?.ledgerEntries || 0, icon: Activity, color: 'blue' },
+          { label: 'Total Records', value: user._count?.ledgerEntries || 0, icon: Activity, color: 'blue' },
           { label: 'Custom Categories', value: user._count?.categories || 0, icon: Tag, color: 'emerald' },
           { label: 'Monthly Budgets', value: user._count?.budgets || 0, icon: Wallet, color: 'amber' },
           { label: 'Recurring Tasks', value: user._count?.recurringEntries || 0, icon: Clock, color: 'purple' },
@@ -382,7 +382,7 @@ export default function UserDetailPage() {
               ))
             ) : (
               <div className="p-12 text-center bg-muted/10 rounded-3xl border border-dashed border-border/20">
-                <p className="text-muted-foreground font-bold">No recent transactions recorded.</p>
+                <p className="text-muted-foreground font-bold">No recent Records added.</p>
               </div>
             )}
           </div>

@@ -20,7 +20,7 @@ export const loginSchema = z.object({
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
 
-// --- Transactional Schemas ---
+// --- Record Schemas ---
 
 export const ledgerEntrySchema = z.object({
   amount: z.string().min(1, 'Value required').refine((val) => !isNaN(Number(val)) && Number(val) > 0, 'Must be positive'),

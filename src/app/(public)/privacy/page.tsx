@@ -52,12 +52,12 @@ export default function PrivacyPage() {
           <FadeIn delay={0.4}>
             <h3 className="text-2xl font-black tracking-tight text-foreground">1. Information We Collect</h3>
             <p className="text-muted-foreground font-medium">
-              We collect information that you provide directly to us, such as when you create an account. This may include your name, email address, and any financial transactions or configurations you save in the application.
+              We collect information that you provide directly to us, such as when you create an account. This may include your name, email address, and any financial Records or configurations you save in the application.
             </p>
 
             <h3 className="text-2xl font-black tracking-tight text-foreground">2. How We Use Your Data</h3>
             <p className="text-muted-foreground font-medium">
-              Your data is used solely to provide and improve the services of Apna Khata. This includes processing transactions, generating reports, and sending security-related notifications.
+              Your data is used solely to provide and improve the services of Apna Khata. This includes processing Records, generating reports, and sending security-related notifications.
             </p>
 
             <h3 className="text-2xl font-black tracking-tight text-foreground">3. Your Rights</h3>

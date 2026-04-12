@@ -39,7 +39,7 @@ export const LedgerEntryList = ({
         <div className="mx-auto w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mb-6 border border-primary/10">
           <Tag className="h-7 w-7 text-primary/40" />
         </div>
-        <h3 className="text-xl font-bold text-foreground tracking-tight">No transactions found</h3>
+        <h3 className="text-xl font-bold text-foreground tracking-tight">No Records found</h3>
         <p className="text-muted-foreground font-medium mt-2 max-w-xs mx-auto text-sm">
           Start by adding your first income or expense to see it here.
         </p>
@@ -164,7 +164,7 @@ export const LedgerEntryList = ({
           setIsDeleting(true);
           try {
             await onDelete(deleteId);
-            toast.success('Transaction deleted');
+            toast.success('Record deleted');
           } catch (error: any) {
             // Handled by global interceptor
           } finally {
@@ -180,7 +180,7 @@ export const LedgerEntryList = ({
       <CustomModal
         isOpen={!!editingEntry}
         onClose={() => setEditingEntry(null)}
-        title="Edit Transaction"
+        title="Edit Record"
         description="Update the details of your record below."
       >
         <LedgerEntryForm

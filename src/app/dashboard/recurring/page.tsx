@@ -161,9 +161,9 @@ export default function RecurringPage() {
       {/* Header & Status Center */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>
-          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Automated Tasks</h1>
+          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Records Automation</h1>
           <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-lg">
-            Manage your automated payments and regular income entries in one place.
+            Manage your automated payments and regular income entries in one place. No need to enter the same record again and again.
           </p>
         </SlideIn>
 

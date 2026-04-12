@@ -16,6 +16,7 @@ export function PublicFooter() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-10 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">
+            <Link href="/guide" className="hover:text-primary cursor-pointer transition-colors">Help Center</Link>
             <Link href="/manifesto" className="hover:text-primary cursor-pointer transition-colors">Manifesto</Link>
             <Link href="/contact" className="hover:text-primary cursor-pointer transition-colors">Contact</Link>
             <Link href="/terms" className="hover:text-primary cursor-pointer transition-colors">Terms</Link>
@@ -25,7 +26,9 @@ export function PublicFooter() {
 
         <div className="mt-16 text-center">
           <p className="text-muted-foreground/20 font-bold text-xs uppercase tracking-widest">
-            © {new Date().getFullYear()} Apna Khata • Crafted with Logic & Care
+            © {new Date().getFullYear()} Apna Khata. Built for human simplicity.
+
+
           </p>
         </div>
       </div>
