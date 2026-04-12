@@ -13,13 +13,13 @@ export const MainLayout = ({ children, isFixed = false }: { children: React.Reac
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMaintenance, setIsMaintenance] = useState(false);
   const { user } = useAuth();
-  const isAdmin = user?.role === 'ADMIN';
+  const isStaff = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
 
   React.useEffect(() => {
     const checkStatus = async () => {
       try {
         const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/status`);
-        if (data.success && data.data.maintenanceMode && !isAdmin) {
+        if (data.success && data.data.maintenanceMode && !isStaff) {
           setIsMaintenance(true);
         } else {
           setIsMaintenance(false);
@@ -32,7 +32,7 @@ export const MainLayout = ({ children, isFixed = false }: { children: React.Reac
     checkStatus();
     const interval = setInterval(checkStatus, 30000); // Poll every 30s
     return () => clearInterval(interval);
-  }, [isAdmin]);
+  }, [isStaff]);
 
   if (isMaintenance) {
     return <MaintenanceOverlay />;

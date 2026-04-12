@@ -16,7 +16,8 @@ export default function AdminLayout({
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading && (!user || user.role !== 'ADMIN')) {
+    const isStaff = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
+    if (!loading && (!user || !isStaff)) {
       router.push('/dashboard');
     }
   }, [user, loading, router]);
@@ -32,7 +33,8 @@ export default function AdminLayout({
     );
   }
 
-  if (!user || user.role !== 'ADMIN') {
+  const isStaff = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
+  if (!user || !isStaff) {
     return null;
   }
 

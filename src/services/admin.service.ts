@@ -50,5 +50,15 @@ export const adminService = {
   updateSettings: async (data: any) => {
     const { data: response } = await api.patch('/admin/settings', data);
     return response;
+  },
+  
+  scheduleUserDeletion: async (id: string) => {
+    const { data: response } = await api.patch(`/admin/users/${id}/schedule-deletion`);
+    return response;
+  },
+
+  cancelUserDeletion: async (id: string) => {
+    const { data: response } = await api.patch(`/admin/users/${id}/cancel-deletion`);
+    return response;
   }
 };

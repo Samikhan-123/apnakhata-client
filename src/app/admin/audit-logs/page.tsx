@@ -1,8 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { adminService } from '@/services/admin.service';
-import { History, Clock, Info, CheckCircle2, Ban, Shield, UserMinus, AlertCircle, Search, Filter } from 'lucide-react';
+import { History, Clock, Info, CheckCircle2, Ban, Shield, UserMinus, AlertCircle, Search, Filter, UserX, UserCheck, Settings } from 'lucide-react';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { Button } from '@/components/ui/button';
 import { PaginationPlus } from '@/components/ui/PaginationPlus';
@@ -11,13 +13,14 @@ import { format } from 'date-fns';
 import { handleApiError } from '@/lib/error-handler';
 
 export default function AuditLogPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [logs, setLogs] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<any>(null);
 
-  // Filters State
   const [filters, setFilters] = useState({
     action: '',
     startDate: '',
@@ -26,8 +29,16 @@ export default function AuditLogPage() {
   });
 
   useEffect(() => {
-    fetchLogs(currentPage, filters);
-  }, [currentPage, filters]);
+    if (!authLoading && user && user.role !== 'ADMIN') {
+      router.push('/admin');
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user?.role === 'ADMIN') {
+      fetchLogs(currentPage, filters);
+    }
+  }, [currentPage, filters, user]);
 
   const fetchLogs = async (page: number = 1, currentFilters: any = {}) => {
     setLoading(true);
@@ -54,6 +65,13 @@ export default function AuditLogPage() {
       case 'DEMOTE_USER': return <UserMinus className="h-4 w-4 text-amber-500" />;
       case 'VERIFY_USER': return <CheckCircle2 className="h-4 w-4 text-blue-500" />;
       case 'UNVERIFY_USER': return <AlertCircle className="h-4 w-4 text-slate-400" />;
+      case 'SCHEDULE_DELETION': return <Clock className="h-4 w-4 text-rose-500" />;
+      case 'CANCEL_DELETION': return <UserCheck className="h-4 w-4 text-emerald-500" />;
+      case 'USER_REQUESTED_DELETION': return <UserX className="h-4 w-4 text-rose-600" />;
+      case 'STAFF_LOGIN': return <Shield className="h-4 w-4 text-indigo-500" />;
+      case 'BATCH_BAN_USERS': return <Ban className="h-4 w-4 text-rose-700" />;
+      case 'BATCH_REACTIVATE_USERS': return <CheckCircle2 className="h-4 w-4 text-emerald-700" />;
+      case 'SYSTEM_MAINTENANCE': return <Settings className="h-4 w-4 text-purple-500" />;
       default: return <Info className="h-4 w-4 text-muted-foreground" />;
     }
   };
@@ -121,6 +139,11 @@ export default function AuditLogPage() {
                     <option value="DEMOTE_USER">Demote User</option>
                     <option value="VERIFY_USER">Verify User</option>
                     <option value="UNVERIFY_USER">Unverify User</option>
+                    <option value="SCHEDULE_DELETION">Schedule Deletion</option>
+                    <option value="CANCEL_DELETION">Restore User</option>
+                    <option value="USER_REQUESTED_DELETION">Self-Deletion Request</option>
+                    <option value="STAFF_LOGIN">Staff Login</option>
+                    <option value="SYSTEM_MAINTENANCE">System Maintenance</option>
                   </select>
                    <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
                       <Filter className="h-3 w-3" />
@@ -212,11 +235,11 @@ export default function AuditLogPage() {
                         <td className="px-6 md:px-8 py-5 md:py-6">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 md:w-10 md:h-10 bg-primary/5 rounded-xl md:rounded-2xl flex items-center justify-center border border-primary/10 font-bold text-primary text-xs sapphire-glow/20">
-                              {log.admin.name ? log.admin.name[0].toUpperCase() : 'A'}
+                              {log.admin ? (log.admin.name ? log.admin.name[0].toUpperCase() : 'A') : <Shield className="h-4 w-4" />}
                             </div>
                             <div>
-                              <p className="text-xs md:text-sm font-bold text-foreground leading-none mb-1">{log.admin.name || 'Admin'}</p>
-                              <p className="text-[9px] md:text-[10px] text-muted-foreground font-medium">{log.admin.email}</p>
+                              <p className="text-xs md:text-sm font-bold text-foreground leading-none mb-1">{log.admin?.name || 'SYSTEM'}</p>
+                              <p className="text-[9px] md:text-[10px] text-muted-foreground font-medium">{log.admin?.email || 'automated@system.com'}</p>
                             </div>
                           </div>
                         </td>

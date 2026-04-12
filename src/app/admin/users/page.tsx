@@ -1,11 +1,19 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useAuth } from '@/context/AuthContext';
 import { adminService } from '@/services/admin.service';
-import { Users, Shield, UserCheck, UserX, Search, Filter, MoreHorizontal, CheckCircle2, AlertCircle, Ban, Activity, ChevronRight, HelpCircle } from 'lucide-react';
+import { 
+  Users, Shield, ShieldCheck, UserCheck, UserX, 
+  Search, Filter, MoreHorizontal, CheckCircle2, 
+  AlertCircle, Ban, Activity, ChevronRight, HelpCircle 
+} from 'lucide-react';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { Button } from '@/components/ui/button';
+import { Tooltip } from '@/components/ui/tooltip';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
+import { ErrorState } from '@/components/ui/ErrorState';
+import { handleApiError } from '@/lib/error-handler';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -13,8 +21,13 @@ import { PaginationPlus } from '@/components/ui/PaginationPlus';
 
 export default function UserManagementPage() {
   const router = useRouter();
+  const { user: currentUser } = useAuth();
+  const isAdmin = currentUser?.role === 'ADMIN';
+  const isModerator = currentUser?.role === 'MODERATOR';
+
   const [users, setUsers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<any>(null);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [paginationData, setPaginationData] = useState<any>(null);
@@ -40,6 +53,7 @@ export default function UserManagementPage() {
 
   const fetchUsers = async (page: number = 1) => {
     setLoading(true);
+    setError(null);
     try {
       const response = await adminService.getUsers(page);
       if (response.success) {
@@ -47,8 +61,9 @@ export default function UserManagementPage() {
         setPaginationData(response.pagination);
         setSelectedUsers(new Set()); // Reset on page change
       }
-    } catch (error) {
-      // Handled by interceptor
+    } catch (err: any) {
+      const { message, status } = handleApiError(err, { silent: true });
+      setError({ message, status });
     } finally {
       setLoading(false);
     }
@@ -68,8 +83,8 @@ export default function UserManagementPage() {
             toast.success(`User account ${!user.isActive ? 'activated' : 'deactivated'} successfully`);
             fetchUsers(currentPage);
           }
-        } catch (error) {
-          toast.error('Failed to update account status');
+        } catch (error: any) {
+          toast.error(error.response?.data?.message || 'Failed to update account status');
         } finally {
           setConfirmConfig(prev => ({ ...prev, isOpen: false, loading: false }));
         }
@@ -96,8 +111,8 @@ export default function UserManagementPage() {
             toast.success(`User ${!user.isVerified ? 'verified' : 'unverified'} successfully`);
             fetchUsers(currentPage);
           }
-        } catch (error) {
-          toast.error('Failed to update verification status');
+        } catch (error: any) {
+          toast.error(error.response?.data?.message || 'Failed to update verification status');
         } finally {
           setConfirmConfig(prev => ({ ...prev, isOpen: false, loading: false }));
         }
@@ -165,7 +180,7 @@ export default function UserManagementPage() {
               <p className="text-muted-foreground font-medium mt-1 text-xs md:text-sm">Manage platform identities and security clearances.</p>
             </div>
             {selectedUsers.size > 0 && (
-              <div className="bg-primary/5 border border-primary/20 px-4 py-2 rounded-2xl flex items-center gap-3">
+              <div className="bg-primary/5 border border-primary/20 px-4 py-2 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-300">
                  <span className="text-xs font-black text-primary uppercase tracking-widest">{selectedUsers.size} Selected</span>
                  <Button 
                    variant="ghost" 
@@ -229,6 +244,18 @@ export default function UserManagementPage() {
                         <td colSpan={6} className="px-6 md:px-8 py-5 md:py-6 h-16 md:h-20 bg-muted/5"></td>
                       </tr>
                     ))
+                  ) : error ? (
+                    <tr>
+                      <td colSpan={6} className="px-8 py-20 text-center">
+                        <ErrorState
+                           title="Registry Unavailable"
+                           message={error.message || "Failed to synchronize platform identities."}
+                           onRetry={() => fetchUsers(currentPage)}
+                           type={error.status === 0 ? 'connection' : 'server'}
+                           className="glass-card p-12"
+                        />
+                      </td>
+                    </tr>
                   ) : filteredUsers.map((user) => (
                     <tr key={user.id} className={cn(
                       "hover:bg-primary/[0.02] transition-colors group",
@@ -248,7 +275,12 @@ export default function UserManagementPage() {
                             {user.name ? user.name[0].toUpperCase() : 'U'}
                           </div>
                           <div>
-                            <p className="text-xs md:text-sm font-bold text-foreground leading-none mb-1">{user.name || 'Anonymous'}</p>
+                            <div className="flex items-center gap-2 mb-1">
+                              <p className="text-xs md:text-sm font-bold text-foreground leading-none">{user.name || 'Anonymous'}</p>
+                              {user.id === currentUser?.id && (
+                                <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-sm uppercase tracking-tighter border border-primary/20">Self</span>
+                              )}
+                            </div>
                             <p className="text-[10px] text-muted-foreground font-medium">{user.email}</p>
                           </div>
                         </div>
@@ -265,7 +297,7 @@ export default function UserManagementPage() {
                             {user.isVerified ? 'Verified' : 'Pending'}
                           </div>
                           <div className={cn(
-                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-tighter border w-fit",
+                            "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] md:text-[10px) font-black uppercase tracking-tighter border w-fit",
                             user.isActive
                               ? "bg-blue-500/10 text-blue-600 border-blue-500/20"
                               : "bg-rose-500/10 text-rose-600 border-rose-500/20"
@@ -278,9 +310,9 @@ export default function UserManagementPage() {
                       <td className="px-6 md:px-8 py-5 md:py-6">
                         <div className={cn(
                           "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-tighter border",
-                          user.role === 'ADMIN'
-                            ? "bg-primary/10 text-primary border-primary/20"
-                            : "bg-muted text-muted-foreground border-border/40"
+                          user.role === 'ADMIN' && "bg-primary/10 text-primary border-primary/20",
+                          user.role === 'MODERATOR' && "bg-blue-500/10 text-blue-600 border-blue-500/20",
+                          user.role === 'USER' && "bg-muted text-muted-foreground border-border/40"
                         )}>
                           <Shield className="h-3 w-3" />
                           {user.role}
@@ -294,38 +326,48 @@ export default function UserManagementPage() {
                       </td>
                       <td className="px-6 md:px-8 py-5 md:py-6">
                         <div className="flex items-center justify-end gap-1 md:gap-2">
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className={cn(
-                              "h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all",
-                              user.googleId && "opacity-20 grayscale cursor-not-allowed"
-                            )}
-                            onClick={() => !user.googleId && handleToggleVerification(user)}
-                            disabled={!!user.googleId}
-                          >
-                            {user.isVerified ? <UserX className="h-4 w-4 text-amber-600" /> : <UserCheck className="h-4 w-4 text-emerald-600" />}
-                          </Button>
+                           <Tooltip content={user.isVerified ? "Revoke Verification" : "Grant Verification"}>
+                             <Button
+                              variant="ghost"
+                              size="icon"
+                              className={cn(
+                                "h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground/40",
+                                (user.googleId || user.id === currentUser?.id) && "opacity-20 grayscale cursor-not-allowed"
+                              )}
+                              onClick={() => !(user.googleId || user.id === currentUser?.id) && handleToggleVerification(user)}
+                              disabled={!!user.googleId || user.id === currentUser?.id}
+                            >
+                              {user.isVerified ? <UserX className="h-4 w-4 text-amber-600" /> : <UserCheck className="h-4 w-4 text-emerald-600" />}
+                            </Button>
+                           </Tooltip>
 
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all"
-                            onClick={() => handleToggleStatus(user)}
-                          >
-                            {user.isActive ? <Ban className="h-4 w-4 text-rose-600" /> : <CheckCircle2 className="h-4 w-4 text-blue-600" />}
-                          </Button>
+                           <Tooltip content={user.isActive ? "Ban Account" : "Reactivate Account"}>
+                             <Button
+                              variant="ghost"
+                              size="icon"
+                              className={cn(
+                                "h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground/40",
+                                user.id === currentUser?.id && "opacity-20 grayscale cursor-not-allowed"
+                              )}
+                              disabled={user.id === currentUser?.id}
+                              onClick={() => handleToggleStatus(user)}
+                            >
+                              {user.isActive ? <Ban className="h-4 w-4 text-rose-600" /> : <CheckCircle2 className="h-4 w-4 text-blue-600" />}
+                            </Button>
+                           </Tooltip>
 
                           <div className="w-px h-4 bg-border/40 mx-0.5 md:mx-1" />
 
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground hover:text-primary"
-                            onClick={() => router.push(`/admin/users/${user.id}`)}
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
+                          <Tooltip content="View Strategic Insights">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground hover:text-primary"
+                              onClick={() => router.push(`/admin/users/${user.id}`)}
+                            >
+                              <ChevronRight className="h-4 w-4" />
+                            </Button>
+                          </Tooltip>
                         </div>
                       </td>
                     </tr>
@@ -350,82 +392,101 @@ export default function UserManagementPage() {
         </FadeIn>
       </div>
 
-      {/* Floating Batch Action Bar */}
+      {/* Floating Bulk Management Banner */}
       {selectedUsers.size > 0 && (
-        <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-500 w-[92%] md:w-auto">
-          <div className="premium-card bg-background/90 backdrop-blur-3xl border border-primary/20 rounded-2xl md:rounded-[2rem] px-4 md:px-8 py-3 md:py-4 shadow-2xl sapphire-glow flex flex-col sm:flex-row items-center gap-3 md:gap-6">
-            <div className="flex items-center gap-3 md:gap-4 sm:border-r border-border/40 sm:pr-6 w-full sm:w-auto justify-between sm:justify-start">
-               <div className="flex items-center gap-3">
-                 <div className="h-8 w-8 md:h-10 md:w-10 bg-primary/10 rounded-lg md:rounded-xl flex items-center justify-center text-primary font-black text-xs md:text-base">
+        <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-6 duration-500 w-[94%] md:w-auto">
+          <div className="premium-card bg-background/80 backdrop-blur-[32px] border border-primary/30 rounded-2xl md:rounded-[3rem] px-4 md:px-10 py-4 md:py-5 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] sapphire-glow flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
+            <div className="flex items-center gap-4 lg:border-r border-border/40 lg:pr-8 w-full lg:w-auto justify-between lg:justify-start">
+               <div className="flex items-center gap-4">
+                 <div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary font-black text-sm md:text-lg border border-primary/20 shadow-inner">
                    {selectedUsers.size}
                  </div>
-                 <div className="hidden sm:block">
-                    <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-foreground leading-none">Users Selected</p>
-                    <p className="text-[8px] md:text-[10px] font-bold text-muted-foreground mt-1">Bulk configuration active</p>
-                 </div>
-                 <div className="sm:hidden">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground leading-none">Selected</p>
+                 <div>
+                    <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-foreground leading-none">Bulk Operations</p>
+                    <p className="text-[8px] md:text-[10px] font-bold text-muted-foreground mt-1.5 flex items-center gap-1.5">
+                       <ShieldCheck className="h-3 w-3 text-emerald-500" />
+                       Strategic hardening session active
+                    </p>
                  </div>
                </div>
                
-               <Button 
-                 variant="ghost" 
-                 size="icon" 
-                 className="h-8 w-8 rounded-full hover:bg-muted sm:hidden"
-                 onClick={() => setSelectedUsers(new Set())}
-               >
-                 <UserX className="h-3.5 w-3.5 text-muted-foreground" />
-               </Button>
+               <Tooltip content="Dismiss Selection">
+                 <Button 
+                   variant="ghost" 
+                   size="icon" 
+                   className="h-9 w-9 rounded-full hover:bg-rose-500/10 hover:text-rose-600 transition-all shadow-sm"
+                   onClick={() => setSelectedUsers(new Set())}
+                 >
+                   <UserX className="h-4 w-4" />
+                 </Button>
+               </Tooltip>
             </div>
 
-            <div className="flex items-center gap-2 md:gap-3 overflow-x-auto w-full sm:w-auto no-scrollbar pb-1 sm:pb-0">
-               <Button 
-                 variant="ghost" 
-                 size="sm" 
-                 className="h-9 md:h-10 px-3 md:px-4 rounded-lg md:rounded-xl hover:bg-emerald-500/10 text-emerald-600 font-bold gap-2 text-[10px] md:text-xs whitespace-nowrap"
-                 onClick={() => handleBatchAction('Verify All', { isVerified: true })}
-               >
-                 <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                 <span className="hidden xs:inline">Verify</span>
-               </Button>
-               <Button 
-                 variant="ghost" 
-                 size="sm" 
-                 className="h-9 md:h-10 px-3 md:px-4 rounded-lg md:rounded-xl hover:bg-rose-500/10 text-rose-600 font-bold gap-2 text-[10px] md:text-xs whitespace-nowrap"
-                 onClick={() => handleBatchAction('Ban All', { isActive: false })}
-               >
-                 <Ban className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                 <span className="hidden xs:inline">Ban</span>
-               </Button>
-               <Button 
-                 variant="ghost" 
-                 size="sm" 
-                 className="h-9 md:h-10 px-3 md:px-4 rounded-lg md:rounded-xl hover:bg-primary/10 text-primary font-bold gap-2 text-[10px] md:text-xs whitespace-nowrap"
-                 onClick={() => handleBatchAction('Change Role: ADMIN', { role: 'ADMIN' })}
-               >
-                 <Shield className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                 <span className="hidden xs:inline">Admin</span>
-               </Button>
-               <Button 
-                 variant="ghost" 
-                 size="sm" 
-                 className="h-9 md:h-10 px-3 md:px-4 rounded-lg md:rounded-xl hover:bg-muted text-muted-foreground font-bold gap-2 text-[10px] md:text-xs whitespace-nowrap"
-                 onClick={() => handleBatchAction('Change Role: USER', { role: 'USER' })}
-               >
-                 <Activity className="h-3.5 w-3.5 md:h-4 md:w-4" />
-                 <span className="hidden xs:inline">User</span>
-               </Button>
+            <div className="flex items-center gap-2 md:gap-4 overflow-x-auto w-full lg:w-auto no-scrollbar pb-1 lg:pb-0 justify-center">
+               <Tooltip content="Apply platform verification status">
+                 <Button 
+                   variant="ghost" 
+                   size="sm" 
+                   className="h-10 md:h-12 px-4 md:px-6 rounded-xl md:rounded-2xl hover:bg-emerald-500/10 text-emerald-600 font-black gap-2 text-[10px] md:text-xs whitespace-nowrap border border-transparent hover:border-emerald-500/20 transition-all active:scale-95"
+                   onClick={() => handleBatchAction('Verify All', { isVerified: true })}
+                 >
+                   <CheckCircle2 className="h-4 w-4" />
+                   <span>VERIFY CLEARANCE</span>
+                 </Button>
+               </Tooltip>
+
+               <Tooltip content="Immediately revoke platform access">
+                 <Button 
+                   variant="ghost" 
+                   size="sm" 
+                   className="h-10 md:h-12 px-4 md:px-6 rounded-xl md:rounded-2xl hover:bg-rose-500/10 text-rose-600 font-black gap-2 text-[10px] md:text-xs whitespace-nowrap border border-transparent hover:border-rose-500/20 transition-all active:scale-95"
+                   onClick={() => handleBatchAction('Ban All', { isActive: false })}
+                 >
+                   <Ban className="h-4 w-4" />
+                   <span>RESTRIC ACCESS</span>
+                 </Button>
+               </Tooltip>
+
+               <div className="w-px h-6 bg-border/40 mx-1 md:mx-2 hidden lg:block" />
+
+               <div className="flex items-center gap-2">
+                 <Tooltip content="Assign Moderator responsibilities">
+                   <Button 
+                     variant="ghost" 
+                     size="sm" 
+                     className="h-10 md:h-12 px-4 md:px-6 rounded-xl md:rounded-2xl hover:bg-blue-500/10 text-blue-600 font-black gap-2 text-[10px] md:text-xs whitespace-nowrap border border-transparent hover:border-blue-500/20 transition-all active:scale-95"
+                     onClick={() => handleBatchAction('Assign: MODERATOR', { role: 'MODERATOR' })}
+                   >
+                     <ShieldCheck className="h-4 w-4" />
+                     <span>MODERATOR</span>
+                   </Button>
+                 </Tooltip>
+
+                 <Tooltip content="Restore to standard User status">
+                   <Button 
+                     variant="ghost" 
+                     size="sm" 
+                     className="h-10 md:h-12 px-4 md:px-6 rounded-xl md:rounded-2xl hover:bg-muted text-muted-foreground font-black gap-2 text-[10px] md:text-xs whitespace-nowrap border border-transparent hover:border-border/40 transition-all active:scale-95"
+                     onClick={() => handleBatchAction('Assign: USER', { role: 'USER' })}
+                   >
+                     <Activity className="h-4 w-4" />
+                     <span>CITIZEN</span>
+                   </Button>
+                 </Tooltip>
+               </div>
             </div>
             
-            <div className="hidden sm:block pl-4">
-               <Button 
-                 variant="ghost" 
-                 size="icon" 
-                 className="h-10 w-10 rounded-full hover:bg-muted"
-                 onClick={() => setSelectedUsers(new Set())}
-               >
-                 <UserX className="h-4 w-4 text-muted-foreground" />
-               </Button>
+            <div className="hidden lg:block">
+               <Tooltip content="Emergency Deselect">
+                 <Button 
+                   variant="ghost" 
+                   size="icon" 
+                   className="h-12 w-12 rounded-2xl hover:bg-muted text-muted-foreground"
+                   onClick={() => setSelectedUsers(new Set())}
+                 >
+                   <UserX className="h-5 w-5" />
+                 </Button>
+               </Tooltip>
             </div>
           </div>
         </div>

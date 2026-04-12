@@ -1,35 +1,36 @@
 # Apna Khata - Client 🚀
 
-The sleek, premium frontend for **Apna Khata**, an advanced personal expense tracker and financial management platform. Built with **Next.js 16**, **TypeScript**, and **Shadcn UI**.
+The Precise, premium frontend for **Apna Khata**, an enterprise-grade personal expense tracker and financial management platform. Built with **Next.js 16**, **TypeScript**, and a custom **Sapphire Design System**.
 
 ![Apna Khata Logo](/public/icon1.png)
 
 ## ✨ Key Features
 
-- **Interactive Dashboard**: Real-time visualization of your financial health using `recharts`.
-- **Advanced Ledger**: Filter, search, and manage your transactions with a high-performance interactive table.
-- **Budgeting System**: Visual progress tracking for monthly and category-based budgets.
-- **Premium UI/UX**: Crafted with `Framer Motion` for smooth transitions and a modern "Glassmorphism" aesthetic.
-- **PWA Ready**: Installable on mobile and desktop devices with offline support via Service Workers.
-- **Responsive Design**: Optimized for everything from mobile phones to high-resolution desktop monitors.
-- **Secure Auth**: Robust login, registration, and OTP-based password recovery flows.
+- **Strategic Admin Command Center**: A high-authority management interface for platform administrators and moderators, featuring real-time system metrics and user registry control.
+- **Intelligent Financial Dashboard**: Advanced data visualization using `recharts` with interactive area charts for liquidity trends and category distribution analytics.
+- **Premium Sapphire UI**: A sophisticated "Glassmorphism" aesthetic powered by `Framer Motion` and `Tailwind CSS`, featuring backdrop blurs, sapphire glows, and high-performance micro-animations.
+- **Bulk Configuration Engine**: High-performance multi-selection registry with "Sapphire Glow" bulk action banners for mass verification, role assignment, and account bans.
+- **Zero-Trust Security UI**: Context-aware administrative sessions with self-protection guards and visual banners for active security sessions.
+- **Autonomous Feedback**: Integrated high-speed tooltips and strategic toast notifications for real-time operation confirmation.
+- **High-Performance Ledger**: A heavy-duty transaction management system with deep search, granular filtering, and pagination.
+- **PWA Ready**: Native-like installation on mobile and desktop with offline resilience.
 
 ## 🛠️ Tech Stack
 
-- **Framework**: [Next.js 16+](https://nextjs.org/)
+- **Framework**: [Next.js 16 (Turbopack)](https://nextjs.org/)
 - **Language**: [TypeScript](https://www.typescriptlang.org/)
-- **Styling**: [Tailwind CSS](https://tailwindcss.com/)
-- **UI Components**: [Radix UI](https://www.radix-ui.com/) & [Shadcn UI](https://ui.shadcn.com/)
-- **Animations**: [Framer Motion](https://www.framer.com/motion/)
+- **Animation Engine**: [Framer Motion](https://www.framer.com/motion/)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/)
+- **UI Architecture**: [Radix UI](https://www.radix-ui.com/) & [Shadcn UI](https://ui.shadcn.com/)
 - **Data Visualization**: [Recharts](https://recharts.org/)
-- **State Management**: [Context API](https://react.dev/reference/react/createContext)
+- **State Management**: React Context API & Lexical Scope
 - **Icons**: [Lucide React](https://lucide.dev/)
 
 ## 🚀 Getting Started
 
 1.  **Clone the Repository**:
     ```bash
-    git clone https://github.com/your-username/apnakhata-client.git
+    git clone https://github.com/Samikhan-123/apnakhata-client.git
     cd apnakhata-client
     ```
 
@@ -49,9 +50,9 @@ The sleek, premium frontend for **Apna Khata**, an advanced personal expense tra
     npm run dev
     ```
 
-## 🔗 Related Repositories
+## 🔗 Ecosystem
 
-- [Apna Khata - Backend Server](https://github.com/your-username/apnakhata-server)
+- [Apna Khata - Backend Server](https://github.com/ySamikhan-123/apnakhata-server)
 
 ## 📄 License
 

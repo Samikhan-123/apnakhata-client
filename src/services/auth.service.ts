@@ -110,6 +110,16 @@ export const authService = {
   async getMe() {
     const { data: response } = await api.get('/auth/me');
     return response;
+  },
+
+  async requestDeletion() {
+    const { data: response } = await api.post('/auth/request-deletion');
+    if (response.success) {
+      Cookies.remove('isVerified', { path: '/' });
+      Cookies.remove('user', { path: '/' });
+      Cookies.remove('isLoggedIn', { path: '/' });
+    }
+    return response;
   }
 };
 

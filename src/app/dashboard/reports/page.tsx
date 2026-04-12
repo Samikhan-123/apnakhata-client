@@ -241,24 +241,6 @@ export default function ReportsPage() {
           </p>
         </SlideIn>
 
-        <SlideIn delay={0.2} duration={0.5}>
-          <div className="flex items-center gap-6 premium-card p-4 px-6 rounded-3xl">
-            <div className="flex items-center gap-4">
-              <div className={cn(
-                "h-11 w-11 rounded-xl flex items-center justify-center border",
-                expenseGrowth <= 0 ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/10" : "bg-rose-500/5 text-rose-600 border-rose-500/10"
-              )}>
-                {expenseGrowth <= 0 ? <TrendingDown size={22} /> : <TrendingUp size={22} />}
-              </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/50 mb-0.5">Month over Month</p>
-                <p className={cn("text-2xl font-bold tracking-tight", expenseGrowth <= 0 ? "text-emerald-600" : "text-rose-600")}>
-                  {expenseGrowth > 0 ? '+' : ''}{expenseGrowth.toFixed(1)}%
-                </p>
-              </div>
-            </div>
-          </div>
-        </SlideIn>
       </div>
 
       <ReportFilters
@@ -404,6 +386,24 @@ export default function ReportsPage() {
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none">
                 <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider mb-1">Total Spent</p>
                 <p className="text-2xl font-bold tracking-tight text-foreground">{formatCurrency(totalExpense)}</p>
+              </div>
+
+              {/* Dynamic Spending List */}
+              <div className="mt-6 space-y-3 px-2 overflow-y-auto max-h-[120px] sapphire-scrollbar pr-3">
+                {stats?.categoryBreakdown?.map((cat: any, idx: number) => (
+                  <div key={idx} className="flex items-center justify-between group/item">
+                    <div className="flex items-center gap-3">
+                      <div className="h-2 w-2 rounded-full" style={{ backgroundColor: COLORS[idx % COLORS.length] }} />
+                      <span className="text-[11px] font-bold text-muted-foreground group-hover/item:text-foreground transition-colors">{capitalize(cat.name)}</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                       <span className="text-[10px] font-bold text-muted-foreground/40">
+                         {((cat.value / totalExpense) * 100).toFixed(0)}%
+                       </span>
+                       <span className="text-xs font-black text-foreground">{formatCurrency(cat.value)}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </FadeIn>

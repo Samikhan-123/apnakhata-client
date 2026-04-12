@@ -1,6 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 import { adminService } from '@/services/admin.service';
 import { 
   Settings, 
@@ -22,14 +24,25 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 export default function SystemSettingsPage() {
+  const { user, loading: authLoading } = useAuth();
+  const router = useRouter();
   const [settings, setSettings] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [confirmState, setConfirmState] = useState<{ isOpen: boolean; title: string; description: string; data: any } | null>(null);
 
   useEffect(() => {
-    fetchSettings();
-  }, []);
+    if (!authLoading && user && user.role !== 'ADMIN') {
+      router.push('/admin');
+      toast.error('Access Denied: Full Administrator privileges required.');
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    if (user?.role === 'ADMIN') {
+      fetchSettings();
+    }
+  }, [user]);
 
   const fetchSettings = async () => {
     setLoading(true);

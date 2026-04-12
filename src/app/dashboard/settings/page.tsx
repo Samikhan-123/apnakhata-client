@@ -30,6 +30,7 @@ import { useTheme } from 'next-themes';
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 import { toast } from "sonner";
 import { SlideIn } from "@/components/ui/FramerMotion";
+import { authService } from '@/services/auth.service';
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
@@ -38,6 +39,8 @@ export default function SettingsPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isPurgeOpen, setIsPurgeOpen] = useState(false);
   const [isPurging, setIsPurging] = useState(false);
+  const [isDeletionOpen, setIsDeletionOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Form states (stubbed for now as we focus on UI)
   const [name, setName] = useState(user?.name || '');
@@ -51,6 +54,26 @@ export default function SettingsPage() {
       setIsPurgeOpen(false);
       toast.success("All data has been cleared");
     }, 2000);
+  };
+
+  const handleRequestDeletion = async () => {
+    setIsDeleting(true);
+    try {
+      const response = await authService.requestDeletion();
+      if (response.success) {
+        toast.success("Account removal initialized", {
+          description: "Your account is now scheduled for deletion in 30 days. You have been logged out."
+        });
+        // logout() is called inside authService.requestDeletion internally by clearing cookies 
+        // but let's force redirect if needed, though interceptor should handle 401/redirect
+        window.location.href = '/login';
+      }
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || "Failed to initialize deletion");
+    } finally {
+      setIsDeleting(false);
+      setIsDeletionOpen(false);
+    }
   };
 
   return (
@@ -236,7 +259,7 @@ export default function SettingsPage() {
                      </div>
                   </Card>
 
-                       <Card className="rounded-[2rem] border-border/40 shadow-sm p-8 bg-card opacity-30 cursor-not-allowed">
+                    <Card className="rounded-[2rem] border-border/40 shadow-sm p-8 bg-card">
                       <div className="flex items-center gap-4 mb-8">
                         <div className="h-10 w-10 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/10 text-primary">
                            <Database size={20} />
@@ -246,29 +269,30 @@ export default function SettingsPage() {
                            <CardDescription className="text-xs font-medium text-muted-foreground/60">Manage your financial records</CardDescription>
                         </div>
                      </div>
- 
+  
                      <div className="space-y-4">
-                        <div className="p-5 rounded-xl bg-muted/20 border border-muted-foreground/10 flex items-center justify-between gap-6">
+                        <div className="p-5 rounded-xl bg-muted/20 border border-muted-foreground/10 flex items-center justify-between gap-6 opacity-40 cursor-not-allowed group">
                            <div>
-                              <h5 className="font-bold text-base tracking-tight">Export History</h5>
-                              <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider">Download CSV file</p>
+                              <h5 className="font-bold text-base tracking-tight">Export Platform History</h5>
+                              <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider italic">Coming Soon...</p>
                            </div>
                            <Button disabled={true} variant="ghost" className="h-10 w-10 rounded-lg p-0 hover:bg-primary/10 hover:text-primary transition-all">
                               <Download size={18} />
                            </Button>
                         </div>
- 
-                        <div className="p-5 rounded-xl bg-rose-500/5 border border-rose-500/10 flex items-center justify-between gap-6">
+  
+                        <div className="p-5 rounded-xl bg-rose-500/5 border border-rose-500/10 flex items-center justify-between gap-6 group hover:bg-rose-500/[0.08] transition-all">
                            <div>
-                              <h5 className="font-bold text-base tracking-tight text-rose-600">Clear All Data</h5>
-                              <p className="text-[11px] font-bold text-muted-foreground/40 uppercase tracking-wider">Permanent removal</p>
+                              <h5 className="font-bold text-base tracking-tight text-rose-600">Delete My Account</h5>
+                              <p className="text-[11px] font-black text-rose-500/40 uppercase tracking-widest">30-Day Grace Period</p>
                            </div>
-                           <Button disabled={true}
+                           <Button 
                              variant="ghost" 
-                             className="h-10 w-10 rounded-lg p-0 text-rose-600 hover:bg-rose-500 hover:text-white transition-all"
-                             onClick={() => setIsPurgeOpen(true)}
+                             className="h-10 px-4 rounded-xl text-rose-600 hover:bg-rose-500 hover:text-white transition-all font-bold gap-2 text-xs"
+                             onClick={() => setIsDeletionOpen(true)}
                            >
-                              <Trash2 size={18} />
+                              <Trash2 size={16} />
+                              REQUEST REMOVAL
                            </Button>
                         </div>
                      </div>
@@ -285,6 +309,15 @@ export default function SettingsPage() {
         loading={isPurging}
         title="Purge all data?"
         description="This is a permanent action. All your records, goals, and recurring tasks will be deleted forever. This cannot be undone."
+      />
+
+      <ConfirmDialog 
+        isOpen={isDeletionOpen}
+        onClose={() => setIsDeletionOpen(false)}
+        onConfirm={handleRequestDeletion}
+        loading={isDeleting}
+        title="Delete your account?"
+        description="WARNING: Your account will be DEACTIVATED immediately and PERMANENTLY ERASED in 30 days. You can contact support within this period to cancel the request. All your data will be gone forever after the deadline."
       />
     </div>
   );

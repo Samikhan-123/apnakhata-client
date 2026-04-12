@@ -59,20 +59,30 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const { user } = useAuth();
 
   const isAdmin = user?.role === 'ADMIN';
+  const isModerator = user?.role === 'MODERATOR';
+  const hasAdminAccess = isAdmin || isModerator;
   const isAdminSection = pathname.startsWith('/admin');
 
   let groups = [];
   
   if (isAdminSection) {
+    const adminItems = [
+      { name: 'Admin Dashboard', icon: ShieldCheck, href: '/admin' },
+      { name: 'User Management', icon: Users, href: '/admin/users' },
+    ];
+    
+    // Only full Admins can manage system settings and audits
+    if (isAdmin) {
+      adminItems.push(
+        { name: 'System Settings', icon: Settings, href: '/admin/settings' },
+        { name: 'Audit Trail', icon: History, href: '/admin/audit-logs' }
+      );
+    }
+
     groups = [
       {
         title: 'Administration',
-        items: [
-          { name: 'Admin Dashboard', icon: ShieldCheck, href: '/admin' },
-          { name: 'User Management', icon: Users, href: '/admin/users' },
-          { name: 'System Settings', icon: Settings, href: '/admin/settings' },
-          { name: 'Audit Trail', icon: History, href: '/admin/audit-logs' },
-        ]
+        items: adminItems
       },
       {
         title: 'Return',
@@ -83,14 +93,21 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     ];
   } else {
     groups = [...menuGroups];
-    if (isAdmin) {
+    if (hasAdminAccess) {
+      const adminItems = [
+        { name: 'Admin Dashboard', icon: ShieldCheck, href: '/admin' },
+      ];
+
+      // if (isAdmin) {
+      //   adminItems.push(
+      //     { name: 'System Settings', icon: Settings, href: '/admin/settings' },
+      //     { name: 'Audit Trail', icon: History, href: '/admin/audit-logs' }
+      //   );
+      // }
+
       groups.push({
         title: 'Administration',
-        items: [
-          { name: 'Admin Dashboard', icon: ShieldCheck, href: '/admin' },
-          { name: 'System Settings', icon: Settings, href: '/admin/settings' },
-          { name: 'Audit Trail', icon: History, href: '/admin/audit-logs' },
-        ]
+        items: adminItems
       });
     }
   }
