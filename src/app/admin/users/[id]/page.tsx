@@ -11,7 +11,7 @@ import {
   Ban, CheckCircle2, AlertCircle, Clock, 
   ArrowUpRight, ArrowDownLeft, ReceiptText, BarChart3, 
   TrendingUp, ShieldAlert, Scale, Globe, TrendingDown, 
-  DollarSign
+  DollarSign, Eye
 } from 'lucide-react';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,7 @@ export default function UserDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const { formatCurrency } = useCurrency();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, impersonate } = useAuth();
   const isAdmin = currentUser?.role === 'ADMIN';
   const isSelf = currentUser?.id === id;
   const [user, setUser] = useState<any>(null);
@@ -152,6 +152,25 @@ export default function UserDetailPage() {
     });
   };
 
+  const handleImpersonate = () => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Start Diagnostic Session?",
+      description: `You are about to enter the dashboard as ${user.name || user.email}. This session will be Read-Only and your actions will be logged for security.`,
+      onConfirm: async () => {
+        setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        setActionLoading(true);
+        try {
+          await impersonate(id as string);
+        } catch (err: any) {
+          // Toast handled by AuthContext/Interceptor
+        } finally {
+          setActionLoading(false);
+        }
+      }
+    });
+  };
+
   if (loading) {
     return (
       <div className="space-y-8 animate-pulse">
@@ -220,6 +239,20 @@ export default function UserDetailPage() {
 
         <SlideIn duration={0.5} delay={0.1}>
           <div className="flex items-center gap-3">
+             {isAdmin && user.role !== 'ADMIN' && (
+              <Tooltip content="Enter Diagnostic Session">
+                <Button 
+                   variant="outline"
+                   className="h-12 px-6 rounded-xl font-bold gap-2 hover:bg-primary/10 transition-all shadow-sm border-primary/20 text-primary"
+                   disabled={actionLoading}
+                   onClick={handleImpersonate}
+                >
+                   <Eye className="h-4 w-4" />
+                   <span>Impersonate</span>
+                </Button>
+              </Tooltip>
+            )}
+
              {user.deletionScheduledAt ? (
                <Button 
                  variant="outline" 

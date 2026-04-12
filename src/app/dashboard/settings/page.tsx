@@ -33,7 +33,7 @@ import { SlideIn } from "@/components/ui/FramerMotion";
 import { authService } from '@/services/auth.service';
 
 export default function SettingsPage() {
-  const { user, logout } = useAuth();
+  const { user, logout, readOnly } = useAuth();
   const { currency, setCurrency } = useCurrency();
   const { theme, setTheme } = useTheme();
   const [isSaving, setIsSaving] = useState(false);
@@ -57,6 +57,10 @@ export default function SettingsPage() {
   };
 
   const handleRequestDeletion = async () => {
+    if (readOnly) {
+      toast.error("Diagnostic Session: Mutation actions are disabled.");
+      return;
+    }
     setIsDeleting(true);
     try {
       const response = await authService.requestDeletion();
@@ -117,10 +121,16 @@ export default function SettingsPage() {
                 <Button 
                   onClick={logout}
                   variant="ghost" 
-                  className="w-full h-11 rounded-xl justify-start gap-3 px-4 text-rose-600 hover:bg-rose-600 hover:text-white transition-all font-bold border border-rose-500/10 active:scale-95"
+                  disabled={readOnly}
+                  className={cn(
+                    "w-full h-11 rounded-xl justify-start gap-3 px-4 text-rose-600 font-bold border border-rose-500/10 active:scale-95 transition-all",
+                    readOnly 
+                      ? "opacity-20 cursor-not-allowed" 
+                      : "hover:bg-rose-600 hover:text-white"
+                  )}
                 >
                   <LogOut size={18} />
-                  <span>Sign Out</span>
+                  <span>{readOnly ? 'Locked Session' : 'Sign Out'}</span>
                 </Button>
              </div>
           </div>
@@ -236,10 +246,13 @@ export default function SettingsPage() {
                      <div className="grid grid-cols-2 gap-4">
                         <Button 
                           variant="ghost" 
-                          onClick={() => setTheme('light')}
+                          onClick={() => !readOnly && setTheme('light')}
+                          disabled={readOnly}
                           className={cn(
                             "h-20 rounded-xl border flex items-center gap-3 transition-all",
-                            theme === 'light' ? "bg-primary text-primary-foreground border-primary/20 shadow-md" : "bg-muted/40 border-transparent hover:border-primary/10"
+                            theme === 'light' ? "bg-primary text-primary-foreground border-primary/20 shadow-md" : "bg-muted/40 border-transparent",
+                            !readOnly && theme !== 'light' && "hover:border-primary/10",
+                            readOnly && "opacity-50 cursor-not-allowed"
                           )}
                         >
                            <Sun size={20} />
@@ -247,10 +260,13 @@ export default function SettingsPage() {
                         </Button>
                         <Button 
                           variant="ghost" 
-                          onClick={() => setTheme('dark')}
+                          onClick={() => !readOnly && setTheme('dark')}
+                          disabled={readOnly}
                           className={cn(
                             "h-20 rounded-xl border flex items-center gap-3 transition-all",
-                            theme === 'dark' ? "bg-primary text-primary-foreground border-primary/20 shadow-md" : "bg-muted/40 border-transparent hover:border-primary/10"
+                            theme === 'dark' ? "bg-primary text-primary-foreground border-primary/20 shadow-md" : "bg-muted/40 border-transparent",
+                            !readOnly && theme !== 'dark' && "hover:border-primary/10",
+                            readOnly && "opacity-50 cursor-not-allowed"
                           )}
                         >
                            <Moon size={20} />
@@ -288,11 +304,17 @@ export default function SettingsPage() {
                            </div>
                            <Button 
                              variant="ghost" 
-                             className="h-10 px-4 rounded-xl text-rose-600 hover:bg-rose-500 hover:text-white transition-all font-bold gap-2 text-xs"
-                             onClick={() => setIsDeletionOpen(true)}
+                             disabled={readOnly}
+                             className={cn(
+                               "h-10 px-4 rounded-xl text-rose-600 font-bold gap-2 text-xs transition-all",
+                               readOnly 
+                                 ? "opacity-20 cursor-not-allowed" 
+                                 : "hover:bg-rose-500 hover:text-white"
+                             )}
+                             onClick={() => !readOnly && setIsDeletionOpen(true)}
                            >
                               <Trash2 size={16} />
-                              REQUEST REMOVAL
+                              {readOnly ? 'LOCKED' : 'REQUEST REMOVAL'}
                            </Button>
                         </div>
                      </div>

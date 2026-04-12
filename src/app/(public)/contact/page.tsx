@@ -29,8 +29,8 @@ export default function ContactPage() {
               <p className="text-muted-foreground font-bold text-sm mb-8 leading-relaxed">
                 Reach out to me directly for support, feedback, or any technical queries.
               </p>
-              <a href="mailto:samikhan7816@gmail.com" className="text-xl font-black text-foreground hover:text-primary transition-colors">
-                support email
+              <a href="mailto:samikhan7816@gmail.com" >
+                samikhan7816@gmail.com
               </a>
             </div>
 

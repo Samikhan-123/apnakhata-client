@@ -12,6 +12,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { toast } from 'sonner';
 import * as LucideIcons from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
 
 export const LedgerEntryList = ({ 
   ledgerEntries, 
@@ -23,6 +24,7 @@ export const LedgerEntryList = ({
   onRefresh?: () => void
 }) => {
   const { formatCurrency } = useCurrency();
+  const { readOnly } = useAuth();
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingEntry, setEditingEntry] = useState<any | null>(null);
@@ -123,9 +125,15 @@ export const LedgerEntryList = ({
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => setEditingEntry(entry)}
-                          className="rounded-xl sm:rounded-2xl h-9 w-9 sm:h-11 sm:w-11 text-muted-foreground hover:text-primary hover:bg-primary/10 border border-transparent hover:border-primary/20 active:scale-90"
-                          title="Edit"
+                          onClick={() => !readOnly && setEditingEntry(entry)}
+                          className={cn(
+                            "rounded-xl sm:rounded-2xl h-9 w-9 sm:h-11 sm:w-11 text-muted-foreground transition-all active:scale-90",
+                            readOnly 
+                              ? "opacity-20 cursor-not-allowed" 
+                              : "hover:text-primary hover:bg-primary/10 border border-transparent hover:border-primary/20"
+                          )}
+                          title={readOnly ? "Locked: Diagnostic Session" : "Edit"}
+                          disabled={readOnly}
                         >
                           <LucideIcons.Edit3 className="h-4 w-4 sm:h-5 sm:w-5" />
                         </Button>
@@ -133,9 +141,15 @@ export const LedgerEntryList = ({
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => setDeleteId(entry.id)}
-                            className="rounded-xl sm:rounded-2xl h-9 w-9 sm:h-11 sm:w-11 text-muted-foreground hover:text-rose-600 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20 active:scale-90"
-                            title="Delete"
+                            onClick={() => !readOnly && setDeleteId(entry.id)}
+                            className={cn(
+                              "rounded-xl sm:rounded-2xl h-9 w-9 sm:h-11 sm:w-11 text-muted-foreground transition-all active:scale-90",
+                              readOnly 
+                                ? "opacity-20 cursor-not-allowed" 
+                                : "hover:text-rose-600 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20"
+                            )}
+                            title={readOnly ? "Locked: Diagnostic Session" : "Delete"}
+                            disabled={readOnly}
                           >
                             <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                           </Button>

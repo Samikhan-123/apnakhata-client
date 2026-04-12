@@ -6,7 +6,7 @@ import { adminService } from '@/services/admin.service';
 import { 
   Users, Shield, ShieldCheck, UserCheck, UserX, 
   Search, Filter, MoreHorizontal, CheckCircle2, 
-  AlertCircle, Ban, Activity, ChevronRight, HelpCircle 
+  AlertCircle, Ban, Activity, ChevronRight, HelpCircle, Eye 
 } from 'lucide-react';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { Button } from '@/components/ui/button';
@@ -21,7 +21,7 @@ import { PaginationPlus } from '@/components/ui/PaginationPlus';
 
 export default function UserManagementPage() {
   const router = useRouter();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, impersonate } = useAuth();
   const isAdmin = currentUser?.role === 'ADMIN';
   const isModerator = currentUser?.role === 'MODERATOR';
 
@@ -113,6 +113,25 @@ export default function UserManagementPage() {
           }
         } catch (error: any) {
           toast.error(error.response?.data?.message || 'Failed to update verification status');
+        } finally {
+          setConfirmConfig(prev => ({ ...prev, isOpen: false, loading: false }));
+        }
+      }
+    });
+  };
+
+  const handleImpersonate = (user: any) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: "Start Diagnostic Session?",
+      description: `You are about to enter the dashboard as ${user.name || user.email}. This session will be Read-Only and your actions will be logged for security.`,
+      loading: false,
+      onConfirm: async () => {
+        setConfirmConfig(prev => ({ ...prev, loading: true }));
+        try {
+          await impersonate(user.id);
+        } catch (error) {
+          // Toast handled by AuthContext/Interceptor
         } finally {
           setConfirmConfig(prev => ({ ...prev, isOpen: false, loading: false }));
         }
@@ -328,35 +347,48 @@ export default function UserManagementPage() {
                         <div className="flex items-center justify-end gap-1 md:gap-2">
                            <Tooltip content={user.isVerified ? "Revoke Verification" : "Grant Verification"}>
                              <Button
-                              variant="ghost"
-                              size="icon"
-                              className={cn(
-                                "h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground/40",
-                                (user.googleId || user.id === currentUser?.id) && "opacity-20 grayscale cursor-not-allowed"
-                              )}
-                              onClick={() => !(user.googleId || user.id === currentUser?.id) && handleToggleVerification(user)}
-                              disabled={!!user.googleId || user.id === currentUser?.id}
-                            >
-                              {user.isVerified ? <UserX className="h-4 w-4 text-amber-600" /> : <UserCheck className="h-4 w-4 text-emerald-600" />}
-                            </Button>
+                               variant="ghost"
+                               size="icon"
+                               className={cn(
+                                 "h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground/40",
+                                 (user.googleId || user.id === currentUser?.id) && "opacity-20 grayscale cursor-not-allowed"
+                               )}
+                               onClick={() => !(user.googleId || user.id === currentUser?.id) && handleToggleVerification(user)}
+                               disabled={!!user.googleId || user.id === currentUser?.id}
+                             >
+                               {user.isVerified ? <UserX className="h-4 w-4 text-amber-600" /> : <UserCheck className="h-4 w-4 text-emerald-600" />}
+                             </Button>
                            </Tooltip>
 
                            <Tooltip content={user.isActive ? "Ban Account" : "Reactivate Account"}>
                              <Button
-                              variant="ghost"
-                              size="icon"
-                              className={cn(
-                                "h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground/40",
-                                user.id === currentUser?.id && "opacity-20 grayscale cursor-not-allowed"
-                              )}
-                              disabled={user.id === currentUser?.id}
-                              onClick={() => handleToggleStatus(user)}
-                            >
-                              {user.isActive ? <Ban className="h-4 w-4 text-rose-600" /> : <CheckCircle2 className="h-4 w-4 text-blue-600" />}
-                            </Button>
+                               variant="ghost"
+                               size="icon"
+                               className={cn(
+                                 "h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground/40",
+                                 user.id === currentUser?.id && "opacity-20 grayscale cursor-not-allowed"
+                               )}
+                               disabled={user.id === currentUser?.id}
+                               onClick={() => handleToggleStatus(user)}
+                             >
+                               {user.isActive ? <Ban className="h-4 w-4 text-rose-600" /> : <CheckCircle2 className="h-4 w-4 text-blue-600" />}
+                             </Button>
                            </Tooltip>
 
                           <div className="w-px h-4 bg-border/40 mx-0.5 md:mx-1" />
+
+                          {isAdmin && user.role !== 'ADMIN' && (
+                            <Tooltip content="Enter Diagnostic Session">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-primary/10 group-hover:scale-105 transition-all text-primary"
+                                onClick={() => handleImpersonate(user)}
+                              >
+                                <Eye className="h-4 w-4" />
+                              </Button>
+                            </Tooltip>
+                          )}
 
                           <Tooltip content="View Strategic Insights">
                             <Button

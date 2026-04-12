@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import { CustomModal } from '@/components/ui/CustomModal';
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 import { ErrorState } from '@/components/ui/ErrorState';
+import { useAuth } from '@/context/AuthContext';
 
 export default function BudgetsPage() {
   const [budgets, setBudgets] = useState<any[]>([]);
@@ -38,6 +39,7 @@ export default function BudgetsPage() {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [error, setError] = useState<string | null>(null);
   const { currency, formatCurrency } = useCurrency();
+  const { readOnly } = useAuth();
 
   const {
     register,
@@ -81,6 +83,10 @@ export default function BudgetsPage() {
   }, [selectedMonth, selectedYear]);
 
   const onSubmit = async (data: BudgetInput) => {
+    if (readOnly) {
+      toast.error("Diagnostic Session: Mutation actions are disabled.");
+      return;
+    }
     try {
       await budgetService.setBudget({
         ...data,
@@ -98,6 +104,10 @@ export default function BudgetsPage() {
   };
 
   const handleDeleteBudget = async (id: string) => {
+    if (readOnly) {
+      toast.error("Diagnostic Session: Mutation actions are disabled.");
+      return;
+    }
     setIsDeleting(true);
     try {
       await budgetService.delete(id);
@@ -158,11 +168,15 @@ export default function BudgetsPage() {
         </div>
 
         <Button
-          onClick={() => setIsModalOpen(true)}
-          className="w-full md:w-auto h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2"
+          onClick={() => !readOnly && setIsModalOpen(true)}
+          disabled={readOnly}
+          className={cn(
+            "w-full md:w-auto h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2",
+            readOnly && "opacity-50 grayscale cursor-not-allowed"
+          )}
         >
           <Plus size={18} />
-          <span>New Budget</span>
+          <span>{readOnly ? 'Locked' : 'New Budget'}</span>
         </Button>
 
         <CustomModal
@@ -207,8 +221,15 @@ export default function BudgetsPage() {
               {errors.limit && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.limit.message}</p>}
             </div>
 
-            <Button type="submit" className="w-full h-18 bg-primary text-primary-foreground hover:scale-[1.02] rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-2xl active:scale-95">
-              Save Goal
+            <Button 
+              type="submit" 
+              disabled={readOnly}
+              className={cn(
+                "w-full h-18 bg-primary text-primary-foreground hover:scale-[1.02] rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-2xl active:scale-95",
+                readOnly && "opacity-50 grayscale cursor-not-allowed"
+              )}
+            >
+              {readOnly ? 'Locked: Diagnostic Session' : 'Save Goal'}
             </Button>
           </form>
         </CustomModal>
@@ -289,8 +310,15 @@ export default function BudgetsPage() {
                       </div>
                       <Button
                         variant="ghost" size="icon"
-                        className="h-9 w-9 text-muted-foreground/30 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-all"
-                        onClick={() => setDeleteId(budget.id)}
+                        className={cn(
+                          "h-9 w-9 text-muted-foreground/30 rounded-lg transition-all",
+                          readOnly 
+                            ? "opacity-20 cursor-not-allowed" 
+                            : "hover:text-rose-600 hover:bg-rose-50"
+                        )}
+                        onClick={() => !readOnly && setDeleteId(budget.id)}
+                        disabled={readOnly}
+                        title={readOnly ? "Locked: Diagnostic Session" : "Delete"}
                       >
                         <Trash2 size={16} />
                       </Button>

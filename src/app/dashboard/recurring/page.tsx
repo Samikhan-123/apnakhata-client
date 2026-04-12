@@ -28,6 +28,7 @@ import { toast } from 'sonner';
 import { CustomModal } from '@/components/ui/CustomModal';
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 import { ErrorState } from '@/components/ui/ErrorState';
+import { useAuth } from '@/context/AuthContext';
 
 export default function RecurringPage() {
   const [patterns, setPatterns] = useState<any[]>([]);
@@ -38,6 +39,7 @@ export default function RecurringPage() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { currency, formatCurrency } = useCurrency();
+  const { readOnly } = useAuth();
 
   const {
     register,
@@ -64,6 +66,10 @@ export default function RecurringPage() {
   const frequency = watch('frequency');
 
   const handleForceSync = async () => {
+    if (readOnly) {
+      toast.error("Diagnostic Session: Mutation actions are disabled.");
+      return;
+    }
     toast.promise(
       (async () => {
         try {
@@ -109,6 +115,10 @@ export default function RecurringPage() {
   }, []);
 
   const onSubmit = async (data: RecurringTaskInput) => {
+    if (readOnly) {
+      toast.error("Diagnostic Session: Mutation actions are disabled.");
+      return;
+    }
     try {
       const executionDateTime = new Date(`${data.nextExecution}T12:00:00`);
       
@@ -130,6 +140,10 @@ export default function RecurringPage() {
   };
 
   const handleDelete = async () => {
+    if (readOnly) {
+      toast.error("Diagnostic Session: Mutation actions are disabled.");
+      return;
+    }
     if (!deleteId) return;
     setIsDeleting(true);
     try {
@@ -181,11 +195,15 @@ export default function RecurringPage() {
             <div className="h-8 w-[1px] bg-border/40" />
           
             <Button 
-              onClick={() => setIsModalOpen(true)}
-              className="w-full md:w-auto h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2"
+              onClick={() => !readOnly && setIsModalOpen(true)}
+              disabled={readOnly}
+              className={cn(
+                "w-full md:w-auto h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2",
+                readOnly && "opacity-50 grayscale cursor-not-allowed"
+              )}
             >
               <Plus size={18} />
-              <span>Add Task</span>
+              <span>{readOnly ? 'Locked' : 'Add Task'}</span>
             </Button>
           </div>
         </SlideIn>
@@ -334,8 +352,15 @@ export default function RecurringPage() {
                    </p>
                 </div>
 
-                <Button type="submit" className="w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all mt-4">
-                   Start Automated Task
+                <Button 
+                   type="submit" 
+                   disabled={readOnly}
+                   className={cn(
+                     "w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all mt-4",
+                     readOnly && "opacity-50 grayscale cursor-not-allowed"
+                   )}
+                >
+                   {readOnly ? 'Locked: Diagnostic Session' : 'Start Automated Task'}
                 </Button>
               </form>
           </CustomModal>
@@ -351,8 +376,9 @@ export default function RecurringPage() {
             variant="ghost" 
             className="h-10 px-6 rounded-xl font-bold text-muted-foreground/40 hover:text-primary transition-all text-[10px] uppercase tracking-widest" 
             onClick={handleForceSync}
+            disabled={readOnly}
           >
-            Force Sync
+            {readOnly ? 'Sync Disabled' : 'Force Sync'}
           </Button>
         </div>
 
@@ -451,8 +477,15 @@ export default function RecurringPage() {
                          <Button
                             variant="ghost"
                             size="icon"
-                            className="rounded-xl text-muted-foreground/20 hover:text-rose-600 hover:bg-rose-500/10 transition-all h-8 w-8 active:scale-90"
-                            onClick={() => setDeleteId(pattern.id)}
+                            className={cn(
+                              "rounded-xl transition-all h-8 w-8 active:scale-90",
+                              readOnly 
+                                ? "text-muted-foreground/10 cursor-not-allowed" 
+                                : "text-muted-foreground/20 hover:text-rose-600 hover:bg-rose-500/10"
+                            )}
+                            onClick={() => !readOnly && setDeleteId(pattern.id)}
+                            disabled={readOnly}
+                            title={readOnly ? "Locked: Diagnostic Session" : "Delete"}
                           >
                             <Trash2 size={16} />
                           </Button>

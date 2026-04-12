@@ -39,6 +39,7 @@ export const LedgerEntryForm = ({
   const [budgets, setBudgets] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { currency } = useCurrency();
+  const { readOnly } = useAuth();
 
   const isIncomeRequired = totalIncome <= 0;
 
@@ -114,6 +115,11 @@ export const LedgerEntryForm = ({
   }, [type, setValue, descriptionValue]);
 
   const onSubmit = async (values: LedgerEntryInput) => {
+    if (readOnly) {
+      toast.error("Diagnostic Session: Mutation actions are disabled.");
+      return;
+    }
+
     // Frontend Balance Validations
     if (values.type === 'EXPENSE' && !initialData) {
       if (totalIncome <= 0) {
@@ -378,10 +384,13 @@ export const LedgerEntryForm = ({
 
         <Button 
           type="submit" 
-          disabled={loading}
-          className="w-full h-16 sm:h-20 rounded-2xl sm:rounded-[2rem] font-black uppercase tracking-[0.3em] text-[10px] sm:text-xs shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-primary/20 hover:bg-primary transition-all active:scale-95 border-none"
+          disabled={loading || readOnly}
+          className={cn(
+            "w-full h-16 sm:h-20 rounded-2xl sm:rounded-[2rem] font-black uppercase tracking-[0.3em] text-[10px] sm:text-xs shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] hover:shadow-primary/20 hover:bg-primary transition-all active:scale-95 border-none",
+            readOnly && "opacity-50 grayscale cursor-not-allowed hover:bg-muted"
+          )}
         >
-          {loading ? 'Saving...' : (initialData ? 'Update Record' : 'Add to Records')}
+          {readOnly ? 'Locked: Diagnostic Session' : (loading ? 'Saving...' : (initialData ? 'Update Record' : 'Add to Records'))}
         </Button>
       </form>
     </div>

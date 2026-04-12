@@ -54,6 +54,7 @@ export const viewport: Viewport = {
 };
 
 import { PWAInstallPrompt } from "@/components/features/PWAInstallPrompt";
+import { ImpersonationBanner } from "@/components/features/ImpersonationBanner";
 
 export default function RootLayout({
   children,
@@ -64,6 +65,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body className={inter.className}>
         <Providers>
+          <ImpersonationBanner />
           <ServiceWorkerRegistration />
           <PWAInstallPrompt />
           {children}

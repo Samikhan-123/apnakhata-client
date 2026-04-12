@@ -12,6 +12,8 @@ import { cn } from '@/lib/utils';
 import { categoryService } from '@/services/category.service';
 import { toast } from 'sonner';
 
+import { useAuth } from '@/context/AuthContext';
+
 const POPULAR_ICONS = [
   'ShoppingBag', 'Home', 'Car', 'Utensils', 'Coffee', 
   'Zap', 'Shield', 'Gift', 'Heart', 'Briefcase',
@@ -28,6 +30,7 @@ interface CategoryFormProps {
 export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
   const [loading, setLoading] = useState(false);
   const [count, setCount] = useState(0);
+  const { readOnly } = useAuth();
 
   const {
     register,
@@ -64,6 +67,11 @@ export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
   }, []);
 
   const onSubmit = async (data: CategoryInput) => {
+    if (readOnly) {
+      toast.error("Diagnostic Session: Mutation actions are disabled.");
+      return;
+    }
+
     if (!initialData && count >= 20) {
       toast.error('Category limit reached (Max 20).');
       return;
@@ -143,10 +151,13 @@ export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
 
       <Button 
         type="submit" 
-        className="w-full h-14 sm:h-16 rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50"
-        disabled={loading || count >= 20}
+        className={cn(
+          "w-full h-14 sm:h-16 rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-2xl shadow-primary/20 transition-all active:scale-95 disabled:opacity-50",
+          readOnly && "opacity-50 grayscale cursor-not-allowed hover:bg-muted"
+        )}
+        disabled={loading || count >= 20 || readOnly}
       >
-        {loading ? 'Saving...' : 'Save Category'}
+        {readOnly ? 'Locked: Diagnostic Session' : (loading ? 'Saving...' : 'Save Category')}
       </Button>
     </form>
   );

@@ -60,5 +60,15 @@ export const adminService = {
   cancelUserDeletion: async (id: string) => {
     const { data: response } = await api.patch(`/admin/users/${id}/cancel-deletion`);
     return response;
+  },
+
+  impersonateUser: async (id: string) => {
+    const { data: response } = await api.post(`/admin/users/${id}/impersonate`);
+    return response;
+  },
+
+  stopImpersonation: async () => {
+    const { data: response } = await api.post('/admin/impersonate/stop');
+    return response;
   }
 };
