@@ -75,42 +75,42 @@ export default function RegisterPage() {
       <div className="grid lg:grid-cols-2 min-h-screen pt-20">
         {/* Left Side - Hero */}
         <div className="hidden lg:flex flex-col justify-center p-24 bg-muted/20 relative overflow-hidden group">
-           <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop')] bg-cover bg-center opacity-8 group-hover:scale-105 transition-transform duration-1000" />
-           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
-           
-           <div className="relative z-10 space-y-12">
-              <div className="space-y-4">
-                 <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">New Journey</p>
-                 <h1 className="text-7xl font-black tracking-tighter leading-[0.9] text-foreground">
-                    Join the <br />
-                    <span className="text-primary italic">smart</span> <br />
-                    wealth club.
-                 </h1>
-                 <p className="text-lg text-muted-foreground font-bold max-w-sm leading-relaxed">
-                    Personalized, private, and privacy-first. Start tracking like a pro today.
-                 </p>
-              </div>
+          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2426&auto=format&fit=crop')] bg-cover bg-center opacity-8 group-hover:scale-105 transition-transform duration-1000" />
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-50" />
 
-              <div className="space-y-6">
-                 <div className="flex items-center gap-5 bg-card p-6 rounded-[2rem] border border-border/40 w-fit shadow-xl shadow-black/5 group-hover:-translate-y-1 transition-transform duration-500">
-                    <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary border border-primary/10">
-                       <ShieldCheck size={24} />
-                    </div>
-                    <div>
-                       <p className="font-black text-foreground tracking-tight">Enterprise Security</p>
-                       <p className="text-[10px] text-muted-foreground/40 font-black uppercase tracking-widest">End-to-End Encryption</p>
-                    </div>
-                 </div>
-              </div>
-           </div>
+          <div className="relative z-10 space-y-12">
+            <div className="space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">New Journey</p>
+              <h1 className="text-7xl font-black tracking-tighter leading-[0.9] text-foreground">
+                Join the <br />
+                <span className="text-primary italic">smart</span> <br />
+                wealth club.
+              </h1>
+              <p className="text-lg text-muted-foreground font-bold max-w-sm leading-relaxed">
+                Personalized, private, and privacy-first. Start tracking like a pro today.
+              </p>
+            </div>
 
-           <div className="absolute -left-20 -top-20 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
-           <div className="absolute -right-20 -bottom-20 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px] animate-pulse" />
+            <div className="space-y-6">
+              <div className="flex items-center gap-5 bg-card p-6 rounded-[2rem] border border-border/40 w-fit shadow-xl shadow-black/5 group-hover:-translate-y-1 transition-transform duration-500">
+                <div className="w-12 h-12 rounded-2xl bg-primary/5 flex items-center justify-center text-primary border border-primary/10">
+                  <ShieldCheck size={24} />
+                </div>
+                <div>
+                  <p className="font-black text-foreground tracking-tight">Enterprise Security</p>
+                  <p className="text-[10px] text-muted-foreground/40 font-black uppercase tracking-widest">End-to-End Encryption</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="absolute -left-20 -top-20 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
+          <div className="absolute -right-20 -bottom-20 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[150px] animate-pulse" />
         </div>
 
         {/* Right Side - Register Form */}
         <div className="flex items-center justify-center p-4 md:p-8 relative overflow-y-auto">
-          <FadeIn 
+          <FadeIn
             className="w-full max-w-md flex flex-col gap-6 md:gap-10 premium-card p-6 md:p-14 rounded-[2.5rem] md:rounded-[3.5rem] border-border/40 shadow-2xl shadow-primary/5 py-10 md:py-12"
           >
             <div className="space-y-3">
@@ -127,14 +127,14 @@ export default function RegisterPage() {
               </HeightChange>
 
               <div className="space-y-5">
-                 {/* Full Name */}
+                {/* Full Name */}
                 <div className="space-y-2.5">
                   <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1">Full Name</Label>
                   <div className="relative group">
-                     <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
-                     <Input 
-                      id="name" 
-                      placeholder="Enter your name" 
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
+                    <Input
+                      id="name"
+                      placeholder="Enter your name"
                       className={cn(
                         "h-14 pl-12 rounded-2xl bg-muted/30 border-none focus:bg-background focus:ring-2 focus:ring-primary/10 font-bold transition-all shadow-inner placeholder:text-muted-foreground/20",
                         errors.name && "ring-2 ring-rose-500/20"
@@ -153,11 +153,11 @@ export default function RegisterPage() {
                 <div className="space-y-2.5">
                   <Label htmlFor="email" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1">Email Address</Label>
                   <div className="relative group">
-                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
-                     <Input 
-                      id="email" 
-                      type="email" 
-                      placeholder="name@email.com" 
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="name@email.com"
                       className={cn(
                         "h-14 pl-12 rounded-2xl bg-muted/30 border-none focus:bg-background focus:ring-2 focus:ring-primary/10 font-bold transition-all shadow-inner placeholder:text-muted-foreground/20",
                         errors.email && "ring-2 ring-rose-500/20"
@@ -175,9 +175,9 @@ export default function RegisterPage() {
                 {/* stong Password */}
                 <div className="space-y-2.5">
                   <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1">Secure Password</Label>
-                  <PasswordInput 
-                    id="password" 
-                    placeholder="••••••••" 
+                  <PasswordInput
+                    id="password"
+                    placeholder="••••••••"
                     {...register('password')}
                     error={errors.password?.message}
                   />
@@ -187,28 +187,28 @@ export default function RegisterPage() {
                 <div className="space-y-2.5">
                   <Label htmlFor="baseCurrency" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1">Base Currency</Label>
                   <div className="relative group">
-                     <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors z-10" />
-                     <Select 
+                    <Globe className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors z-10" />
+                    <Select
                       onValueChange={(value) => setValue('baseCurrency', value)}
                       defaultValue="PKR"
-                     >
-                        <SelectTrigger className="h-14 pl-12 rounded-2xl bg-muted/30 border-none focus:bg-background focus:ring-2 focus:ring-primary/10 font-bold transition-all shadow-inner">
-                           <SelectValue placeholder="Select Currency" />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-2xl border-border/40 shadow-2xl p-1">
-                           {currencies.map((curr) => (
-                             <SelectItem key={curr.code} value={curr.code} className="rounded-xl focus:bg-primary/5 font-bold">
-                               {curr.code} - {curr.name}
-                             </SelectItem>
-                           ))}
-                        </SelectContent>
-                     </Select>
+                    >
+                      <SelectTrigger className="h-14 pl-12 rounded-2xl bg-muted/30 border-none focus:bg-background focus:ring-2 focus:ring-primary/10 font-bold transition-all shadow-inner">
+                        <SelectValue placeholder="Select Currency" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-border/40 shadow-2xl p-1">
+                        {currencies.map((curr) => (
+                          <SelectItem key={curr.code} value={curr.code} className="rounded-xl focus:bg-primary/5 font-bold">
+                            {curr.code} - {curr.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={loading}
                 className="w-full h-16 min-h-[4rem] rounded-[1.5rem] bg-foreground text-background hover:bg-primary hover:text-white font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-primary/5 transition-all group mt-6"
               >
@@ -227,34 +227,34 @@ export default function RegisterPage() {
             </form>
 
             <div className="space-y-8 pt-2">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border/40" />
-                  </div>
-                  <div className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.4em]">
-                    <span className="bg-card px-4 text-muted-foreground/30 text-center">Fast Registration</span>
-                  </div>
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-border/40" />
                 </div>
+                <div className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.4em]">
+                  <span className="bg-card px-4 text-muted-foreground/30 text-center">Fast Registration</span>
+                </div>
+              </div>
 
-                <Button 
-                  type="button"
-                  variant="outline" 
-                  onClick={() => handleGoogleLogin()}
-                  disabled={loading}
-                  className="w-full h-14 rounded-2xl border-border/60 bg-transparent hover:bg-muted/50 text-foreground font-bold transition-all gap-3 active:scale-95"
-                >
-                  <svg className="h-5 w-5" viewBox="0 0 24 24">
-                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
-                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
-                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
-                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
-                  </svg>
-                  <span className="text-xs uppercase tracking-widest font-black">Google Account</span>
-                </Button>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => handleGoogleLogin()}
+                disabled={loading}
+                className="w-full h-14 rounded-2xl border-border/60 bg-transparent hover:bg-muted/50 text-foreground font-bold transition-all gap-3 active:scale-95"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
+                </svg>
+                <span className="text-xs uppercase tracking-widest font-black">Google Account</span>
+              </Button>
 
-                <p className="text-center text-muted-foreground/60 font-bold text-sm">
-                  Already have an account? <Link href="/login" title="Login" className="text-primary hover:underline underline-offset-4">Login</Link>
-                </p>
+              <p className="text-center text-muted-foreground/60 font-bold text-sm">
+                Already have an account? <Link href="/login" title="Login" className="text-primary hover:underline underline-offset-4">Login</Link>
+              </p>
             </div>
           </FadeIn>
         </div>

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { adminService } from '@/services/admin.service';
-import { useCurrency } from '@/context/CurrencyContext';
+import { useCurrency, currencies } from '@/context/CurrencyContext';
 import { Users, ReceiptText, BarChart3, TrendingUp, ShieldAlert, ArrowUpRight, Scale, Globe, TrendingDown, DollarSign } from 'lucide-react';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { cn } from '@/lib/utils';
@@ -29,7 +29,7 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<any>(null);
   const [financialStats, setFinancialStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const { formatCurrency } = useCurrency();
+  const { currency, formatCurrency } = useCurrency();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -104,10 +104,10 @@ export default function AdminDashboardPage() {
              <div className="bg-primary/10 p-2 rounded-lg">
                 <ShieldAlert className="h-5 w-5 text-primary" />
              </div>
-             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Financial Intelligence</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Financial Overview</span>
           </div>
-          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">System Analytics</h1>
-          <p className="text-muted-foreground font-medium mt-2 text-lg">Cross-platform financial forensics and growth metrics.</p>
+          <h1 className="text-4xl font-black tracking-tight text-foreground sm:text-5xl">Platform Insights</h1>
+          <p className="text-muted-foreground font-medium mt-2 text-lg">Cross-platform financial snapshots and growth metrics.</p>
         </SlideIn>
       </header>
 
@@ -144,7 +144,7 @@ export default function AdminDashboardPage() {
           <div className="premium-card rounded-[2.5rem] p-8 border border-border/10 h-full">
              <div className="flex items-center justify-between mb-8">
                 <div>
-                  <h3 className="text-xl font-bold">Platform Monetary Flow</h3>
+                  <h3 className="text-xl font-bold">Platform Cash Flow</h3>
                   <p className="text-sm text-muted-foreground/60">Income vs Expenses (Last 30 Days)</p>
                 </div>
                 <div className="flex gap-4">
@@ -185,7 +185,11 @@ export default function AdminDashboardPage() {
                       axisLine={false} 
                       tickLine={false} 
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 600 }}
-                      tickFormatter={(val) => `${val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val}`}
+                      tickFormatter={(val: number) => {
+                        const symbol = currency === 'PKR' ? 'Rs' : (currencies.find((c: any) => c.code === currency)?.symbol || '');
+                        const formattedVal = val >= 1000 ? (val / 1000).toFixed(1) + 'k' : val;
+                        return `${symbol}${formattedVal}`;
+                      }}
                     />
                     <Tooltip 
                       contentStyle={{ 
@@ -364,7 +368,7 @@ export default function AdminDashboardPage() {
                   <p className="text-[10px] text-rose-600/60 mt-1">Operational burn rate</p>
                </div>
                <div className="p-6 bg-primary/5 rounded-3xl border border-primary/10 flex flex-col justify-center">
-                  <p className="text-xs font-bold text-primary mb-2 text-center">Export Full Forensic Audit</p>
+                  <p className="text-xs font-bold text-primary mb-2 text-center">Export Full Financial History</p>
                   <Button variant="outline" className="h-9 rounded-xl border-primary/20 text-primary hover:bg-primary/10">Generate Report</Button>
                </div>
             </div>

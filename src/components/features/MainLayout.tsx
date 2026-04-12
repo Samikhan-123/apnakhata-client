@@ -3,11 +3,40 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { MaintenanceOverlay } from './MaintenanceOverlay';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
+import { useAuth } from '@/context/AuthContext';
+import axios from 'axios';
 
 export const MainLayout = ({ children, isFixed = false }: { children: React.ReactNode, isFixed?: boolean }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isMaintenance, setIsMaintenance] = useState(false);
+  const { user } = useAuth();
+  const isAdmin = user?.role === 'ADMIN';
+
+  React.useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/status`);
+        if (data.success && data.data.maintenanceMode && !isAdmin) {
+          setIsMaintenance(true);
+        } else {
+          setIsMaintenance(false);
+        }
+      } catch (error) {
+        console.error('Status check failed', error);
+      }
+    };
+
+    checkStatus();
+    const interval = setInterval(checkStatus, 30000); // Poll every 30s
+    return () => clearInterval(interval);
+  }, [isAdmin]);
+
+  if (isMaintenance) {
+    return <MaintenanceOverlay />;
+  }
 
   return (
     <div className="flex min-h-screen bg-background text-foreground font-sans antialiased overflow-x-hidden">

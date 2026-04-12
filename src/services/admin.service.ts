@@ -40,5 +40,15 @@ export const adminService = {
   getFinancialStats: async () => {
     const { data } = await api.get('/admin/financial-stats');
     return data;
+  },
+
+  getSettings: async () => {
+    const { data } = await api.get('/admin/settings');
+    return data;
+  },
+
+  updateSettings: async (data: any) => {
+    const { data: response } = await api.patch('/admin/settings', data);
+    return response;
   }
 };
