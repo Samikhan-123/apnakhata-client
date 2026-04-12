@@ -16,6 +16,11 @@ export const adminService = {
     return response;
   },
 
+  batchUpdateUsers: async (ids: string[], data: { role?: string, isVerified?: boolean, isActive?: boolean }) => {
+    const { data: response } = await api.patch('/admin/users/batch', { ids, data });
+    return response;
+  },
+
   getUserDetail: async (id: string) => {
     const { data: response } = await api.get(`/admin/users/${id}`);
     return response;

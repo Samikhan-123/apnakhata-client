@@ -18,6 +18,8 @@ export default function UserManagementPage() {
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [paginationData, setPaginationData] = useState<any>(null);
+  const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  
   const [confirmConfig, setConfirmConfig] = useState<{
     isOpen: boolean;
     title: string;
@@ -43,6 +45,7 @@ export default function UserManagementPage() {
       if (response.success) {
         setUsers(response.data);
         setPaginationData(response.pagination);
+        setSelectedUsers(new Set()); // Reset on page change
       }
     } catch (error) {
       // Handled by interceptor
@@ -102,13 +105,52 @@ export default function UserManagementPage() {
     });
   };
 
+  // Multiple Selection Logic
+  const toggleSelectUser = (id: string) => {
+    const next = new Set(selectedUsers);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setSelectedUsers(next);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedUsers.size === users.length) {
+      setSelectedUsers(new Set());
+    } else {
+      setSelectedUsers(new Set(users.map(u => u.id)));
+    }
+  };
+
+  const handleBatchAction = (action: string, data: any) => {
+    setConfirmConfig({
+      isOpen: true,
+      title: `Batch Action: ${action}`,
+      description: `Are you sure you want to apply this action to ${selectedUsers.size} selected users?`,
+      loading: false,
+      onConfirm: async () => {
+        setConfirmConfig(prev => ({ ...prev, loading: true }));
+        try {
+          const response = await adminService.batchUpdateUsers(Array.from(selectedUsers), data);
+          if (response.success) {
+            toast.success(response.message || 'Batch update successful');
+            fetchUsers(currentPage);
+          }
+        } catch (error: any) {
+          toast.error(error.response?.data?.message || 'Batch update failed');
+        } finally {
+          setConfirmConfig(prev => ({ ...prev, isOpen: false, loading: false }));
+        }
+      }
+    });
+  };
+
   const filteredUsers = users.filter(u =>
     u.email.toLowerCase().includes(search.toLowerCase()) ||
     (u.name && u.name.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
-    <div className="flex flex-col h-full space-y-4 md:space-y-8">
+    <div className="flex flex-col h-full space-y-4 md:space-y-8 relative">
       <header className="flex-none">
         <SlideIn duration={0.5}>
           <div className="flex items-center gap-2 md:gap-3 mb-1 md:mb-2">
@@ -117,8 +159,25 @@ export default function UserManagementPage() {
             </div>
             <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-emerald-600">Command & Control</span>
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-4xl">User Registry</h1>
-          <p className="text-muted-foreground font-medium mt-1 text-xs md:text-sm">Manage platform identities and security clearances.</p>
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-4xl">User Registry</h1>
+              <p className="text-muted-foreground font-medium mt-1 text-xs md:text-sm">Manage platform identities and security clearances.</p>
+            </div>
+            {selectedUsers.size > 0 && (
+              <div className="bg-primary/5 border border-primary/20 px-4 py-2 rounded-2xl flex items-center gap-3">
+                 <span className="text-xs font-black text-primary uppercase tracking-widest">{selectedUsers.size} Selected</span>
+                 <Button 
+                   variant="ghost" 
+                   size="sm" 
+                   className="h-7 text-[10px] font-bold text-muted-foreground hover:text-rose-600 px-2"
+                   onClick={() => setSelectedUsers(new Set())}
+                 >
+                   Deselect All
+                 </Button>
+              </div>
+            )}
+          </div>
         </SlideIn>
       </header>
 
@@ -145,9 +204,17 @@ export default function UserManagementPage() {
         <FadeIn className="w-full" duration={0.7}>
           <div className="premium-card rounded-2xl md:rounded-[2rem] overflow-hidden border border-border/10">
             <div className="w-full overflow-x-auto sapphire-scrollbar pb-2">
-              <table className="w-full text-left border-collapse min-w-[1000px]">
+              <table className="w-full text-left border-collapse min-w-[1100px]">
                 <thead className="sticky top-0 z-20">
                   <tr className="bg-muted/90 backdrop-blur-xl border-b border-border/10">
+                    <th className="px-4 py-4 md:py-5 w-12 text-center">
+                       <input 
+                         type="checkbox" 
+                         className="h-4 w-4 rounded border-border/40 focus:ring-primary accent-primary cursor-pointer"
+                         checked={users.length > 0 && selectedUsers.size === users.length}
+                         onChange={toggleSelectAll}
+                       />
+                    </th>
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Platform Member</th>
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Status</th>
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Auth Role</th>
@@ -159,11 +226,22 @@ export default function UserManagementPage() {
                   {loading ? (
                     Array.from({ length: 8 }).map((_, i) => (
                       <tr key={i} className="animate-pulse">
-                        <td colSpan={5} className="px-6 md:px-8 py-5 md:py-6 h-16 md:h-20 bg-muted/5"></td>
+                        <td colSpan={6} className="px-6 md:px-8 py-5 md:py-6 h-16 md:h-20 bg-muted/5"></td>
                       </tr>
                     ))
                   ) : filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-primary/[0.02] transition-colors group">
+                    <tr key={user.id} className={cn(
+                      "hover:bg-primary/[0.02] transition-colors group",
+                      selectedUsers.has(user.id) && "bg-primary/[0.03]"
+                    )}>
+                      <td className="px-4 py-5 md:py-6 text-center">
+                        <input 
+                          type="checkbox" 
+                          className="h-4 w-4 rounded border-border/40 focus:ring-primary accent-primary cursor-pointer"
+                          checked={selectedUsers.has(user.id)}
+                          onChange={() => toggleSelectUser(user.id)}
+                        />
+                      </td>
                       <td className="px-6 md:px-8 py-5 md:py-6">
                         <div className="flex items-center gap-4">
                           <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/5 rounded-xl md:rounded-2xl flex items-center justify-center border border-primary/10 font-black text-primary sapphire-glow/20">
@@ -271,6 +349,87 @@ export default function UserManagementPage() {
           </div>
         </FadeIn>
       </div>
+
+      {/* Floating Batch Action Bar */}
+      {selectedUsers.size > 0 && (
+        <div className="fixed bottom-4 md:bottom-8 left-1/2 -translate-x-1/2 z-50 animate-in fade-in slide-in-from-bottom-4 duration-500 w-[92%] md:w-auto">
+          <div className="premium-card bg-background/90 backdrop-blur-3xl border border-primary/20 rounded-2xl md:rounded-[2rem] px-4 md:px-8 py-3 md:py-4 shadow-2xl sapphire-glow flex flex-col sm:flex-row items-center gap-3 md:gap-6">
+            <div className="flex items-center gap-3 md:gap-4 sm:border-r border-border/40 sm:pr-6 w-full sm:w-auto justify-between sm:justify-start">
+               <div className="flex items-center gap-3">
+                 <div className="h-8 w-8 md:h-10 md:w-10 bg-primary/10 rounded-lg md:rounded-xl flex items-center justify-center text-primary font-black text-xs md:text-base">
+                   {selectedUsers.size}
+                 </div>
+                 <div className="hidden sm:block">
+                    <p className="text-[10px] md:text-xs font-black uppercase tracking-widest text-foreground leading-none">Users Selected</p>
+                    <p className="text-[8px] md:text-[10px] font-bold text-muted-foreground mt-1">Bulk configuration active</p>
+                 </div>
+                 <div className="sm:hidden">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-foreground leading-none">Selected</p>
+                 </div>
+               </div>
+               
+               <Button 
+                 variant="ghost" 
+                 size="icon" 
+                 className="h-8 w-8 rounded-full hover:bg-muted sm:hidden"
+                 onClick={() => setSelectedUsers(new Set())}
+               >
+                 <UserX className="h-3.5 w-3.5 text-muted-foreground" />
+               </Button>
+            </div>
+
+            <div className="flex items-center gap-2 md:gap-3 overflow-x-auto w-full sm:w-auto no-scrollbar pb-1 sm:pb-0">
+               <Button 
+                 variant="ghost" 
+                 size="sm" 
+                 className="h-9 md:h-10 px-3 md:px-4 rounded-lg md:rounded-xl hover:bg-emerald-500/10 text-emerald-600 font-bold gap-2 text-[10px] md:text-xs whitespace-nowrap"
+                 onClick={() => handleBatchAction('Verify All', { isVerified: true })}
+               >
+                 <CheckCircle2 className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                 <span className="hidden xs:inline">Verify</span>
+               </Button>
+               <Button 
+                 variant="ghost" 
+                 size="sm" 
+                 className="h-9 md:h-10 px-3 md:px-4 rounded-lg md:rounded-xl hover:bg-rose-500/10 text-rose-600 font-bold gap-2 text-[10px] md:text-xs whitespace-nowrap"
+                 onClick={() => handleBatchAction('Ban All', { isActive: false })}
+               >
+                 <Ban className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                 <span className="hidden xs:inline">Ban</span>
+               </Button>
+               <Button 
+                 variant="ghost" 
+                 size="sm" 
+                 className="h-9 md:h-10 px-3 md:px-4 rounded-lg md:rounded-xl hover:bg-primary/10 text-primary font-bold gap-2 text-[10px] md:text-xs whitespace-nowrap"
+                 onClick={() => handleBatchAction('Change Role: ADMIN', { role: 'ADMIN' })}
+               >
+                 <Shield className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                 <span className="hidden xs:inline">Admin</span>
+               </Button>
+               <Button 
+                 variant="ghost" 
+                 size="sm" 
+                 className="h-9 md:h-10 px-3 md:px-4 rounded-lg md:rounded-xl hover:bg-muted text-muted-foreground font-bold gap-2 text-[10px] md:text-xs whitespace-nowrap"
+                 onClick={() => handleBatchAction('Change Role: USER', { role: 'USER' })}
+               >
+                 <Activity className="h-3.5 w-3.5 md:h-4 md:w-4" />
+                 <span className="hidden xs:inline">User</span>
+               </Button>
+            </div>
+            
+            <div className="hidden sm:block pl-4">
+               <Button 
+                 variant="ghost" 
+                 size="icon" 
+                 className="h-10 w-10 rounded-full hover:bg-muted"
+                 onClick={() => setSelectedUsers(new Set())}
+               >
+                 <UserX className="h-4 w-4 text-muted-foreground" />
+               </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <ConfirmDialog
         isOpen={confirmConfig.isOpen}
