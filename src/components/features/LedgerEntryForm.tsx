@@ -7,6 +7,7 @@ import { ledgerEntrySchema, LedgerEntryInput } from '@/lib/validations';
 import { ledgerEntryService } from '../../services/ledger-entry.service';
 import { categoryService } from '../../services/category.service';
 import { budgetService } from '../../services/budget.service';
+import { useAuth } from '@/context/AuthContext';
 import { useCurrency } from '@/context/CurrencyContext';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
