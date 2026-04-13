@@ -20,11 +20,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from '@/components/ui/dropdown-menu';
+import { FileDown, FileSpreadsheet, FileText, Printer, MoreVertical } from 'lucide-react';
 
 interface LedgerFiltersProps {
   onFilterChange: (filters: any) => void;
   categories: any[];
-  onExport: () => void;
+  onExport: (format: 'csv' | 'excel' | 'pdf') => void;
   currentFilters?: any;
 }
 
@@ -189,14 +198,45 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
 
         <div className="hidden lg:block h-6 w-px bg-border/60 mx-2" />
 
-        <Button 
-          onClick={onExport}
-          variant="outline"
-          className="h-11 rounded-xl gap-2 font-bold px-6 active:scale-95 transition-all text-xs"
-        >
-          <Download className="h-4 w-4" />
-          Export CSV
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="outline"
+              className="h-11 rounded-xl gap-2 font-bold px-6 active:scale-95 transition-all text-xs border-primary/20 hover:border-primary/40 text-primary bg-primary/5"
+            >
+              <Download className="h-4 w-4" />
+              Export Records
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-[200px] rounded-2xl p-2 shadow-2xl border-border/40">
+            <DropdownMenuLabel className="px-3 py-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Choose Format</DropdownMenuLabel>
+            <DropdownMenuSeparator className="opacity-50" />
+            <DropdownMenuItem 
+              onClick={() => onExport('excel')}
+              className="rounded-xl flex items-center gap-3 px-3 py-2.5 cursor-pointer data-[highlighted]:bg-muted/50"
+            >
+              <div className="h-8 w-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-600">
+                <FileSpreadsheet className="h-4 w-4" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-bold">Excel Records (.xls)</span>
+              </div>
+            </DropdownMenuItem>
+
+            <DropdownMenuItem 
+              onClick={() => onExport('pdf')}
+              className="rounded-xl flex items-center gap-3 px-3 py-2.5 cursor-pointer data-[highlighted]:bg-muted/50"
+            >
+              <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                <FileText className="h-4 w-4" />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xs font-bold">Statement PDF (.pdf)</span>
+                <span className="text-[9px] font-medium text-muted-foreground uppercase"></span>
+              </div>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );

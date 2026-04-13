@@ -114,7 +114,7 @@ export const Header = ({ onMenuClick }: HeaderProps) => {
               </Avatar>
               <div className="text-left hidden lg:block pr-1">
                 <p className="text-[11px] font-black leading-none text-foreground mb-0.5">{user?.name}</p>
-                <p className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest">Premium Member</p>
+                {/* <p className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest">Premium Member</p> */}
               </div>
               <ChevronDown className="h-4 w-4 text-muted-foreground/60 hidden md:block" />
             </Button>

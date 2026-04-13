@@ -12,8 +12,8 @@ import { cn } from '@/lib/utils';
 // --- Motion Definitions (Senior Standard) ---
 const fadeInUp: Variants = {
   initial: { opacity: 0, y: 20 },
-  whileInView: { 
-    opacity: 1, 
+  whileInView: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] }
   }
@@ -57,7 +57,7 @@ function SpotlightCard({ children, className }: { children: React.ReactNode, cla
 function RetroGrid() {
   return (
     <div className="absolute inset-0 z-0 overflow-hidden [perspective:200px] pointer-events-none opacity-[0.05] dark:opacity-50 bg-primary/5">
-      <motion.div 
+      <motion.div
         animate={{ translateY: [0, 40] }}
         transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
         className="absolute inset-0 [transform:rotateX(35deg)]"
@@ -78,11 +78,11 @@ function BackgroundBeams() {
     <div className="absolute inset-0 pointer-events-none overflow-hidden z-0 opacity-20">
       {[1, 2, 3].map((v) => (
         <motion.div
-           key={v}
-           initial={{ top: `${20 * v}%`, left: '-10%', opacity: 0 }}
-           animate={{ left: '110%', opacity: [0, 1, 0] }}
-           transition={{ duration: 10 + v * 2, repeat: Infinity, delay: v * 3, ease: "linear" }}
-           className="absolute h-[1px] w-[20%] bg-gradient-to-r from-transparent via-primary to-transparent blur-[2px]"
+          key={v}
+          initial={{ top: `${20 * v}%`, left: '-10%', opacity: 0 }}
+          animate={{ left: '110%', opacity: [0, 1, 0] }}
+          transition={{ duration: 10 + v * 2, repeat: Infinity, delay: v * 3, ease: "linear" }}
+          className="absolute h-[1px] w-[20%] bg-gradient-to-r from-transparent via-primary to-transparent blur-[2px]"
         />
       ))}
     </div>
@@ -111,12 +111,12 @@ import { useAuth } from '@/context/AuthContext';
 // ... (in LandingPage component)
 export default function LandingPage() {
   const { user } = useAuth();
-  
+
   return (
     <div className="min-h-screen bg-background text-foreground font-sans selection:bg-primary/20 overflow-x-hidden relative">
       {/* Pro Grain Overlay */}
       <div className="fixed inset-0 pointer-events-none z-[9999] opacity-[0.03] dark:opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] brightness-100 contrast-150" />
-      
+
       <PublicHeader />
 
       {/* Hero Section - Professional & Theme-Aware */}
@@ -125,15 +125,15 @@ export default function LandingPage() {
         <div className="absolute inset-0 z-0 pointer-events-none">
           <RetroGrid />
           <BackgroundBeams />
-          
+
           <div className="absolute top-[10%] left-[10%] w-[50rem] h-[50rem] bg-primary/5 dark:bg-primary/20 rounded-full blur-[160px] opacity-40 animate-float" />
           <div className="absolute bottom-[20%] right-[10%] w-[40rem] h-[40rem] bg-sky-500/5 dark:bg-sky-500/10 rounded-full blur-[140px] opacity-30" />
-          
+
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,hsl(var(--primary)/0.03)_0%,transparent_70%)]" />
         </div>
-        
+
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          <motion.div 
+          <motion.div
             variants={fadeInUp}
             initial="initial"
             whileInView="whileInView"
@@ -143,22 +143,22 @@ export default function LandingPage() {
             <Zap className="h-3 w-3 fill-current" />
             The Clarity Your Money Deserves
           </motion.div>
-          
-          <motion.h1 
+
+          <motion.h1
             initial={{ opacity: 0, scale: 0.98, y: 20 }}
             whileInView={{ opacity: 1, scale: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-            className="text-4xl sm:text-6xl md:text-[8.5rem] font-black tracking-tighter leading-[0.9] md:leading-[0.82] mb-10 relative"
+            className="text-4xl sm:text-6xl md:text-[6.5rem] font-black tracking-tighter leading-[0.9] md:leading-[0.82] mb-10 relative"
           >
             <span className="relative z-10">Don't worry about the paper. </span><br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-500 to-sky-500 italic relative z-10 py-2">
-               Take charge of your past.
-               <div className="absolute -bottom-2 left-0 w-full h-1 bg-primary/20 blur-sm rounded-full" />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-indigo-500 to-sky-500  relative z-10 py-2">
+              Take charge of your past.
+              <div className="absolute -bottom-2 left-0 w-full h-1 bg-primary/20 blur-sm rounded-full" />
             </span>
           </motion.h1>
 
-          <motion.p 
+          <motion.p
             variants={fadeInUp}
             initial="initial"
             whileInView="whileInView"
@@ -169,16 +169,16 @@ export default function LandingPage() {
             No more messy paper lines or forgetting where your money went. Just add your monthly income, track daily expenses, and let Apna Khata handle the rest.
           </motion.p>
 
-          <motion.div 
-             variants={fadeInUp}
-             initial="initial"
-             whileInView="whileInView"
-             viewport={{ once: true }}
-             transition={{ delay: 0.4 }}
-             className="flex flex-col sm:flex-row items-center justify-center gap-6"
+          <motion.div
+            variants={fadeInUp}
+            initial="initial"
+            whileInView="whileInView"
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+            className="flex flex-col sm:flex-row items-center justify-center gap-6"
           >
             {user ? (
-               <Link href="/dashboard">
+              <Link href="/dashboard">
                 <Button size="lg" className="h-16 px-10 rounded-2xl bg-primary text-white hover:bg-primary/90 text-base font-black transition-all shadow-[0_20px_50px_rgba(var(--primary-rgb),0.3)] active:scale-95 group relative overflow-hidden">
                   <span className="relative z-10 flex items-center">
                     Return to Dashboard
@@ -199,8 +199,8 @@ export default function LandingPage() {
               </Link>
             )}
             <div className="flex flex-col items-center sm:items-start opacity-60">
-               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Trusted by developers</p>
-               <p className="text-xs font-bold text-muted-foreground leading-none mt-1">Start tracking in seconds</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Trusted by developers</p>
+              <p className="text-xs font-bold text-muted-foreground leading-none mt-1">Start tracking in seconds</p>
             </div>
           </motion.div>
         </div>
@@ -210,9 +210,9 @@ export default function LandingPage() {
       <section className="py-40 relative overflow-hidden bg-muted/20 border-y border-border/40">
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] -z-10" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-sky-500/5 rounded-full blur-[140px] -z-10" />
-        
+
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <motion.div 
+          <motion.div
             initial="initial"
             whileInView="whileInView"
             viewport={{ once: true }}
@@ -220,7 +220,7 @@ export default function LandingPage() {
             className="text-center mb-24 space-y-4"
           >
             <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-[10px] font-black uppercase tracking-[0.3em] border border-primary/20">
-               <SparklesIcon size={12} className="fill-current" /> Built for Reliability
+              <SparklesIcon size={12} className="fill-current" /> Built for Reliability
             </motion.div>
             <motion.h2 variants={fadeInUp} className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9]">
               Accuracy you can <br />
@@ -228,7 +228,7 @@ export default function LandingPage() {
             </motion.h2>
           </motion.div>
 
-          <motion.div 
+          <motion.div
             initial="initial"
             whileInView="whileInView"
             viewport={{ once: true }}
@@ -250,7 +250,7 @@ export default function LandingPage() {
                       <Wallet size={40} />
                     </div>
                     <div className="space-y-4">
-                      <h3 className="text-4xl md:text-5xl font-black tracking-tighter leading-[0.9]">Professional <br/>Ledger Standards</h3>
+                      <h3 className="text-4xl md:text-5xl font-black tracking-tighter leading-[0.9]">Professional <br />Ledger Standards</h3>
                       <p className="text-muted-foreground dark:text-white/60 font-bold text-lg leading-relaxed max-w-sm">Move beyond messy paper trails. Experience a multi-threaded financial engine built for industrial-grade precision.</p>
                     </div>
                   </div>
@@ -274,7 +274,7 @@ export default function LandingPage() {
                   <div className="absolute -right-10 -bottom-10 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:scale-110 transition-transform duration-700">
                     <Lock size={120} className="md:w-[200px] md:h-[200px]" strokeWidth={1} />
                   </div>
-                  
+
                   <div className="w-24 h-24 bg-emerald-500/10 rounded-[2rem] flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0 border border-emerald-500/20 group-hover:rotate-3 transition-all relative z-10">
                     <ShieldCheck size={48} />
                   </div>
@@ -288,56 +288,56 @@ export default function LandingPage() {
 
             {/* Cell 3: Live Analytics - Amber/Gold Theme */}
             <motion.div variants={fadeInUp} className="relative group">
-               <SpotlightCard className="h-full rounded-[3.5rem] transition-all duration-500 overflow-hidden border border-border/50">
-                  <div className="relative h-full bg-card dark:bg-slate-900 p-6 md:p-8 flex flex-col justify-between group">
-                    {/* Background Icon Detail */}
-                    <div className="absolute top-0 right-0 p-4 md:p-6 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-700">
-                      <Activity size={100} className="md:w-[140px] md:h-[140px]" strokeWidth={1} />
-                    </div>
-
-                    <div className="flex gap-2 h-20 items-end relative z-10">
-                       {[0.4, 0.7, 0.5, 0.9, 0.6, 0.8].map((h, i) => (
-                         <motion.div 
-                          key={i} 
-                          animate={{ height: [`${h * 100}%`, `${(h * 0.7) * 100}%`, `${h * 100}%`] }}
-                          transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }}
-                          className="flex-1 bg-amber-500/20 rounded-t-xl border-t border-amber-500/40"
-                         />
-                       ))}
-                    </div>
-                    <div className="relative z-10 mt-auto">
-                      <h5 className="font-black tracking-tighter text-3xl text-amber-600 dark:text-amber-500 mb-2 leading-none">Live Analytics</h5>
-                      <p className="text-amber-600/40 dark:text-amber-500/40 font-black text-[10px] uppercase tracking-[0.3em]">Real-time vectors</p>
-                    </div>
+              <SpotlightCard className="h-full rounded-[3.5rem] transition-all duration-500 overflow-hidden border border-border/50">
+                <div className="relative h-full bg-card dark:bg-slate-900 p-6 md:p-8 flex flex-col justify-between group">
+                  {/* Background Icon Detail */}
+                  <div className="absolute top-0 right-0 p-4 md:p-6 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:translate-x-2 group-hover:translate-y-2 transition-transform duration-700">
+                    <Activity size={100} className="md:w-[140px] md:h-[140px]" strokeWidth={1} />
                   </div>
-               </SpotlightCard>
+
+                  <div className="flex gap-2 h-20 items-end relative z-10">
+                    {[0.4, 0.7, 0.5, 0.9, 0.6, 0.8].map((h, i) => (
+                      <motion.div
+                        key={i}
+                        animate={{ height: [`${h * 100}%`, `${(h * 0.7) * 100}%`, `${h * 100}%`] }}
+                        transition={{ repeat: Infinity, duration: 1.5, delay: i * 0.2 }}
+                        className="flex-1 bg-amber-500/20 rounded-t-xl border-t border-amber-500/40"
+                      />
+                    ))}
+                  </div>
+                  <div className="relative z-10 mt-auto">
+                    <h5 className="font-black tracking-tighter text-3xl text-amber-600 dark:text-amber-500 mb-2 leading-none">Live Analytics</h5>
+                    <p className="text-amber-600/40 dark:text-amber-500/40 font-black text-[10px] uppercase tracking-[0.3em]">Real-time vectors</p>
+                  </div>
+                </div>
+              </SpotlightCard>
             </motion.div>
 
             {/* Cell 4: Founder Spotlight - Amethyst/Primary Theme */}
             <motion.div variants={fadeInUp} className="relative group">
-               <SpotlightCard className="h-full rounded-[3.5rem] transition-all duration-500 overflow-hidden border border-border/50">
-                  <div className="relative h-full bg-card dark:bg-indigo-950 p-6 md:p-8 flex flex-col justify-between group">
-                    {/* Background Icon Detail */}
-                    <div className="absolute bottom-0 right-0 p-4 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:scale-125 transition-transform duration-700">
-                      <Code size={100} className="md:w-[160px] md:h-[160px]" strokeWidth={1} />
-                    </div>
+              <SpotlightCard className="h-full rounded-[3.5rem] transition-all duration-500 overflow-hidden border border-border/50">
+                <div className="relative h-full bg-card dark:bg-indigo-950 p-6 md:p-8 flex flex-col justify-between group">
+                  {/* Background Icon Detail */}
+                  <div className="absolute bottom-0 right-0 p-4 opacity-[0.03] dark:opacity-5 pointer-events-none group-hover:scale-125 transition-transform duration-700">
+                    <Code size={100} className="md:w-[160px] md:h-[160px]" strokeWidth={1} />
+                  </div>
 
-                    <div className="relative z-10">
-                       <div className="w-32 h-32 rounded-3xl bg-indigo-500/10 border border-indigo-400/20 overflow-hidden group-hover:border-indigo-400/40 transition-colors relative mb-6 shadow-2xl">
-                          <img 
-                            src="/images/developer.png" 
-                            alt="Sami Khan" 
-                            className="object-cover w-full h-full grayscale group-hover:grayscale-0 object-top transition-all duration-700 scale-110"
-                          />
-                          <div className="absolute inset-0 bg-indigo-500/10 group-hover:opacity-0 transition-opacity" />
-                       </div>
-                    </div>
-                    <div className="relative z-10">
-                      <h5 className="font-black tracking-tighter text-3xl text-indigo-600 dark:text-indigo-300 leading-none">Sami Khan</h5>
-                      <p className="text-indigo-600/60 dark:text-indigo-400 font-black text-[10px] uppercase tracking-[0.3em] mt-2">Founding Developer</p>
+                  <div className="relative z-10">
+                    <div className="w-32 h-32 rounded-3xl bg-indigo-500/10 border border-indigo-400/20 overflow-hidden group-hover:border-indigo-400/40 transition-colors relative mb-6 shadow-2xl">
+                      <img
+                        src="/images/developer.png"
+                        alt="Sami Khan"
+                        className="object-cover w-full h-full grayscale group-hover:grayscale-0 object-top transition-all duration-700 scale-110"
+                      />
+                      <div className="absolute inset-0 bg-indigo-500/10 group-hover:opacity-0 transition-opacity" />
                     </div>
                   </div>
-               </SpotlightCard>
+                  <div className="relative z-10">
+                    <h5 className="font-black tracking-tighter text-3xl text-indigo-600 dark:text-indigo-300 leading-none">Sami Khan</h5>
+                    <p className="text-indigo-600/60 dark:text-indigo-400 font-black text-[10px] uppercase tracking-[0.3em] mt-2">Founding Developer</p>
+                  </div>
+                </div>
+              </SpotlightCard>
             </motion.div>
           </motion.div>
         </div>
@@ -348,7 +348,7 @@ export default function LandingPage() {
         <BackgroundBeams />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_50%,hsl(var(--primary)/0.03),transparent_50%)]" />
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <motion.div 
+          <motion.div
             initial="initial"
             whileInView="whileInView"
             viewport={{ once: true }}
@@ -379,54 +379,54 @@ export default function LandingPage() {
                 ))}
               </div>
             </div>
-            
+
             <motion.div variants={fadeInUp} className="relative">
               <div className="absolute -inset-10 bg-gradient-to-r from-primary/10 to-sky-500/10 rounded-[5rem] blur-[80px] animate-pulse" />
               <div className="relative bg-card border border-border/50 rounded-[4rem] p-3 shadow-2xl rotate-2 hover:rotate-0 transition-all duration-1000 group">
                 <div className="bg-background rounded-[3.5rem] p-12 space-y-12 shadow-inner overflow-hidden relative">
-                   {/* Background Decoration */}
-                   <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none group-hover:scale-125 transition-transform duration-700">
-                     <Zap size={200} />
-                   </div>
+                  {/* Background Decoration */}
+                  <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none group-hover:scale-125 transition-transform duration-700">
+                    <Zap size={200} />
+                  </div>
 
-                   <div className="flex justify-between items-center border-b border-border/50 pb-10 relative z-10">
-                     <div className="space-y-3">
-                       <div className="w-20 h-2 bg-primary/20 rounded-full" />
-                       <div className="w-32 h-6 bg-foreground rounded-full" />
-                     </div>
-                     <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center border border-primary/20">
-                       <TrendingUp className="text-primary h-10 w-10" />
-                     </div>
-                   </div>
-                   
-                   <div className="space-y-8 relative z-10">
-                      <div className="h-20 bg-muted/20 rounded-3xl flex items-center px-8 border border-border/50 tracking-tighter font-black text-lg text-muted-foreground/40 uppercase">
-                         Analytical Pulse Active
-                      </div>
-                      <div className="grid grid-cols-2 gap-6">
-                        <div className="h-32 bg-primary/5 rounded-[2.5rem] border border-primary/10 flex flex-col items-center justify-center gap-2">
-                           <span className="text-primary font-black text-xl tabular-nums">+92%</span>
-                           <span className="text-[10px] font-black uppercase tracking-widest text-primary/40">Accuracy</span>
-                        </div>
-                        <div className="h-32 bg-emerald-500/5 rounded-[2.5rem] border border-emerald-500/10 flex flex-col items-center justify-center gap-2">
-                            <span className="text-emerald-500 font-black text-xl tabular-nums">1.2ms</span>
-                            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/40">Latency</span>
-                        </div>
-                      </div>
-                      <div className="h-40 bg-primary border border-primary/20 rounded-[2.5rem] flex flex-col items-center justify-center p-8 text-center shadow-xl shadow-primary/20 group/sync overflow-hidden">
-                         <motion.div 
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                          className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-md"
-                         >
-                           <CheckCircle2 size={32} className="text-white" />
-                         </motion.div>
-                         <p className="text-white font-black uppercase tracking-[0.3em] text-xs">Sync Complete</p>
-                         <p className="text-white/60 font-bold text-sm mt-1">Ready for review</p>
+                  <div className="flex justify-between items-center border-b border-border/50 pb-10 relative z-10">
+                    <div className="space-y-3">
+                      <div className="w-20 h-2 bg-primary/20 rounded-full" />
+                      <div className="w-32 h-6 bg-foreground rounded-full" />
+                    </div>
+                    <div className="w-20 h-20 bg-primary/10 rounded-[2rem] flex items-center justify-center border border-primary/20">
+                      <TrendingUp className="text-primary h-10 w-10" />
+                    </div>
+                  </div>
 
-                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/sync:animate-shimmer" />
+                  <div className="space-y-8 relative z-10">
+                    <div className="h-20 bg-muted/20 rounded-3xl flex items-center px-8 border border-border/50 tracking-tighter font-black text-lg text-muted-foreground/40 uppercase">
+                      Analytical Pulse Active
+                    </div>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="h-32 bg-primary/5 rounded-[2.5rem] border border-primary/10 flex flex-col items-center justify-center gap-2">
+                        <span className="text-primary font-black text-xl tabular-nums">+92%</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-primary/40">Accuracy</span>
                       </div>
-                   </div>
+                      <div className="h-32 bg-emerald-500/5 rounded-[2.5rem] border border-emerald-500/10 flex flex-col items-center justify-center gap-2">
+                        <span className="text-emerald-500 font-black text-xl tabular-nums">1.2ms</span>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-emerald-500/40">Latency</span>
+                      </div>
+                    </div>
+                    <div className="h-40 bg-primary border border-primary/20 rounded-[2.5rem] flex flex-col items-center justify-center p-8 text-center shadow-xl shadow-primary/20 group/sync overflow-hidden">
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                        className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mb-4 backdrop-blur-md"
+                      >
+                        <CheckCircle2 size={32} className="text-white" />
+                      </motion.div>
+                      <p className="text-white font-black uppercase tracking-[0.3em] text-xs">Sync Complete</p>
+                      <p className="text-white/60 font-bold text-sm mt-1">Ready for review</p>
+
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/sync:animate-shimmer" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </motion.div>
@@ -437,7 +437,7 @@ export default function LandingPage() {
       {/* Trust & Modern Architecture */}
       <section className="py-40 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <motion.div 
+          <motion.div
             initial="initial"
             whileInView="whileInView"
             viewport={{ once: true }}
@@ -451,18 +451,18 @@ export default function LandingPage() {
             ].map((trust, i) => (
               <motion.div key={i} variants={fadeInUp} className="group relative">
                 <div className="premium-card p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] h-full flex flex-col justify-between border-border/50 bg-card/40 backdrop-blur-3xl overflow-hidden hover:bg-card transition-all duration-700">
-                   {/* Huge Background Icon */}
-                   <div className="absolute -right-4 -bottom-4 md:-right-8 md:-bottom-8 opacity-[0.02] dark:opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
-                     <trust.bgIcon size={120} className="md:w-[240px] md:h-[240px]" />
-                   </div>
+                  {/* Huge Background Icon */}
+                  <div className="absolute -right-4 -bottom-4 md:-right-8 md:-bottom-8 opacity-[0.02] dark:opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-1000">
+                    <trust.bgIcon size={120} className="md:w-[240px] md:h-[240px]" />
+                  </div>
 
-                   <div className={cn("w-20 h-20 rounded-[1.5rem] flex items-center justify-center border border-current/10 mb-10 transition-all duration-700 group-hover:scale-110 group-hover:rotate-3", trust.theme)}>
-                     <trust.icon size={36} />
-                   </div>
-                   <div className="space-y-4 relative z-10">
-                     <h4 className="text-4xl font-black tracking-tighter leading-none">{trust.title}</h4>
-                     <p className="text-muted-foreground font-bold text-base leading-relaxed">{trust.desc}</p>
-                   </div>
+                  <div className={cn("w-20 h-20 rounded-[1.5rem] flex items-center justify-center border border-current/10 mb-10 transition-all duration-700 group-hover:scale-110 group-hover:rotate-3", trust.theme)}>
+                    <trust.icon size={36} />
+                  </div>
+                  <div className="space-y-4 relative z-10">
+                    <h4 className="text-4xl font-black tracking-tighter leading-none">{trust.title}</h4>
+                    <p className="text-muted-foreground font-bold text-base leading-relaxed">{trust.desc}</p>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -474,13 +474,13 @@ export default function LandingPage() {
       <section className="py-40 relative overflow-hidden rounded-t-[5rem] border-t border-border/40">
         <div className="absolute inset-0 bg-background" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_0%_0%,hsl(var(--primary)/0.03)_0%,transparent_50%)]" />
-        
+
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <motion.div 
-            initial="initial" 
-            whileInView="whileInView" 
-            viewport={{ once: true }} 
-            variants={staggerContainer} 
+          <motion.div
+            initial="initial"
+            whileInView="whileInView"
+            viewport={{ once: true }}
+            variants={staggerContainer}
             className="grid grid-cols-1 lg:grid-cols-2 gap-24 items-start"
           >
             <div className="space-y-10 group">
@@ -488,8 +488,8 @@ export default function LandingPage() {
                 <SparklesIcon size={12} className="fill-current" /> Assistance
               </div>
               <motion.h2 variants={fadeInUp} className="text-6xl md:text-8xl font-black tracking-tighter leading-[0.85]">
-                Frequently <br /> 
-                <span className="italic opacity-30 group-hover:opacity-100 transition-opacity">Encountered</span> <br /> 
+                Frequently <br />
+                <span className="italic opacity-30 group-hover:opacity-100 transition-opacity">Encountered</span> <br />
                 Questions.
               </motion.h2>
               <p className="text-muted-foreground text-xl font-bold max-w-sm leading-relaxed">Everything you need to know about the most reliable expense tracker.</p>
@@ -502,13 +502,13 @@ export default function LandingPage() {
                 { q: 'Is it free to use?', a: 'Apna Khata offers a robust free tier for personal use. Professional tools for all.' }
               ].map((faq, idx) => (
                 <motion.div key={idx} variants={fadeInUp} className="group bg-card border border-border/50 rounded-[2.5rem] p-10 hover:border-primary/50 transition-all cursor-pointer relative overflow-hidden shadow-sm hover:shadow-xl">
-                   <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none">
-                      <SparklesIcon size={80} className="text-primary" />
-                   </div>
-                   <h4 className="text-3xl font-black tracking-tighter mb-4 flex items-center gap-4 group-hover:text-primary transition-colors">
-                     <span className="text-primary opacity-30 group-hover:opacity-100 transition-opacity">/</span> {faq.q}
-                   </h4>
-                   <p className="text-muted-foreground group-hover:text-foreground font-bold text-base leading-relaxed max-w-lg transition-colors">{faq.a}</p>
+                  <div className="absolute top-0 right-0 p-8 opacity-0 group-hover:opacity-5 transition-opacity pointer-events-none">
+                    <SparklesIcon size={80} className="text-primary" />
+                  </div>
+                  <h4 className="text-3xl font-black tracking-tighter mb-4 flex items-center gap-4 group-hover:text-primary transition-colors">
+                    <span className="text-primary opacity-30 group-hover:opacity-100 transition-opacity">/</span> {faq.q}
+                  </h4>
+                  <p className="text-muted-foreground group-hover:text-foreground font-bold text-base leading-relaxed max-w-lg transition-colors">{faq.a}</p>
                 </motion.div>
               ))}
             </motion.div>

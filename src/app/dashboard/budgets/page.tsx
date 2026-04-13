@@ -221,8 +221,8 @@ export default function BudgetsPage() {
               {errors.limit && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.limit.message}</p>}
             </div>
 
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={readOnly}
               className={cn(
                 "w-full h-18 bg-primary text-primary-foreground hover:scale-[1.02] rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-2xl active:scale-95",
@@ -312,8 +312,8 @@ export default function BudgetsPage() {
                         variant="ghost" size="icon"
                         className={cn(
                           "h-9 w-9 text-muted-foreground/30 rounded-lg transition-all",
-                          readOnly 
-                            ? "opacity-20 cursor-not-allowed" 
+                          readOnly
+                            ? "opacity-20 cursor-not-allowed"
                             : "hover:text-rose-600 hover:bg-rose-50"
                         )}
                         onClick={() => !readOnly && setDeleteId(budget.id)}

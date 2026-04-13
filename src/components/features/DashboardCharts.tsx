@@ -63,16 +63,16 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
                 return (
-                  <div className="glass-card rounded-2xl p-4 shadow-2xl border-primary/20 transition-all duration-300 opacity-100 scale-100">
-                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">{payload[0].payload.month}</p>
-                    <div className="space-y-2">
+                  <div className="glass-card rounded-2xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] border-white/10 backdrop-blur-xl transition-all duration-300">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 mb-4">{payload[0].payload.month}</p>
+                    <div className="space-y-3">
                       {payload.map((item: any) => (
-                        <div key={item.name} className="flex items-center justify-between gap-8">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
-                            <span className="text-[11px] font-bold text-foreground capitalize">{item.name}</span>
+                        <div key={item.name} className="flex items-center justify-between gap-10">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.2)]" style={{ backgroundColor: item.color }} />
+                            <span className="text-xs font-bold text-foreground/90">{item.name}</span>
                           </div>
-                          <span className="text-[11px] font-black tabular-nums">{formatCurrency(item.value)}</span>
+                          <span className="text-xs font-black tabular-nums text-foreground">{formatCurrency(item.value)}</span>
                         </div>
                       ))}
                     </div>
@@ -91,6 +91,7 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
             fillOpacity={1}
             fill="url(#colorIncome)"
             animationDuration={2000}
+            activeDot={{ r: 6, strokeWidth: 0, fill: '#10b981' }}
           />
           <Area
             type="monotone"
@@ -101,16 +102,18 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
             fillOpacity={1}
             fill="url(#colorExpense)"
             animationDuration={2000}
+            activeDot={{ r: 6, strokeWidth: 0, fill: '#f43f5e' }}
           />
           <Area
             type="monotone"
-            name="Remaining Balance"
+            name="Balance"
             dataKey="balance"
             stroke="#6366f1"
             strokeWidth={4}
             fillOpacity={1}
             fill="url(#colorBalance)"
             animationDuration={2000}
+            activeDot={{ r: 6, strokeWidth: 0, fill: '#6366f1' }}
           />
         </AreaChart>
       </ResponsiveContainer>

@@ -60,6 +60,7 @@ export default function LoginPage() {
       }
     },
     onError: () => setServerError('Google Sign-In was cancelled'),
+    scope: 'email profile openid',
   });
 
   return (

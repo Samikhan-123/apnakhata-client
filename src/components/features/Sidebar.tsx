@@ -18,7 +18,8 @@ import {
   Activity,
   Zap,
   X,
-  Download
+  Download,
+  MessageSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -45,6 +46,7 @@ const menuGroups = [
     title: 'Account',
     items: [
       { name: 'Settings', icon: Settings, href: '/dashboard/settings' },
+      // { name: 'Support', icon: MessageSquare, href: '/contact' },
     ]
   }
 ];

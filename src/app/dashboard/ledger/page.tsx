@@ -8,6 +8,7 @@ import { LedgerFilters } from '@/components/features/LedgerFilters';
 import { categoryService } from '@/services/category.service';
 import { Plus, Tag, ChevronLeft, ChevronRight, Wallet, ArrowUpCircle, ArrowDownCircle, Calendar as CalendarIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/ui/input';
 import { PaginationPlus } from '@/components/ui/PaginationPlus';
 import { useCurrency } from '@/context/CurrencyContext';
@@ -21,6 +22,7 @@ import { LedgerSkeleton } from '@/components/ui/LedgerSkeleton';
 
 export default function LedgerPage() {
   const { formatCurrency } = useCurrency();
+  const { user } = useAuth();
   const now = new Date();
   const defaultStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
   const defaultEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999).toISOString();
@@ -76,11 +78,33 @@ export default function LedgerPage() {
     fetchData(filters, 1);
   }, [fetchData, filters]);
 
-  const handleExport = async () => {
+  const handleExport = async (formatType: 'csv' | 'excel' | 'pdf') => {
     try {
-      await ledgerEntryService.downloadCSV(filters);
+      const { exportToCSV, exportToExcel, exportLedgerToPDF } = await import('@/lib/export-utils');
+
+      const data = await ledgerEntryService.getExportData(filters);
+      const filename = `ApnaKhata_Records_${format(new Date(), 'dd_MMM_yyyy')}`;
+
+      if (formatType === 'pdf') {
+        await exportLedgerToPDF(data, user?.name || 'User', filters);
+        return;
+      }
+
+      const formattedData = data.map((item: any) => ({
+        date: item.date,
+        description: item.description,
+        category: item.category?.name || 'Uncategorized',
+        type: item.type,
+        amount: Number(item.amount)
+      }));
+
+      if (formatType === 'csv') {
+        exportToCSV(formattedData, filename);
+      } else if (formatType === 'excel') {
+        exportToExcel(formattedData, filename);
+      }
     } catch (error) {
-      // console.error('Export failed:', error);
+      // Silent error handling
     }
   };
 

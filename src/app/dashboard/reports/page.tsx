@@ -12,7 +12,8 @@ import {
   ArrowDownLeft,
   ChevronRight,
   Sparkles,
-  Wallet
+  Wallet,
+  Download
 } from 'lucide-react';
 import { ledgerEntryService } from '@/services/ledger-entry.service';
 import { categoryService } from '@/services/category.service';
@@ -21,6 +22,7 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/com
 import { useCurrency } from '@/context/CurrencyContext';
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 import { ErrorState } from '@/components/ui/ErrorState';
+import { useAuth } from '@/context/AuthContext';
 import { AnimatePresence } from "framer-motion";
 import {
   BarChart,
@@ -57,7 +59,8 @@ export default function ReportsPage() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { formatCurrency } = useCurrency();
-  
+  const { user } = useAuth();
+
   // Default to current month for a professional, focused initial experience
   const getDefaultFilters = () => {
     const now = new Date();
@@ -213,7 +216,7 @@ export default function ReportsPage() {
 
   if (error) return (
     <div className="min-h-[60vh] flex items-center justify-center p-6">
-      <ErrorState 
+      <ErrorState
         title="Reports Unavailable"
         message={error}
         onRetry={() => fetchStats(filters, true)}
@@ -230,6 +233,42 @@ export default function ReportsPage() {
     ? ((lastMonthTrend.expense - prevMonthTrend.expense) / prevMonthTrend.expense) * 100
     : 0;
 
+  const handleExportPDF = async () => {
+    if (!stats) return;
+
+    setIsRefreshing(true);
+    try {
+      const { exportReportToPDF } = await import('@/lib/export-utils');
+
+      const income = Number(stats?.overview?.totalIncome || 0);
+      const expense = Number(stats?.overview?.totalExpense || 0);
+      const savings = income - expense;
+      const rate = income > 0 ? (savings / income) * 100 : 0;
+
+      const reportData = {
+        summary: {
+          totalIncome: income,
+          totalExpense: expense,
+          netSavings: savings,
+          savingsRate: rate
+        },
+        categoryStats: (stats?.categoryBreakdown || []).map((c: any) => ({
+          name: c.name,
+          total: c.value,
+          percentage: expense > 0 ? (c.value / expense) * 100 : 0
+        })),
+        activeBudgets: [],
+        period: filters
+      };
+
+      await exportReportToPDF(reportData, user?.name || 'User');
+    } catch (error) {
+      // Silent error handling as per rules
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   return (
     <div className="space-y-12 pb-20">
       {/* Header & Impact Bar */}
@@ -241,12 +280,24 @@ export default function ReportsPage() {
           </p>
         </SlideIn>
 
+        <div className="flex gap-3 no-print">
+          <Button
+            onClick={handleExportPDF}
+            disabled={isRefreshing || loading}
+            className="rounded-xl h-12 px-8 font-bold shadow-xl gap-2 bg-primary hover:bg-primary/90 active:scale-95 transition-all"
+          >
+            <Download className="h-4 w-4" />
+            <span>{isRefreshing ? 'Generating...' : 'Download Statement'}</span>
+          </Button>
+        </div>
       </div>
 
-      <ReportFilters
-        onFilterChange={setFilters}
-        currentFilters={filters}
-      />
+      <div className="no-print">
+        <ReportFilters
+          onFilterChange={setFilters}
+          currentFilters={filters}
+        />
+      </div>
 
       <div className="flex items-center gap-3 px-6 py-3 bg-primary/5 rounded-2xl border border-primary/10 w-fit animate-fade-in">
         <Activity size={14} className="text-primary" />
@@ -305,15 +356,28 @@ export default function ReportsPage() {
                     tickFormatter={(val) => `${val / 1000}k`}
                   />
                   <Tooltip
-                    cursor={{ stroke: 'hsl(var(--border))', strokeWidth: 1 }}
-                    contentStyle={{
-                      borderRadius: '16px',
-                      border: '1px solid hsl(var(--border))',
-                      backgroundColor: 'hsl(var(--background))',
-                      boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
-                      padding: '12px',
+                    cursor={{ stroke: 'hsl(var(--primary) / 0.2)', strokeWidth: 2, strokeDasharray: '4 4' }}
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="glass-card rounded-2xl p-5 shadow-2xl border-white/10 backdrop-blur-xl">
+                            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-4">{payload[0].payload.month}</p>
+                            <div className="space-y-3">
+                              {payload.map((item: any) => (
+                                <div key={item.name} className="flex items-center justify-between gap-10">
+                                  <div className="flex items-center gap-2.5">
+                                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: item.color }} />
+                                    <span className="text-xs font-bold text-foreground/80">{item.name}</span>
+                                  </div>
+                                  <span className="text-xs font-black tabular-nums">{formatCurrency(item.value)}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
                     }}
-                    itemStyle={{ fontSize: '11px', fontWeight: 600 }}
                   />
                   <Area
                     type="monotone"
@@ -322,7 +386,8 @@ export default function ReportsPage() {
                     strokeWidth={4}
                     fillOpacity={1}
                     fill="url(#colorIncome)"
-                    name="Total Income"
+                    name="Income"
+                    activeDot={{ r: 6, strokeWidth: 0, fill: '#10b981' }}
                   />
                   <Area
                     type="monotone"
@@ -331,16 +396,8 @@ export default function ReportsPage() {
                     strokeWidth={4}
                     fillOpacity={1}
                     fill="url(#colorExpense)"
-                    name="Total Expenses"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="balance"
-                    stroke="#6366f1"
-                    strokeWidth={4}
-                    fillOpacity={1}
-                    fill="url(#colorBalance)"
-                    name="Net Balance"
+                    name="Expense"
+                    activeDot={{ r: 6, strokeWidth: 0, fill: '#f43f5e' }}
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -373,11 +430,19 @@ export default function ReportsPage() {
                     ))}
                   </Pie>
                   <Tooltip
-                    contentStyle={{
-                      borderRadius: '16px',
-                      border: 'none',
-                      backgroundColor: 'hsl(var(--background))',
-                      boxShadow: '0 10px 15px -3px rgba(0,0,0,0.1)',
+                    content={({ active, payload }) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="glass-card rounded-2xl p-4 shadow-2xl border-white/10 backdrop-blur-xl">
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className="w-2 h-2 rounded-full" style={{ backgroundColor: payload[0].payload.fill || payload[0].color }} />
+                              <span className="text-xs font-bold text-foreground">{capitalize(String(payload[0].name ?? ''))}</span>
+                            </div>
+                            <p className="text-xs font-black text-primary">{formatCurrency(Number(payload[0].value ?? 0))}</p>
+                          </div>
+                        );
+                      }
+                      return null;
                     }}
                   />
                 </PieChart>
@@ -397,10 +462,10 @@ export default function ReportsPage() {
                       <span className="text-[11px] font-bold text-muted-foreground group-hover/item:text-foreground transition-colors">{capitalize(cat.name)}</span>
                     </div>
                     <div className="flex items-center gap-3">
-                       <span className="text-[10px] font-bold text-muted-foreground/40">
-                         {((cat.value / totalExpense) * 100).toFixed(0)}%
-                       </span>
-                       <span className="text-xs font-black text-foreground">{formatCurrency(cat.value)}</span>
+                      <span className="text-[10px] font-bold text-muted-foreground/40">
+                        {((cat.value / totalExpense) * 100).toFixed(0)}%
+                      </span>
+                      <span className="text-xs font-black text-foreground">{formatCurrency(cat.value)}</span>
                     </div>
                   </div>
                 ))}
@@ -454,7 +519,7 @@ export default function ReportsPage() {
             ))}
           </div>
 
-          <div className={cn("mt-10 p-8 rounded-3xl text-white relative overflow-hidden flex items-center min-h-[160px]", currentTip?.bgColor)}>
+          <div className={cn("mt-10 p-8 rounded-3xl text-white relative overflow-hidden flex items-center min-h-[160px] no-print", currentTip?.bgColor)}>
             <div className="flex flex-col md:flex-row items-center justify-between w-full gap-8 relative z-10">
               <AnimatePresence mode="wait">
                 <SlideIn
@@ -473,7 +538,7 @@ export default function ReportsPage() {
                   </div>
                 </SlideIn>
               </AnimatePresence>
- 
+
               <div className="flex items-center gap-6">
                 <div className="flex gap-1.5">
                   {tips.map((_, i) => (

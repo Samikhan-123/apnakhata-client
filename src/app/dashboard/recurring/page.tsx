@@ -12,14 +12,14 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
-import { 
-  Calendar, 
-  RefreshCcw, 
-  Timer, 
-  Plus, 
-  Trash2, 
-  ArrowUpRight, 
-  ArrowDownLeft, 
+import {
+  Calendar,
+  RefreshCcw,
+  Timer,
+  Plus,
+  Trash2,
+  ArrowUpRight,
+  ArrowDownLeft,
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { format } from 'date-fns';
@@ -121,7 +121,7 @@ export default function RecurringPage() {
     }
     try {
       const executionDateTime = new Date(`${data.nextExecution}T12:00:00`);
-      
+
       await recurringService.create({
         ...data,
         description: data.description.toLowerCase(),
@@ -129,7 +129,7 @@ export default function RecurringPage() {
         categoryId: data.type === 'INCOME' ? undefined : (data.categoryId || undefined),
         nextExecution: executionDateTime.toISOString()
       });
-      
+
       toast.success("Automated task added");
       setIsModalOpen(false);
       reset();
@@ -161,7 +161,7 @@ export default function RecurringPage() {
   const getFrequencyNote = () => {
     const val = amount ? `${currency === 'PKR' ? 'Rs.' : '$'}${amount}` : 'this amount';
     const action = type === 'INCOME' ? 'added to your income' : 'counted as an expense';
-    
+
     switch (frequency) {
       case 'WEEKLY': return `${val} will be ${action} every week.`;
       case 'MONTHLY': return `${val} will be ${action} on this day every month.`;
@@ -193,8 +193,8 @@ export default function RecurringPage() {
               </div>
             </div>
             <div className="h-8 w-[1px] bg-border/40" />
-          
-            <Button 
+
+            <Button
               onClick={() => !readOnly && setIsModalOpen(true)}
               disabled={readOnly}
               className={cn(
@@ -209,172 +209,172 @@ export default function RecurringPage() {
         </SlideIn>
 
         <CustomModal
-            isOpen={isModalOpen}
-            onClose={setIsModalOpen}
-            title="New Automated Task"
-            description="Setup a regular payment or automated income."
-            maxWidth="550px"
-          >
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-                <div className="space-y-3">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Type</Label>
-                  <Controller
-                    name="type"
-                    control={control}
-                    render={({ field }) => (
-                      <Select 
-                        value={field.value} 
-                        onValueChange={(val: any) => { 
-                          field.onChange(val); 
-                          setValue('description', ''); 
-                        }}
-                      >
-                        <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="rounded-xl border-none shadow-2xl">
-                          <SelectItem value="EXPENSE" className="rounded-lg font-bold">Expense</SelectItem>
-                          <SelectItem value="INCOME" className="rounded-lg font-bold">Income</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    )}
-                  />
-                  {errors.type && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.type.message}</p>}
-                </div>
-
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Amount ({currency})</Label>
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      {...register('amount')}
-                      className={cn(
-                        "h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6",
-                        errors.amount && "ring-2 ring-rose-500/20 bg-rose-500/5"
-                      )}
-                    />
-                    {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.amount.message}</p>}
-                  </div>
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Frequency</Label>
-                    <Controller
-                      name="frequency"
-                      control={control}
-                      render={({ field }) => (
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-xl border-none shadow-2xl">
-                            <SelectItem value="WEEKLY" className="rounded-lg font-bold">Weekly</SelectItem>
-                            <SelectItem value="MONTHLY" className="rounded-lg font-bold">Monthly</SelectItem>
-                            <SelectItem value="YEARLY" className="rounded-lg font-bold">Yearly</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.frequency && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.frequency.message}</p>}
-                  </div>
-                </div>
-
-                <div className="space-y-3">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Description</Label>
-                  {type === 'INCOME' ? (
-                    <Controller
-                      name="description"
-                      control={control}
-                      render={({ field }) => (
-                        <Select value={field.value} onValueChange={field.onChange}>
-                          <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                            <SelectValue placeholder="Select Source" />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-xl border-none shadow-2xl">
-                             <SelectItem value="salary" className="rounded-lg font-bold">Salary</SelectItem>
-                             <SelectItem value="business" className="rounded-lg font-bold">Business</SelectItem>
-                             <SelectItem value="freelance" className="rounded-lg font-bold">Freelance</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                  ) : (
-                    <Input
-                      placeholder="e.g., Monthly Rent"
-                      {...register('description')}
-                      className={cn(
-                        "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6",
-                        errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
-                      )}
-                    />
-                  )}
-                  {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.description.message}</p>}
-                </div>
-
-                {type === 'EXPENSE' && (
-                  <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Category</Label>
-                    <Controller
-                      name="categoryId"
-                      control={control}
-                      render={({ field }) => (
-                        <Select value={field.value || ''} onValueChange={field.onChange}>
-                          <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
-                            <SelectValue placeholder="Choose Category" />
-                          </SelectTrigger>
-                          <SelectContent className="rounded-xl border-none shadow-2xl">
-                            {categories.map(cat => (
-                              <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      )}
-                    />
-                    {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.categoryId.message}</p>}
-                  </div>
+          isOpen={isModalOpen}
+          onClose={setIsModalOpen}
+          title="New Automated Task"
+          description="Setup a regular payment or automated income."
+          maxWidth="550px"
+        >
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Type</Label>
+              <Controller
+                name="type"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(val: any) => {
+                      field.onChange(val);
+                      setValue('description', '');
+                    }}
+                  >
+                    <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-none shadow-2xl">
+                      <SelectItem value="EXPENSE" className="rounded-lg font-bold">Expense</SelectItem>
+                      <SelectItem value="INCOME" className="rounded-lg font-bold">Income</SelectItem>
+                    </SelectContent>
+                  </Select>
                 )}
+              />
+              {errors.type && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.type.message}</p>}
+            </div>
 
-                <div className="space-y-3">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">First Payment Date</Label>
-                    <Input
-                      type="date"
-                      {...register('nextExecution')}
-                      className={cn(
-                        "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6",
-                        errors.nextExecution && "ring-2 ring-rose-500/20 bg-rose-500/5"
-                      )}
-                    />
-                    {errors.nextExecution && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.nextExecution.message}</p>}
-                </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Amount ({currency})</Label>
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  {...register('amount')}
+                  className={cn(
+                    "h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6",
+                    errors.amount && "ring-2 ring-rose-500/20 bg-rose-500/5"
+                  )}
+                />
+                {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.amount.message}</p>}
+              </div>
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Frequency</Label>
+                <Controller
+                  name="frequency"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border-none shadow-2xl">
+                        <SelectItem value="WEEKLY" className="rounded-lg font-bold">Weekly</SelectItem>
+                        <SelectItem value="MONTHLY" className="rounded-lg font-bold">Monthly</SelectItem>
+                        <SelectItem value="YEARLY" className="rounded-lg font-bold">Yearly</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.frequency && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.frequency.message}</p>}
+              </div>
+            </div>
 
-                <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-                   <p className="text-[11px] font-bold text-primary/70 italic leading-snug">
-                      {getFrequencyNote()}
-                   </p>
-                </div>
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Description</Label>
+              {type === 'INCOME' ? (
+                <Controller
+                  name="description"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                        <SelectValue placeholder="Select Source" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border-none shadow-2xl">
+                        <SelectItem value="salary" className="rounded-lg font-bold">Salary</SelectItem>
+                        <SelectItem value="business" className="rounded-lg font-bold">Business</SelectItem>
+                        <SelectItem value="freelance" className="rounded-lg font-bold">Freelance</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+              ) : (
+                <Input
+                  placeholder="e.g., Monthly Rent"
+                  {...register('description')}
+                  className={cn(
+                    "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6",
+                    errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
+                  )}
+                />
+              )}
+              {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.description.message}</p>}
+            </div>
 
-                <Button 
-                   type="submit" 
-                   disabled={readOnly}
-                   className={cn(
-                     "w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all mt-4",
-                     readOnly && "opacity-50 grayscale cursor-not-allowed"
-                   )}
-                >
-                   {readOnly ? 'Locked: Diagnostic Session' : 'Start Automated Task'}
-                </Button>
-              </form>
-          </CustomModal>
-        </div>
+            {type === 'EXPENSE' && (
+              <div className="space-y-3">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Category</Label>
+                <Controller
+                  name="categoryId"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value || ''} onValueChange={field.onChange}>
+                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                        <SelectValue placeholder="Choose Category" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-xl border-none shadow-2xl">
+                        {categories.map(cat => (
+                          <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.categoryId.message}</p>}
+              </div>
+            )}
 
-        <div className="space-y-8">
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">First Payment Date</Label>
+              <Input
+                type="date"
+                {...register('nextExecution')}
+                className={cn(
+                  "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6",
+                  errors.nextExecution && "ring-2 ring-rose-500/20 bg-rose-500/5"
+                )}
+              />
+              {errors.nextExecution && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.nextExecution.message}</p>}
+            </div>
+
+            <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+              <p className="text-[11px] font-bold text-primary/70 italic leading-snug">
+                {getFrequencyNote()}
+              </p>
+            </div>
+
+            <Button
+              type="submit"
+              disabled={readOnly}
+              className={cn(
+                "w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all mt-4",
+                readOnly && "opacity-50 grayscale cursor-not-allowed"
+              )}
+            >
+              {readOnly ? 'Locked: Diagnostic Session' : 'Start Automated Task'}
+            </Button>
+          </form>
+        </CustomModal>
+      </div>
+
+      <div className="space-y-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
             <span className="text-xs font-bold text-muted-foreground/50 uppercase tracking-wide">Sync Active</span>
           </div>
-          <Button 
-            variant="ghost" 
-            className="h-10 px-6 rounded-xl font-bold text-muted-foreground/40 hover:text-primary transition-all text-[10px] uppercase tracking-widest" 
+          <Button
+            variant="ghost"
+            className="h-10 px-6 rounded-xl font-bold text-muted-foreground/40 hover:text-primary transition-all text-[10px] uppercase tracking-widest"
             onClick={handleForceSync}
             disabled={readOnly}
           >
@@ -401,7 +401,7 @@ export default function RecurringPage() {
             ))}
           </div>
         ) : error ? (
-          <ErrorState 
+          <ErrorState
             title="Unable to Load Tasks"
             message={error}
             onRetry={fetchData}
@@ -449,8 +449,8 @@ export default function RecurringPage() {
                         </p>
                       </div>
                     </div>
-                    
-                     <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4">
+
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4">
                       <div className="text-right">
                         <p className={cn("text-2xl font-bold tabular-nums tracking-tight", isIncome ? "text-emerald-600" : "text-rose-600")}>
                           {isIncome ? '+' : '−'} {formatCurrency(pattern.amount)}
@@ -468,27 +468,27 @@ export default function RecurringPage() {
                         )}
                       </div>
                       <div className="flex items-center gap-3">
-                         <div className="flex flex-col items-end gap-1 text-[10px] font-bold text-muted-foreground/40">
-                           <div className="flex items-center gap-1.5">
-                             <Calendar size={12} />
-                             Next: {format(new Date(pattern.nextExecution), 'MMM dd')}
-                           </div>
-                         </div>
-                         <Button
-                            variant="ghost"
-                            size="icon"
-                            className={cn(
-                              "rounded-xl transition-all h-8 w-8 active:scale-90",
-                              readOnly 
-                                ? "text-muted-foreground/10 cursor-not-allowed" 
-                                : "text-muted-foreground/20 hover:text-rose-600 hover:bg-rose-500/10"
-                            )}
-                            onClick={() => !readOnly && setDeleteId(pattern.id)}
-                            disabled={readOnly}
-                            title={readOnly ? "Locked: Diagnostic Session" : "Delete"}
-                          >
-                            <Trash2 size={16} />
-                          </Button>
+                        <div className="flex flex-col items-end gap-1 text-[10px] font-bold text-muted-foreground/40">
+                          <div className="flex items-center gap-1.5">
+                            <Calendar size={12} />
+                            Next: {format(new Date(pattern.nextExecution), 'MMM dd')}
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className={cn(
+                            "rounded-xl transition-all h-8 w-8 active:scale-90",
+                            readOnly
+                              ? "text-muted-foreground/10 cursor-not-allowed"
+                              : "text-muted-foreground/20 hover:text-rose-600 hover:bg-rose-500/10"
+                          )}
+                          onClick={() => !readOnly && setDeleteId(pattern.id)}
+                          disabled={readOnly}
+                          title={readOnly ? "Locked: Diagnostic Session" : "Delete"}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
                       </div>
                     </div>
                   </div>
@@ -498,7 +498,7 @@ export default function RecurringPage() {
           </div>
         )}
       </div>
-      
+
       {/* Footer Info Box */}
       <div className="mt-12">
         <div className="premium-card rounded-3xl p-8 flex flex-col md:flex-row gap-8 items-center bg-transparent border-dashed">

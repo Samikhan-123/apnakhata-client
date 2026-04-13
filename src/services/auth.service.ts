@@ -49,7 +49,8 @@ export const authService = {
   },
 
   async register(userData: any) {
-    const { data: response } = await api.post('/auth/register', userData);
+    const clientTimestamp = new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium', hour12: true });
+    const { data: response } = await api.post('/auth/register', { ...userData, clientTimestamp });
     if (response.success) {
       const options = getCookieOptions();
       Cookies.set('isVerified', 'false', options);
@@ -70,17 +71,20 @@ export const authService = {
   },
 
   async resendOTP(email: string) {
-    const { data: response } = await api.post('/auth/resend-otp', { email });
+    const clientTimestamp = new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium', hour12: true });
+    const { data: response } = await api.post('/auth/resend-otp', { email, clientTimestamp });
     return response;
   },
 
   async forgotPassword(email: string) {
-    const { data: response } = await api.post('/auth/forgot-password', { email });
+    const clientTimestamp = new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium', hour12: true });
+    const { data: response } = await api.post('/auth/forgot-password', { email, clientTimestamp });
     return response;
   },
 
   async resetPassword(data: any) {
-    const { data: response } = await api.post('/auth/reset-password', data);
+    const clientTimestamp = new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium', hour12: true });
+    const { data: response } = await api.post('/auth/reset-password', { ...data, clientTimestamp });
     return response;
   },
 

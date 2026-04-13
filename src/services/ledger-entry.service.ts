@@ -45,6 +45,13 @@ export const ledgerEntryService = {
     document.body.appendChild(link);
     link.click();
     link.remove();
+  },
+
+  async getExportData(params?: any) {
+    const { data: response } = await api.get('/ledger-entries/export', { 
+       params: { ...params, format: 'json' } 
+    });
+    return response.success ? response.data : [];
   }
 };
 

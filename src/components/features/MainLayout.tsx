@@ -25,7 +25,7 @@ export const MainLayout = ({ children, isFixed = false }: { children: React.Reac
           setIsMaintenance(false);
         }
       } catch (error) {
-        console.error('Status check failed', error);
+        // console.error('Status check failed', error);
       }
     };
 
@@ -63,7 +63,6 @@ export const MainLayout = ({ children, isFixed = false }: { children: React.Reac
               <p>&copy; {new Date().getFullYear()} Apna Khata • Built for human simplicity.</p>
               <div className="flex gap-6">
                 <Link href="/guide" className="hover:text-primary transition-colors cursor-pointer">User Guide</Link>
-                <Link href="/premium-experience" className="hover:text-primary transition-colors cursor-pointer">Premium Experience</Link>
                 <Link href="/manifesto" className="hover:text-primary transition-colors cursor-pointer">Manifesto</Link>
                 <Link href="/contact" className="hover:text-primary transition-colors cursor-pointer">Contact</Link>
               </div>
