@@ -108,6 +108,11 @@ export default function ForgotPasswordPage() {
                     </div>
                   )}
                 </Button>
+
+                <div className="flex items-center gap-2 justify-center py-2 px-4 rounded-xl bg-primary/5 text-primary/60 text-[10px] font-bold animate-in fade-in slide-in-from-bottom-1 duration-700">
+                  <LifeBuoy className="h-3 w-3" />
+                  <span>Tip: If you don't receive it, check your **Spam** folder</span>
+                </div>
               </div>
             )}
           </form>

@@ -119,8 +119,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await authService.resetPassword(data);
   };
 
-  const logout = () => {
-    authService.logout();
+  const logout = async () => {
+    await authService.logout();
     setUser(null);
     setIsImpersonating(false);
     setReadOnly(false);

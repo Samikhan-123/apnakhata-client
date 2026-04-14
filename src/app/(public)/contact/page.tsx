@@ -85,7 +85,7 @@ export default function ContactPage() {
           </div>
           <h2 className="text-4xl font-black tracking-tighter">Message <span className="text-primary italic">Received.</span></h2>
           <p className="text-muted-foreground font-medium leading-relaxed">
-            Your request has been dispatched to the Apna Khata sanctuary. One of our human administrators will review it and get back to you via email.
+            Your request has been dispatched to the Apna Khata team. One of our team members will review it and get back to you via email.
           </p>
           <Button 
             onClick={() => setIsSuccess(false)}
@@ -126,7 +126,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                    <p className="text-xs font-black uppercase tracking-widest text-muted-foreground opacity-50 mb-1">Direct Email</p>
-                   <p className="text-sm font-bold text-foreground">samikhan7816@gmail.com</p>
+                   <p className="text-sm font-bold text-foreground">isamikhan.dev@gmail.com</p>
                 </div>
               </div>
               <div className="flex items-start gap-4 p-6 rounded-3xl bg-muted/30 border border-border/40">

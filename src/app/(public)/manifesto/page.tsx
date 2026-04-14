@@ -65,36 +65,41 @@ export default function ManifestoPage() {
         <div className="premium-card p-12 md:p-16 rounded-[3.5rem] border-primary/20 bg-primary/[0.02] relative overflow-hidden group">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/2" />
           
-          <div className="relative z-10 space-y-8">
+          <div className="relative z-10 space-y-10">
             <div className="flex items-center gap-4">
               <div className="h-px w-12 bg-primary/30" />
               <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">A Note from the Founder</p>
             </div>
             
-            <h2 className="text-4xl font-black tracking-tighter text-foreground leading-tight">
-              "Apna Khata is my promise to <br /> 
-              <span className="text-primary italic">simplify your financial life.</span>"
-            </h2>
-            
-            <div className="space-y-6 text-lg text-muted-foreground font-medium leading-relaxed max-w-2xl">
-               <p>
-                 I remember watching my father struggle with multiple paper diaries, trying to tally debts and savings at the end of every month. It was stressful, chaotic, and felt like a burden. 
-               </p>
-               <p>
-                 When I moved to digital tools, I found them cold, complex, and invasive. That's why I built Apna Khata. It's not just an app; it's a digital legacy of the traditional 'Khata' system—built for the modern mind.
-               </p>
-               <p>
-                 No ads, no data selling, just pure financial clarity. That is my commitment to you.
-               </p>
+            <div className="max-w-3xl space-y-8">
+                <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-foreground leading-tight">
+                  "Apna Khata is my promise to <br /> 
+                  <span className="text-primary italic">simplify your financial journey.</span>"
+                </h2>
+                
+                <div className="space-y-6 text-lg text-muted-foreground font-medium leading-relaxed">
+                   <p>
+                     I still remember watching my father sit with three different paper diaries at the end of every month. He would spend hours trying to reconcile debts, savings, and household expenses. It wasn't just math; it was a visible weight of responsibility on his shoulders.
+                   </p>
+                   <p>
+                     When I started my own financial journey, I tried the apps. But they felt cold. They were full of ads, or so complicated that I stopped using them after a week. There was no 'soul' in the digital tools that were supposed to help us. 
+                   </p>
+                   <p>
+                     That's why I built **Apna Khata**. I wanted to take that traditional, trustworthy 'Khata' system—the one that has lived in our shops and homes for generations—and give it a modern, elegant digital home. 
+                   </p>
+                   <p>
+                     It's built for humans, not for accountants. No data selling, no hidden traps. Just clarity, heart, and a tool you can actually trust.
+                   </p>
+                </div>
             </div>
 
             <div className="pt-8 border-t border-border/40 flex items-center gap-6">
-               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary/20">
+               <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center text-white font-black text-xl shadow-lg shadow-primary/20 shrink-0">
                  SK
                </div>
                <div>
                   <h4 className="text-xl font-black text-foreground tracking-tight">Sami Khan</h4>
-                  <p className="text-xs font-black uppercase tracking-widest text-primary">Lead Developer & Founder</p>
+                  <p className="text-xs font-black uppercase tracking-widest text-primary">Founding Developer</p>
                </div>
             </div>
           </div>

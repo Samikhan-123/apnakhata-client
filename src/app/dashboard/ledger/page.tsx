@@ -75,8 +75,10 @@ export default function LedgerPage() {
   }, []);
 
   useEffect(() => {
-    fetchData(filters, 1);
-  }, [fetchData, filters]);
+    // Silent refresh if we already have entries to prevent flickering on tab/type switch
+    const isSilent = ledgerEntries.length > 0;
+    fetchData(filters, 1, isSilent);
+  }, [fetchData, filters]); // Added ledgerEntries.length to dependencies if needed, but filters change is the trigger
 
   const handleExport = async (formatType: 'csv' | 'excel' | 'pdf') => {
     try {
@@ -109,7 +111,7 @@ export default function LedgerPage() {
   };
 
   const handlePageChange = (newPage: number) => {
-    fetchData(filters, newPage);
+    fetchData(filters, newPage, true); // Always silent for page changes for smoother feel
   };
 
   const periodText = filters.startDate
@@ -163,7 +165,7 @@ export default function LedgerPage() {
               totalIncome={allTimeOverview?.totalIncome || 0}
               remainingBalance={allTimeOverview?.remainingBalance || 0}
               onRefresh={() => {
-                fetchData(filters);
+                fetchData(filters, pagination.page, true);
                 setIsFormOpen(false);
               }}
             />

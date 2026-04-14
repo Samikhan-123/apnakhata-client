@@ -177,10 +177,15 @@ function VerifyEmailContent() {
           </form>
 
           <div className="mt-14 pt-10 border-t border-border/40 flex flex-col items-center gap-8 text-center relative z-10">
-            <div className="space-y-3">
               <p className="text-xs font-bold text-muted-foreground/40 uppercase tracking-widest">
                 Didn't get the code?
               </p>
+              
+              <div className="flex items-center gap-2 justify-center py-2 px-4 rounded-xl bg-primary/5 text-primary/60 text-[10px] font-bold animate-in fade-in slide-in-from-bottom-1 duration-700">
+                <AlertCircle className="h-3 w-3" />
+                <span>Tip: If you don't see it, check your **Spam** folder</span>
+              </div>
+
               <button
                 onClick={handleResend}
                 disabled={!canResend || loading}
@@ -200,7 +205,6 @@ function VerifyEmailContent() {
               <ArrowRight className="h-3 w-3 rotate-180 group-hover:-translate-x-1 transition-transform" />
               Back to Login
             </button>
-          </div>
 
           <div className="mt-12 flex items-center justify-center gap-3 opacity-10">
             <ShieldCheck className="h-4 w-4 text-primary" />

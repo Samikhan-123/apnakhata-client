@@ -5,11 +5,11 @@ Sentry.init({
   tracesSampleRate: 1.0,
   debug: false,
   replaysOnErrorSampleRate: 1.0,
-  replaysSessionSampleRate: 0.1,
+  replaysSessionSampleRate: 0.02, // Lowered to 2% to save quota
   integrations: [
     Sentry.replayIntegration({
       maskAllText: false,
-      blockAllMedia: false,
+      blockAllMedia: false, // Don't mask images/videos
     }),
   ],
 });

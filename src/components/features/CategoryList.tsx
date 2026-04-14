@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import { capitalize } from '@/lib/utils';
 import { CategoryForm } from './CategoryForm';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { Tooltip } from '@/components/ui/tooltip';
 import {
   Dialog,
   DialogContent,
@@ -101,48 +102,54 @@ export function CategoryList() {
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
         {categories.map((category: any, index) => {
           const Icon = (LucideIcons as any)[category.icon] || LucideIcons.HelpCircle;
           
           return (
-            <div 
+            <Tooltip 
               key={category.id} 
-              className="glass-card rounded-[2rem] p-5 flex items-center gap-5 group transition-all hover:translate-y-[-4px] animate-fade-in-scale opacity-0"
-              style={{ animationDelay: `${index * 50}ms` }}
+              content={`${capitalize(category.name)} (${category.isSystem ? 'Standard' : 'Personal'})`}
+              position="top"
+              className="mb-4"
             >
-              <div className="h-14 w-14 rounded-2xl bg-primary/5 text-primary flex items-center justify-center group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-500 border border-primary/10">
-                <Icon size={28} strokeWidth={2.5} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="font-black text-foreground truncate tracking-tight">{capitalize(category.name)}</h3>
-                <p className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mt-1">
-                  {category.isSystem ? 'Standard' : 'Personal'}
-                </p>
-              </div>
-              
-              {!category.isSystem ? (
-                <Button 
-                  variant="ghost" 
-                   size="icon"
-                   className={cn(
-                    "rounded-2xl h-10 w-10 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all active:scale-90",
-                    "opacity-100 lg:opacity-0 lg:group-hover:opacity-100" // Visible on mobile, hover on desktop
-                  )}
-                  onClick={() => setEditingCategory(category)}
-                  title="Edit Category"
-                >
-                  <LucideIcons.Edit3 className="h-4 w-4" />
-                </Button>
-              ) : (
-                <div 
-                  className="h-10 w-10 flex items-center justify-center text-primary/40 bg-primary/5 rounded-xl border border-primary/10 shrink-0" 
-                  title="System categories are locked"
-                >
-                  <Lock className="h-4 w-4" />
+              <div 
+                className="glass-card rounded-[2rem] p-4 flex items-center gap-5 group transition-all hover:translate-y-[-4px] animate-in fade-in duration-500 w-full"
+                style={{ animationDelay: `${index * 50}ms`, animationFillMode: 'forwards' }}
+              >
+                <div className="h-14 w-14 rounded-2xl bg-primary/5 text-primary flex items-center justify-center group-hover:bg-primary/10 group-hover:scale-110 transition-all duration-500 border border-primary/10">
+                  <Icon size={28} strokeWidth={2.5} />
                 </div>
-              )}
-            </div>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-black text-foreground truncate tracking-tight">{capitalize(category.name)}</h3>
+                  <p className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mt-1">
+                    {category.isSystem ? 'Standard' : 'Personal'}
+                  </p>
+                </div>
+                
+                {!category.isSystem ? (
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className={cn(
+                      "rounded-2xl h-10 w-10 text-muted-foreground hover:text-primary hover:bg-primary/10 transition-all active:scale-90",
+                      "opacity-100 lg:opacity-0 lg:group-hover:opacity-100" // Visible on mobile, hover on desktop
+                    )}
+                    onClick={() => setEditingCategory(category)}
+                    title="Edit Category"
+                  >
+                    <LucideIcons.Edit3 className="h-4 w-4" />
+                  </Button>
+                ) : (
+                  <div 
+                    className="h-10 w-10 flex items-center justify-center text-primary/40 bg-primary/5 rounded-xl border border-primary/10 shrink-0" 
+                    title="System categories are locked"
+                  >
+                    <Lock className="h-4 w-4" />
+                  </div>
+                )}
+              </div>
+            </Tooltip>
           );
         })}
       </div>

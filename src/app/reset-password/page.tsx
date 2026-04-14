@@ -235,10 +235,16 @@ function ResetPasswordContent() {
 
           {!success && (
             <div className="text-center space-y-6 relative z-10">
-              <div className="space-y-2">
+              <div className="space-y-4">
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30">
                   Didn't receive the code?
                 </p>
+
+                <div className="flex items-center gap-2 justify-center py-2 px-4 rounded-xl bg-primary/5 text-primary/60 text-[10px] font-bold animate-in fade-in slide-in-from-bottom-1 duration-700">
+                  <ShieldCheck size={12} className="opacity-50" />
+                  <span>Tip: Check your **Spam** folder if not in Inbox</span>
+                </div>
+
                 <button 
                   type="button"
                   onClick={handleResend}
