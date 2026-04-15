@@ -252,6 +252,7 @@ export default function UserManagementPage() {
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Platform Member</th>
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Status</th>
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Auth Role</th>
+                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Connectivity</th>
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Metric Activity</th>
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 text-right">Operations</th>
                   </tr>
@@ -335,6 +336,19 @@ export default function UserManagementPage() {
                         )}>
                           <Shield className="h-3 w-3" />
                           {user.role}
+                        </div>
+                      </td>
+                      <td className="px-6 md:px-8 py-5 md:py-6">
+                        <div className="flex flex-col gap-0.5">
+                          <p className="text-[11px] font-black text-foreground selection:bg-primary/30 uppercase tracking-tighter">{user.lastIp || 'No IP'}</p>
+                          <div className="flex items-center gap-1">
+                             <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-tighter">{user.lastLocation || 'Global'}</span>
+                             {user.lastDevice && (
+                               <Tooltip content={user.lastDevice}>
+                                 <Activity className="h-2.5 w-2.5 text-primary/40 cursor-help" />
+                               </Tooltip>
+                             )}
+                          </div>
                         </div>
                       </td>
                       <td className="px-6 md:px-8 py-5 md:py-6">

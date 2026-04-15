@@ -466,6 +466,56 @@ export default function UserDetailPage() {
             </div>
           </div>
 
+          <h2 className="text-xl font-black tracking-tight text-foreground px-2">Connectivity Intelligence</h2>
+          <div className="premium-card p-6 rounded-3xl space-y-5 border border-border/10">
+             <div className="flex items-start gap-4">
+               <div className="bg-primary/5 p-2.5 rounded-xl">
+                 <Globe className="h-5 w-5 text-primary" />
+               </div>
+               <div>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Last Known IP</p>
+                 <p className="font-bold text-foreground selection:bg-primary/30 uppercase tracking-tighter">{user.lastIp || 'Unknown'}</p>
+                 <p className="text-[10px] text-muted-foreground mt-0.5 font-bold">{user.lastLocation || 'N/A'}</p>
+               </div>
+             </div>
+
+             <div className="flex items-start gap-4">
+               <div className="bg-primary/5 p-2.5 rounded-xl">
+                 <Activity className="h-5 w-5 text-primary" />
+               </div>
+               <div>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Device Signature</p>
+                 <p className="font-bold text-foreground text-sm leading-tight">{user.lastDevice || 'Unknown Identity'}</p>
+               </div>
+             </div>
+
+             {user.metadata && (
+               <div className="pt-4 border-t border-border/10 space-y-4">
+                 <div className="bg-muted/30 p-4 rounded-2xl">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50 mb-3">Diagnostic Metadata</p>
+                    <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+                       <div>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Organization</p>
+                          <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.org || 'N/A'}</p>
+                       </div>
+                       <div>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Hostname</p>
+                          <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.hostname || 'N/A'}</p>
+                       </div>
+                       <div>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Coordinates</p>
+                          <p className="text-[10px] font-bold text-foreground">{user.metadata.loc || 'N/A'}</p>
+                       </div>
+                       <div>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Postal Code</p>
+                          <p className="text-[10px] font-bold text-foreground">{user.metadata.postal || 'N/A'}</p>
+                       </div>
+                    </div>
+                 </div>
+               </div>
+             )}
+          </div>
+
           <div className="p-6 rounded-3xl bg-rose-500/5 border border-rose-500/10 space-y-4 shadow-sm group hover:border-rose-500/30 transition-all">
              <div className="flex items-center gap-2">
                <h3 className="text-sm font-black text-rose-600 uppercase tracking-widest">Platform Identity Deletion</h3>

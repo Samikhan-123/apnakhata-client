@@ -9,7 +9,7 @@ export default function PrivacyPage() {
     {
       title: 'Data Collection',
       icon: Database,
-      content: 'We only collect what we absolutely need. This includes your email for authentication and the financial data you choice to enter. We do not track your location or access your contacts.'
+      content: 'We only collect what we absolutely need. This includes your email for authentication and technical metadata (IP & Device info) to protect your account from unauthorized access and prevent platform abuse.'
     },
     {
       title: 'No Data Selling',
