@@ -54,7 +54,7 @@ The Precise, premium frontend for **Apna Khata**, an enterprise-grade personal e
 
 ## 🔗 Ecosystem
 
-- [Apna Khata - Backend Server](https://github.com/ySamikhan-123/apnakhata-server)
+- [Apna Khata - Backend Server](https://github.com/Samikhan-123/apnakhata-server)
 
 ## 📄 License
 
