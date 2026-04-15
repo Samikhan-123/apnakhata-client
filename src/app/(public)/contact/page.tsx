@@ -15,6 +15,7 @@ import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { FadeIn, HeightChange } from '@/components/ui/FramerMotion';
+import { useRouter } from 'next/navigation';
 
 const contactFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters').max(50),
@@ -29,7 +30,7 @@ export default function ContactPage() {
   const { user, isImpersonating } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -109,7 +110,7 @@ export default function ContactPage() {
           {/* Left Side: Info & Branding */}
           <div className="lg:col-span-5 space-y-12">
             <div className="space-y-6">
-              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Support Sanctuary</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.4em] text-primary">Contact Support</p>
               <h1 className="text-5xl md:text-7xl font-black tracking-tighter leading-[0.9] text-foreground">
                 Reach <br />
                 <span className="text-primary italic">Out.</span>
@@ -141,81 +142,113 @@ export default function ContactPage() {
             </div>
           </div>
 
-          {/* Right Side: Contact Form */}
+          {/* Right Side: Contact Form / Login Prompt */}
           <FadeIn className="lg:col-span-7">
-            <div className="premium-card p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] border-border/40 shadow-2xl relative overflow-hidden">
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 relative z-10">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 ml-1">Full Name</Label>
-                    <Input 
-                      placeholder="Your Name"
-                      className="h-14 rounded-2xl bg-muted/30 border-none font-bold placeholder:text-muted-foreground/30 focus:ring-2 focus:ring-primary/10"
-                      {...register('name')}
-                      disabled={isSubmitting || !!user}
-                    />
-                    {errors.name && <p className="text-[10px] font-bold text-rose-500 ml-1">{errors.name.message}</p>}
-                  </div>
-                  <div className="space-y-2">
-                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 ml-1">Email Address</Label>
-                    <Input 
-                      placeholder="name@example.com"
-                      className="h-14 rounded-2xl bg-muted/30 border-none font-bold placeholder:text-muted-foreground/30 focus:ring-2 focus:ring-primary/10"
-                      {...register('email')}
-                      disabled={isSubmitting || !!user}
-                    />
-                    {errors.email && <p className="text-[10px] font-bold text-rose-500 ml-1">{errors.email.message}</p>}
-                  </div>
+            {!user ? (
+              <div className="premium-card p-12 rounded-[2.5rem] md:rounded-[3.5rem] border-border/40 shadow-2xl relative overflow-hidden flex flex-col items-center justify-center text-center space-y-8 min-h-[500px]">
+                <div className="w-24 h-24 bg-primary/10 text-primary rounded-[2rem] flex items-center justify-center border border-primary/20 animate-bounce-slow">
+                  <MessageSquare size={48} />
                 </div>
-
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 ml-1">Subject</Label>
-                  <select 
-                    className="w-full h-14 rounded-2xl bg-muted/30 border-none px-4 font-bold text-sm focus:ring-2 focus:ring-primary/10 outline-none appearance-none"
-                    {...register('subject')}
-                    disabled={isSubmitting}
+                <div className="space-y-4">
+                  <h2 className="text-3xl font-black tracking-tighter">Login Required</h2>
+                  <p className="text-muted-foreground font-bold max-w-xs mx-auto text-base">
+                    To prevent spam and provide personalized support, we only accept requests from registered users.
+                  </p>
+                </div>
+                <div className="flex flex-col w-full gap-4 max-w-xs">
+                  <Button 
+                    onClick={() => router.push('/login?callbackUrl=/contact')}
+                    className="h-16 rounded-2xl bg-foreground text-background hover:bg-primary hover:text-white font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all"
                   >
-                    <option value="HELP">General Help</option>
-                    <option value="BUG">Bug Report</option>
-                    <option value="FEEDBACK">Feature Request / Feedback</option>
-                    <option value="OTHER">Other Query</option>
-                  </select>
-                  {errors.subject && <p className="text-[10px] font-bold text-rose-500 ml-1">{errors.subject.message}</p>}
+                    Login to Continue
+                  </Button>
+                  <Button 
+                    onClick={() => router.push('/register')}
+                    variant="ghost"
+                    className="h-14 font-black text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-primary transition-colors"
+                  >
+                    Create Account
+                  </Button>
                 </div>
+                
+                {/* Decorative Background Element */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none opacity-50" />
+              </div>
+            ) : (
+              <div className="premium-card p-8 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] border-border/40 shadow-2xl relative overflow-hidden">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 relative z-10">
+                  <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 ml-1">Full Name</Label>
+                      <Input 
+                        placeholder="Your Name"
+                        className="h-14 rounded-2xl bg-muted/10 border-none font-bold text-muted-foreground/60 cursor-not-allowed"
+                        {...register('name')}
+                        readOnly
+                      />
+                      {errors.name && <p className="text-[10px] font-bold text-rose-500 ml-1">{errors.name.message}</p>}
+                    </div>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 ml-1">Email Address</Label>
+                      <Input 
+                        placeholder="name@example.com"
+                        className="h-14 rounded-2xl bg-muted/10 border-none font-bold text-muted-foreground/60 cursor-not-allowed"
+                        {...register('email')}
+                        readOnly
+                      />
+                      {errors.email && <p className="text-[10px] font-bold text-rose-500 ml-1">{errors.email.message}</p>}
+                    </div>
+                  </div>
 
-                <div className="space-y-2">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 ml-1">Message</Label>
-                  <Textarea 
-                    placeholder="How can we help you today?"
-                    className="min-h-[160px] rounded-2xl bg-muted/30 border-none font-bold placeholder:text-muted-foreground/30 focus:ring-2 focus:ring-primary/10 p-5 leading-relaxed"
-                    {...register('message')}
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 ml-1">Subject</Label>
+                    <select 
+                      className="w-full h-14 rounded-2xl bg-muted/30 border-none px-4 font-bold text-sm focus:ring-2 focus:ring-primary/10 outline-none appearance-none cursor-pointer"
+                      {...register('subject')}
+                      disabled={isSubmitting}
+                    >
+                      <option value="HELP">General Help</option>
+                      <option value="BUG">Bug Report</option>
+                      <option value="FEEDBACK">Feature Request / Feedback</option>
+                      <option value="OTHER">Other Query</option>
+                    </select>
+                    {errors.subject && <p className="text-[10px] font-bold text-rose-500 ml-1">{errors.subject.message}</p>}
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 ml-1">Message</Label>
+                    <Textarea 
+                      placeholder="How can we help you today?"
+                      className="min-h-[160px] rounded-2xl bg-muted/30 border-none font-bold placeholder:text-muted-foreground/30 focus:ring-2 focus:ring-primary/10 p-5 leading-relaxed"
+                      {...register('message')}
+                      disabled={isSubmitting}
+                    />
+                    {errors.message && <p className="text-[10px] font-bold text-rose-500 ml-1">{errors.message.message}</p>}
+                  </div>
+
+                  <Button 
+                    type="submit" 
                     disabled={isSubmitting}
-                  />
-                  {errors.message && <p className="text-[10px] font-bold text-rose-500 ml-1">{errors.message.message}</p>}
-                </div>
+                    className="w-full h-16 rounded-2xl bg-foreground text-background hover:bg-primary hover:text-white font-black uppercase tracking-[0.2em] text-xs transition-all flex items-center gap-3 overflow-hidden group shadow-xl shadow-primary/5 active:scale-[0.98]"
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center gap-3">
+                        <div className="w-5 h-5 border-2 border-background/20 border-t-background rounded-full animate-spin" />
+                        <span>Dispatching Message...</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-2">
+                         <span>Send Support Request</span>
+                         <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      </div>
+                    )}
+                  </Button>
+                </form>
 
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className="w-full h-16 rounded-2xl bg-foreground text-background hover:bg-primary hover:text-white font-black uppercase tracking-[0.2em] text-xs transition-all flex items-center gap-3 overflow-hidden group shadow-xl shadow-primary/5"
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center gap-3">
-                      <div className="w-5 h-5 border-2 border-background/20 border-t-background rounded-full animate-spin" />
-                      <span>Dispatching Message...</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-center gap-2">
-                       <span>Send Support Request</span>
-                       <Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                    </div>
-                  )}
-                </Button>
-              </form>
-
-              {/* Decorative Background Element */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
-            </div>
+                {/* Decorative Background Element */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[100px] -mr-32 -mt-32 pointer-events-none" />
+              </div>
+            )}
           </FadeIn>
         </div>
       </main>

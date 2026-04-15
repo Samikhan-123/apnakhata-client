@@ -87,10 +87,12 @@ export default function UserGuidePage() {
                  <Button className="h-14 px-10 rounded-2xl font-bold bg-primary hover:bg-primary/90 text-white shadow-xl shadow-primary/20 gap-2">
                    Get Started <ArrowRight className="h-4 w-4" />
                  </Button>
-               </Link>
-               <Button variant="ghost" className="h-14 px-10 rounded-2xl font-bold border border-border/40 hover:bg-muted/30 transition-all">
+              </Link>
+              <Link href="/contact">
+                <Button variant="ghost" className="h-14 px-10 rounded-2xl font-bold border border-border/40 hover:bg-muted/30 transition-all">
                   Contact Support
                </Button>
+              </Link>
             </div>
           </SlideIn>
         </div>
