@@ -38,8 +38,8 @@ export default function AdminDashboardPage() {
   const [error, setError] = useState<any>(null);
   const { currency, formatCurrency } = useCurrency();
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchData = async (isSilent: boolean = false) => {
+    if (!isSilent) setLoading(true);
     setError(null);
     try {
       const [statsRes, finRes] = await Promise.all([
@@ -53,12 +53,18 @@ export default function AdminDashboardPage() {
       const { message, status } = handleApiError(err, { silent: true });
       setError({ message, status });
     } finally {
-      setLoading(false);
+      if (!isSilent) setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
+    // Add 12-hour background synchronization (Silent Refresh)
+    const interval = setInterval(() => {
+       fetchData(true);
+    }, 1000 * 60 * 60 * 12); // 12 hours
+
+    return () => clearInterval(interval);
   }, []);
 
   if (loading) {
@@ -189,9 +195,13 @@ export default function AdminDashboardPage() {
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={financialStats?.activityTrends || []}>
                   <defs>
-                    <linearGradient id="colorCount" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient id="colorSignups" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3}/>
                       <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorActive" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
+                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border)/0.2)" />
@@ -216,13 +226,29 @@ export default function AdminDashboardPage() {
                     }}
                     labelStyle={{ fontWeight: 900, marginBottom: '4px' }}
                   />
+                  <Legend 
+                    verticalAlign="top" 
+                    align="right" 
+                    iconType="circle"
+                    wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', paddingBottom: '20px' }}
+                  />
                   <Area 
+                    name="New Growth (Signups)"
                     type="monotone" 
-                    dataKey="count" 
+                    dataKey="signups" 
                     stroke="#3b82f6" 
-                    strokeWidth={4}
+                    strokeWidth={3}
                     fillOpacity={1} 
-                    fill="url(#colorCount)" 
+                    fill="url(#colorSignups)" 
+                  />
+                  <Area 
+                    name="Social Engagement (Active Users)"
+                    type="monotone" 
+                    dataKey="activeUsers" 
+                    stroke="#8b5cf6" 
+                    strokeWidth={3}
+                    fillOpacity={1} 
+                    fill="url(#colorActive)" 
                   />
                 </AreaChart>
               </ResponsiveContainer>
@@ -282,61 +308,102 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
-         {/* Global Ledger Pulse */}
-         <FadeIn delay={0.6}>
-           <div className="premium-card p-8 rounded-[3rem] border border-border/10">
-              <div className="flex justify-between items-center mb-8">
-                 <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
-                    <Scale className="h-5 w-5 text-primary" />
-                    Global Ledger Pulse
-                 </h3>
-                 <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 px-3 py-1 bg-muted/30 rounded-full">30-Day Analysis</span>
-              </div>
-              <div className="space-y-4">
-                 <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border/5">
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-emerald-600">
-                          <TrendingUp className="h-5 w-5" />
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Total Inflow</p>
-                          <p className="text-lg font-black text-emerald-600 leading-tight">{statCards[1].value}</p>
-                       </div>
-                    </div>
-                    <div className="text-right">
-                       <p className="text-[10px] font-bold text-muted-foreground">{stats?.incomeCount || 0} Entries</p>
-                    </div>
-                 </div>
+          {/* Global Ledger Pulse */}
+          <FadeIn delay={0.6}>
+            <div className="premium-card p-8 rounded-[3rem] border border-border/10">
+               <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
+                     <Scale className="h-5 w-5 text-primary" />
+                     Global Ledger Pulse
+                  </h3>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 px-3 py-1 bg-muted/30 rounded-full">30-Day Analysis</span>
+               </div>
+               <div className="space-y-4">
+                  <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border/5">
+                     <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-emerald-600">
+                           <TrendingUp className="h-5 w-5" />
+                        </div>
+                        <div>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Total Inflow</p>
+                           <p className="text-lg font-black text-emerald-600 leading-tight">{statCards[1].value}</p>
+                        </div>
+                     </div>
+                     <div className="text-right">
+                        <p className="text-[10px] font-bold text-muted-foreground">{stats?.incomeCount || 0} Entries</p>
+                     </div>
+                  </div>
 
-                 <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border/5">
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20 text-rose-600">
-                          <TrendingDown className="h-5 w-5" />
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Total Outflow</p>
-                          <p className="text-lg font-black text-rose-600 leading-tight">{statCards[2].value}</p>
-                       </div>
-                    </div>
-                    <div className="text-right">
-                       <p className="text-[10px] font-bold text-muted-foreground">{stats?.expenseCount || 0} Entries</p>
-                    </div>
-                 </div>
+                  <div className="flex items-center justify-between p-4 rounded-2xl bg-muted/20 border border-border/5">
+                     <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20 text-rose-600">
+                           <TrendingDown className="h-5 w-5" />
+                        </div>
+                        <div>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Total Outflow</p>
+                           <p className="text-lg font-black text-rose-600 leading-tight">{statCards[2].value}</p>
+                        </div>
+                     </div>
+                     <div className="text-right">
+                        <p className="text-[10px] font-bold text-muted-foreground">{stats?.expenseCount || 0} Entries</p>
+                     </div>
+                  </div>
 
-                 <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 border border-primary/10">
-                    <div className="flex items-center gap-3">
-                       <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 text-primary">
-                          <DollarSign className="h-5 w-5" />
-                       </div>
-                       <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">Net Platform Volume</p>
-                          <p className="text-lg font-black text-primary leading-tight">{formatCurrency((financialStats?.summary?.totalIncome || 0) - (financialStats?.summary?.totalExpense || 0))}</p>
-                       </div>
+                  <div className="flex items-center justify-between p-4 rounded-2xl bg-primary/5 border border-primary/10">
+                     <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20 text-primary">
+                           <DollarSign className="h-5 w-5" />
+                        </div>
+                        <div>
+                           <p className="text-[10px] font-black uppercase tracking-widest text-primary/60">Net Platform Volume</p>
+                           <p className="text-lg font-black text-primary leading-tight">{formatCurrency((financialStats?.summary?.totalIncome || 0) - (financialStats?.summary?.totalExpense || 0))}</p>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+            </div>
+          </FadeIn>
+
+          {/* Top Active Users Engagement */}
+          <FadeIn delay={0.65}>
+             <div className="premium-card p-8 rounded-[3rem] border border-border/10">
+                <div className="flex justify-between items-center mb-8">
+                   <h3 className="text-xl font-black tracking-tight flex items-center gap-2 text-foreground">
+                      <LucideActivity className="h-5 w-5 text-indigo-500" />
+                      Engagement Champions
+                   </h3>
+                   <span className="text-[9px] font-black uppercase tracking-widest text-indigo-500/60 animate-pulse">MOST ACTIVE</span>
+                </div>
+                <div className="space-y-4">
+                  {(financialStats?.topActiveUsers || []).map((user: any, idx: number) => (
+                    <div key={user.id} className={cn(
+                      "flex items-center justify-between p-3 rounded-2xl transition-all border border-transparent",
+                      idx === 0 ? "bg-indigo-500/5 border-indigo-500/10" : "hover:bg-muted/30"
+                    )}>
+                      <div className="flex items-center gap-3 min-w-0">
+                         <div className="w-9 h-9 rounded-xl bg-indigo-500/10 flex items-center justify-center font-black text-xs text-indigo-600 uppercase">
+                            {user.name?.charAt(0) || 'U'}
+                         </div>
+                         <div className="truncate">
+                            <p className="text-xs font-black text-foreground truncate">{user.name || 'Anonymous User'}</p>
+                            <p className="text-[10px] font-medium text-muted-foreground truncate">{user.email}</p>
+                         </div>
+                      </div>
+                      <div className="bg-background/80 border border-border/10 px-3 py-1 rounded-full text-right ml-4">
+                         <span className="text-[10px] font-black text-indigo-600">{user.activityCount}</span>
+                         <span className="text-[8px] font-bold text-muted-foreground ml-1 uppercase">Hits</span>
+                      </div>
                     </div>
-                 </div>
-              </div>
-           </div>
-         </FadeIn>
+                  ))}
+                  {(!financialStats?.topActiveUsers || financialStats.topActiveUsers.length === 0) && (
+                    <div className="flex flex-col items-center justify-center py-10 opacity-40">
+                       <LucideActivity className="h-8 w-8 mb-2" />
+                       <p className="text-xs font-bold uppercase tracking-widest">No activity found</p>
+                    </div>
+                  )}
+                </div>
+             </div>
+          </FadeIn>
 
          {/* System Infrastructure */}
          <FadeIn delay={0.7}>
