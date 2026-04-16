@@ -174,7 +174,7 @@ export default function LandingPage() {
             )}
             <div className="flex flex-col items-center sm:items-start text-muted-foreground/60">
               <p className="text-[10px] font-black uppercase tracking-widest">No credit card needed</p>
-              <p className="text-xs font-bold leading-none mt-1">Join 1,000+ users today</p>
+              <p className="text-xs font-bold leading-none mt-1">Joined by 1,000+ users</p>
             </div>
           </motion.div>
         </div>

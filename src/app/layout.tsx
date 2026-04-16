@@ -41,6 +41,8 @@ export const metadata: Metadata = {
     title: "Apna Khata - Financial Clarity & Secure Mastery",
     description: "Your personal financial haven. Simple, secure, and made for clarity.",
     images: ["/og-image.png"],
+    site: "@apnakhata",
+    creator: "@apnakhata",
   },
   icons: {
     icon: "/favicon.ico",
@@ -76,16 +78,21 @@ export default function RootLayout({
               "name": "Apna Khata",
               "operatingSystem": "Web",
               "applicationCategory": "FinancialApplication",
+              "applicationSubCategory": "Personal Ledger & Budgeting",
               "description": "Master your personal finances with a secure, elegant, and beautifully simple ledger.",
               "offers": {
                 "@type": "Offer",
                 "price": "0",
-                "priceCurrency": "PKR"
+                "priceCurrency": "PKR",
+                "availability": "https://schema.org/InStock"
               },
               "author": {
                 "@type": "Organization",
-                "name": "Apna Khata"
-              }
+                "name": "Apna Khata",
+                "url": "https://apnakhata.online"
+              },
+              "featureList": "Daily Expense Tracking, PDF Reports, Budget Management, Secure Encryption",
+              "genre": "Finance"
             }),
           }}
         />
