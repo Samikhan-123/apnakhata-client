@@ -132,7 +132,7 @@ export default function LandingPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tighter leading-[0.95] mb-8"
           >
-            Finally, see where your <br />
+            Apna Khata: See where your <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-indigo-500">
               money really goes.
             </span>
@@ -181,7 +181,7 @@ export default function LandingPage() {
       </section>
 
       {/* Core Features - Simplified Bento */}
-      <section className="py-24 md:py-40 relative bg-muted/10 border-b border-border/40">
+      <section id="features" className="py-24 md:py-40 relative bg-muted/10 border-b border-border/40">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -286,7 +286,7 @@ export default function LandingPage() {
       </section>
 
       {/* How It Works - Humanized Steps */}
-      <section className="py-24 md:py-40 bg-background text-foreground relative overflow-hidden border-b border-border/40">
+      <section id="how-it-works" className="py-24 md:py-40 bg-background text-foreground relative overflow-hidden border-b border-border/40">
         <div className="max-w-7xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -355,7 +355,7 @@ export default function LandingPage() {
       </section>
 
       {/* FAQ - Accordion Styled */}
-      <section className="py-24 md:py-40 relative bg-background border-t border-border/40">
+      <section id="faq" className="py-24 md:py-40 relative bg-background border-t border-border/40">
         <div className="max-w-4xl mx-auto px-6">
           <motion.div
             initial="initial"
@@ -377,7 +377,7 @@ export default function LandingPage() {
             {[
               { q: 'Is my data secure?', a: 'Completely. We use industry-standard encryption to ensure only you can access your financial transactions.' },
               { q: 'Can I export my data?', a: 'Yes! You can download your reports in Excel or PDF formats at any time from your dashboard.' },
-              { q: 'Is it free to use?', a: 'The core features of Apna Khata are free for personal use. We believe everyone deserves financial clarity.' },
+              { q: 'Is it free to use?', a: 'The core features of Apna Khata are free for now but will be subscription based in the future. We believe everyone deserves financial clarity.' },
               { q: 'How do I get started?', a: 'Just create an account, set your starting balance, and start logging. It takes less than 5 minutes.' }
             ].map((faq, idx) => (
               <FAQItem key={idx} question={faq.q} answer={faq.a} />

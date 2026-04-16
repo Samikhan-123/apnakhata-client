@@ -14,8 +14,11 @@ export const metadata: Metadata = {
     default: "Apna Khata - Financial Clarity & Secure Mastery",
     template: "%s | Apna Khata"
   },
-  description: "Master your personal finances with a secure, elegant, and beautifully simple ledger. Achieve financial clarity for you and your family with Apna Khata.",
-  keywords: ["financial clarity", "secure money management", "personal ledger", "family wealth", "honest tracking", "modern finance sanctuary"],
+  alternates: {
+    canonical: '/',
+  },
+  description: "Take back control of your financial story. Apna Khata offers a serene and secure harbor for your daily ledger, helping you track money while building the future your family deserves.",
+  keywords: ["financial clarity", "secure money management", "personal ledger", "family wealth", "honest tracking", "modern finance sanctuary", "Apna Khata"],
   manifest: "/manifest.json",
   openGraph: {
     title: "Apna Khata - Elegant & Secure Money Management",
@@ -63,6 +66,30 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "Apna Khata",
+              "operatingSystem": "Web",
+              "applicationCategory": "FinancialApplication",
+              "description": "Master your personal finances with a secure, elegant, and beautifully simple ledger.",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "PKR"
+              },
+              "author": {
+                "@type": "Organization",
+                "name": "Apna Khata"
+              }
+            }),
+          }}
+        />
+      </head>
       <body className={inter.className}>
         <Providers>
           <ImpersonationBanner />
