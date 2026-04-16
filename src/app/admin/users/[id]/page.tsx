@@ -22,6 +22,7 @@ import { useCurrency } from '@/context/CurrencyContext';
 import { format } from 'date-fns';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useAuth } from '@/context/AuthContext';
+import { RiskProfileCard } from './RiskProfileCard';
 
 export default function UserDetailPage() {
   const { id } = useParams();
@@ -352,10 +353,10 @@ export default function UserDetailPage() {
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {[
-          { label: 'Total Records', value: user._count?.ledgerEntries || 0, icon: Activity, color: 'blue' },
+          { label: 'Total Transactions', value: user._count?.ledgerEntries || 0, icon: Activity, color: 'blue' },
           { label: 'Custom Categories', value: user._count?.categories || 0, icon: Tag, color: 'emerald' },
           { label: 'Monthly Budgets', value: user._count?.budgets || 0, icon: Wallet, color: 'amber' },
-          { label: 'Recurring Tasks', value: user._count?.recurringEntries || 0, icon: Clock, color: 'purple' },
+          { label: 'Automated Transactions', value: user._count?.recurringEntries || 0, icon: Clock, color: 'purple' },
         ].map((stat, i) => (
           <FadeIn key={stat.label} delay={0.2 + i * 0.1}>
             <div className="premium-card p-6 rounded-3xl flex flex-col justify-between h-32 border border-border/10 group hover:border-primary/20 transition-all">
@@ -415,14 +416,16 @@ export default function UserDetailPage() {
               ))
             ) : (
               <div className="p-12 text-center bg-muted/10 rounded-3xl border border-dashed border-border/20">
-                <p className="text-muted-foreground font-bold">No recent Records added.</p>
+                <p className="text-muted-foreground font-bold">No recent transactions added.</p>
               </div>
             )}
           </div>
         </div>
 
-        {/* System Info */}
+        {/* System Info & Risk Profile */}
         <div className="space-y-6">
+          <RiskProfileCard riskProfile={user.riskProfile} />
+          
           <h2 className="text-xl font-black tracking-tight text-foreground px-2">Account Metadata</h2>
           <div className="premium-card p-6 rounded-3xl space-y-6 border border-border/10">
             <div className="flex items-start gap-4">

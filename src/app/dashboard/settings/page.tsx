@@ -282,7 +282,7 @@ export default function SettingsPage() {
                         </div>
                         <div>
                            <CardTitle className="text-xl font-bold tracking-tight">Data & Privacy</CardTitle>
-                           <CardDescription className="text-xs font-medium text-muted-foreground/60">Manage your financial records</CardDescription>
+                           <CardDescription className="text-xs font-medium text-muted-foreground/60">Manage your financial transactions</CardDescription>
                         </div>
                      </div>
   
@@ -329,8 +329,8 @@ export default function SettingsPage() {
         onClose={() => setIsPurgeOpen(false)}
         onConfirm={handlePurgeData}
         loading={isPurging}
-        title="Purge all data?"
-        description="This is a permanent action. All your records, goals, and recurring tasks will be deleted forever. This cannot be undone."
+        title="Delete all data?"
+        description="This is a permanent action. All your transactions, goals, and recurring patterns will be deleted forever. This cannot be undone."
       />
 
       <ConfirmDialog 

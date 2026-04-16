@@ -55,7 +55,7 @@ export const LedgerEntryForm = ({
     resolver: zodResolver(ledgerEntrySchema),
     defaultValues: {
       type: initialData?.type || (isIncomeRequired ? 'INCOME' : 'EXPENSE'),
-      amount: initialData?.amount ? String(initialData.amount) : '',
+      amount: initialData?.amount ? Number(initialData.amount) : 0,
       description: initialData?.description || (isIncomeRequired ? 'Salary' : ' '),
       categoryId: initialData?.categoryId || null,
       date: initialData?.date || new Date().toISOString()
@@ -239,7 +239,7 @@ export const LedgerEntryForm = ({
                 placeholder="0.00"
               />
             </div>
-            {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.amount.message}</p>}
+            {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.amount as any).message}</p>}
           </div>
 
           {/* Date Selector */}
@@ -307,7 +307,7 @@ export const LedgerEntryForm = ({
               )}
               placeholder={type === 'INCOME' ? "e.g., Salary" : "What was this for?"}
             />
-            {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.description.message}</p>}
+            {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.description as any).message}</p>}
           </div>
 
           {/* Category Selector (Expense Only) */}

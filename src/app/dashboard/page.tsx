@@ -67,7 +67,7 @@ export default function DashboardPage() {
             <Link href="/dashboard/ledger">
               <Button className="rounded-xl h-11 px-6 font-bold shadow-sm gap-2 hover:bg-primary/90 active:scale-95 transition-all">
                 <PlusCircle className="h-4 w-4" />
-                <span>Add Record</span>
+                <span>Add Transaction</span>
               </Button>
             </Link>
           </div>

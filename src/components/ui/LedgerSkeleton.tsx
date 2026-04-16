@@ -51,20 +51,29 @@ export function LedgerSkeleton() {
         {/* List Skeleton (Mirroring LedgerEntryList items) */}
         <div className="space-y-4">
           {[1, 2, 3, 4, 5].map((i) => (
-            <div key={i} className="premium-card rounded-2xl p-4 sm:p-5 flex items-center justify-between gap-4 border-border/40">
-              <div className="flex items-center gap-4 flex-1">
-                <Skeleton className="h-12 w-12 rounded-xl shrink-0" />
+            <div key={i} className="premium-card rounded-2xl p-2.5 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-4 border-border/40">
+              <div className="flex items-center gap-3 sm:gap-4 flex-1">
+                <Skeleton className="h-10 w-10 sm:h-12 sm:w-12 rounded-xl shrink-0" />
                 <div className="space-y-2 flex-1">
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-4 w-32 sm:w-48 rounded-md" />
-                    <Skeleton className="h-4 w-16 rounded-md hidden sm:block" />
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2">
+                    <Skeleton className="h-3.5 sm:h-4 w-32 sm:w-48 rounded-md" />
+                    <Skeleton className="h-3.5 w-16 rounded-md hidden sm:block" />
                   </div>
-                  <Skeleton className="h-3 w-24 sm:w-32 rounded-md" />
+                  <Skeleton className="h-2.5 w-20 sm:w-32 rounded-md" />
                 </div>
+                {/* Mobile Amount Skeleton */}
+                <Skeleton className="h-4 w-20 rounded-md sm:hidden" />
               </div>
-              <div className="flex flex-col items-end gap-1">
-                <Skeleton className="h-6 w-20 sm:w-28 rounded-lg" />
-                <Skeleton className="h-3 w-12 rounded-md hidden sm:block" />
+              {/* Desktop Amount & Actions Skeleton */}
+              <div className="hidden sm:flex items-center gap-8 ml-auto">
+                 <div className="flex flex-col items-end gap-1">
+                    <Skeleton className="h-5 w-24 rounded-md" />
+                    <Skeleton className="h-2.5 w-12 rounded-md" />
+                 </div>
+                 <div className="flex gap-2">
+                    <Skeleton className="h-10 w-10 rounded-xl" />
+                    <Skeleton className="h-10 w-10 rounded-xl" />
+                 </div>
               </div>
             </div>
           ))}

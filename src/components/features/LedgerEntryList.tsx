@@ -57,7 +57,7 @@ export const LedgerEntryList = ({
           return (
             <div
               key={entry.id}
-              className="premium-card rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 group transition-all hover:bg-muted/5 border-border/40"
+              className="premium-car rounded-2xl p-2.5 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-4 group transition-all hover:bg-muted/5 border-border/40"
             >
               <div className="flex items-center flex-1 min-w-0">
                 {/* Icons Container */}
@@ -74,41 +74,42 @@ export const LedgerEntryList = ({
                 </div>
 
                 {/* Main Info */}
-                <div className="ml-4 sm:ml-5 flex-1 min-w-0">
-                  <div className="flex flex-wrap items-center gap-2 mb-0.5 sm:mb-1">
-                    <h4 className="text-sm sm:text-base font-bold text-foreground truncate tracking-tight">{capitalize(entry.description)}</h4>
-                    <Badge variant="secondary" className="text-[9px] sm:text-[10px] h-4 sm:h-5 rounded-md font-bold bg-muted/50 text-muted-foreground border-none px-1.5 sm:px-2">
+                <div className="ml-3 sm:ml-5 flex-1 min-w-0">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-0.5 sm:gap-2 sm:mb-1">
+                    <h4 className="text-xs sm:text-base font-bold text-foreground truncate tracking-tight">{capitalize(entry.description)}</h4>
+                    <span className="hidden sm:inline text-muted-foreground/20">•</span>
+                    <Badge variant="secondary" className="w-fit text-[8px] sm:text-[10px] h-3.5 sm:h-5 rounded-md font-bold bg-muted/50 text-muted-foreground border-none px-1.5 sm:px-2">
                       {entry.category?.name ? capitalize(entry.category.name) : (isIncome ? 'Income' : 'General')}
                     </Badge>
                   </div>
-                  <div className="flex items-center gap-3 text-[10px] sm:text-[11px] font-medium text-muted-foreground/60">
-                    <span className="flex items-center gap-1.5">
-                      <CalendarIcon className="h-3 sm:h-3.5 w-3 sm:w-3.5" />
-                      {format(new Date(entry.date), 'MMM dd, yyyy')}
+                  <div className="flex items-center gap-3 text-[9px] sm:text-[11px] font-medium text-muted-foreground/60 mt-1">
+                    <span className="flex items-center gap-1">
+                      <CalendarIcon className="h-2.5 sm:h-3.5 w-2.5 sm:w-3.5" />
+                      {format(new Date(entry.date), 'MMM dd')}
                     </span>
                   </div>
                 </div>
-
+                
                 {/* Amount (Mobile: inside first row) */}
-                <div className="text-right ml-3 sm:hidden">
+                <div className="text-right ml-2 sm:hidden shrink-0">
                   <p className={cn(
-                    "text-base font-bold tabular-nums tracking-tight",
+                    "text-sm font-black tabular-nums tracking-tight",
                     isIncome ? "text-emerald-600" : "text-rose-600"
                   )}>
-                    {isIncome ? '+' : '-'} {formatCurrency(Math.abs(entry.amount))}
+                    {isIncome ? '+' : '−'}{formatCurrency(Math.abs(entry.amount))}
                   </p>
                 </div>
               </div>
 
               {/* Amount (Desktop: separate column) */}
-              <div className="hidden sm:block text-right ml-4">
+              <div className="hidden sm:block text-right ml-auto min-w-[100px]">
                 <p className={cn(
-                  "text-lg font-bold tabular-nums tracking-tight",
+                  "text-lg font-black tabular-nums tracking-tight",
                   isIncome ? "text-emerald-600" : "text-rose-600"
                 )}>
-                  {isIncome ? '+' : '-'} {formatCurrency(Math.abs(entry.amount))}
+                  {isIncome ? '+' : '−'}{formatCurrency(Math.abs(entry.amount))}
                 </p>
-                <p className="text-[10px] font-medium text-muted-foreground/40 uppercase tracking-wider">{isIncome ? 'Income' : 'Expense'}</p>
+                <p className="text-[9px] font-black text-muted-foreground/40 uppercase tracking-widest">{isIncome ? 'Income' : 'Expense'}</p>
               </div>
 
               {/* Actions */}
@@ -127,7 +128,7 @@ export const LedgerEntryList = ({
                           size="icon"
                           onClick={() => !readOnly && setEditingEntry(entry)}
                           className={cn(
-                            "rounded-xl sm:rounded-2xl h-9 w-9 sm:h-11 sm:w-11 text-muted-foreground transition-all active:scale-90",
+                            "rounded-lg sm:rounded-2xl h-8 w-8 sm:h-11 sm:w-11 text-muted-foreground transition-all active:scale-90",
                             readOnly 
                               ? "opacity-20 cursor-not-allowed" 
                               : "hover:text-primary hover:bg-primary/10 border border-transparent hover:border-primary/20"
@@ -135,7 +136,7 @@ export const LedgerEntryList = ({
                           title={readOnly ? "Locked: Diagnostic Session" : "Edit"}
                           disabled={readOnly}
                         >
-                          <LucideIcons.Edit3 className="h-4 w-4 sm:h-5 sm:w-5" />
+                          <LucideIcons.Edit3 className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                         </Button>
                         {!isIncome && (
                           <Button
@@ -143,7 +144,7 @@ export const LedgerEntryList = ({
                             size="icon"
                             onClick={() => !readOnly && setDeleteId(entry.id)}
                             className={cn(
-                              "rounded-xl sm:rounded-2xl h-9 w-9 sm:h-11 sm:w-11 text-muted-foreground transition-all active:scale-90",
+                              "rounded-lg sm:rounded-2xl h-8 w-8 sm:h-11 sm:w-11 text-muted-foreground transition-all active:scale-90",
                               readOnly 
                                 ? "opacity-20 cursor-not-allowed" 
                                 : "hover:text-rose-600 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20"
@@ -151,7 +152,7 @@ export const LedgerEntryList = ({
                             title={readOnly ? "Locked: Diagnostic Session" : "Delete"}
                             disabled={readOnly}
                           >
-                            <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                            <Trash2 className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                           </Button>
                         )}
                       </>

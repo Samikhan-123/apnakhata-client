@@ -52,7 +52,7 @@ export default function BudgetsPage() {
     resolver: zodResolver(budgetSchema),
     defaultValues: {
       categoryId: '',
-      limit: ''
+      limit: 0
     }
   });
 
@@ -204,7 +204,7 @@ export default function BudgetsPage() {
                   </Select>
                 )}
               />
-              {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.categoryId.message}</p>}
+              {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.categoryId as any).message}</p>}
             </div>
 
             <div className="space-y-3">
@@ -218,7 +218,7 @@ export default function BudgetsPage() {
                   errors.limit && "ring-2 ring-rose-500/20 bg-rose-500/5"
                 )}
               />
-              {errors.limit && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.limit.message}</p>}
+              {errors.limit && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.limit as any).message}</p>}
             </div>
 
             <Button

@@ -36,10 +36,10 @@ const menuGroups = [
   {
     title: 'Financials',
     items: [
-      { name: 'Records', icon: ReceiptText, href: '/dashboard/ledger' },
+      { name: 'Transactions', icon: ReceiptText, href: '/dashboard/ledger' },
       { name: 'Categories', icon: Tags, href: '/dashboard/categories' },
       { name: 'Budgets', icon: PiggyBank, href: '/dashboard/budgets' },
-      { name: 'Auto-Pilot', icon: RefreshCcw, href: '/dashboard/recurring' },
+      { name: 'Schedules', icon: RefreshCcw, href: '/dashboard/recurring' },
     ]
   },
   {

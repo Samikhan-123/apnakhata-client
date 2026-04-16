@@ -54,7 +54,7 @@ export default function RecurringPage() {
     defaultValues: {
       type: 'EXPENSE',
       frequency: 'MONTHLY',
-      amount: '',
+      amount: 0,
       description: '',
       nextExecution: new Date().toISOString().split('T')[0]
     }
@@ -175,9 +175,9 @@ export default function RecurringPage() {
       {/* Header & Status Center */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
         <SlideIn duration={0.5}>
-          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Records Automation</h1>
+          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Transaction Automation</h1>
           <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-lg">
-            Manage your automated payments and regular income entries in one place. No need to enter the same record again and again.
+            Manage your automated payments and regular income transactions in one place. No need to log the same transaction again and again.
           </p>
         </SlideIn>
 
@@ -239,7 +239,7 @@ export default function RecurringPage() {
                   </Select>
                 )}
               />
-              {errors.type && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.type.message}</p>}
+              {errors.type && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.type as any).message}</p>}
             </div>
 
             <div className="grid grid-cols-2 gap-6">
@@ -254,7 +254,7 @@ export default function RecurringPage() {
                     errors.amount && "ring-2 ring-rose-500/20 bg-rose-500/5"
                   )}
                 />
-                {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.amount.message}</p>}
+                {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.amount as any).message}</p>}
               </div>
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Frequency</Label>
@@ -274,7 +274,7 @@ export default function RecurringPage() {
                     </Select>
                   )}
                 />
-                {errors.frequency && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.frequency.message}</p>}
+                {errors.frequency && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.frequency as any).message}</p>}
               </div>
             </div>
 
@@ -307,7 +307,7 @@ export default function RecurringPage() {
                   )}
                 />
               )}
-              {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.description.message}</p>}
+              {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.description as any).message}</p>}
             </div>
 
             {type === 'EXPENSE' && (
@@ -329,7 +329,7 @@ export default function RecurringPage() {
                     </Select>
                   )}
                 />
-                {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.categoryId.message}</p>}
+                {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.categoryId as any).message}</p>}
               </div>
             )}
 
@@ -343,7 +343,7 @@ export default function RecurringPage() {
                   errors.nextExecution && "ring-2 ring-rose-500/20 bg-rose-500/5"
                 )}
               />
-              {errors.nextExecution && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{errors.nextExecution.message}</p>}
+              {errors.nextExecution && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.nextExecution as any).message}</p>}
             </div>
 
             <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
@@ -506,9 +506,9 @@ export default function RecurringPage() {
             <RefreshCcw size={28} className="text-primary/40" />
           </div>
           <div>
-            <h5 className="font-bold text-lg text-foreground tracking-tight mb-1">Automated Records</h5>
+            <h5 className="font-bold text-lg text-foreground tracking-tight mb-1">Scheduled Transactions</h5>
             <p className="text-muted-foreground font-medium text-sm leading-relaxed max-w-2xl">
-              Apna Khata keeps your records effortless. We automatically track your regular payments and income so you can focus on your goals while we handle the data.
+              Apna Khata keeps your transactions effortless. We automatically track your regular payments and income so you can focus on your goals while we handle the data.
             </p>
           </div>
         </div>
@@ -517,8 +517,8 @@ export default function RecurringPage() {
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
-        title="Stop this task?"
-        description="Are you sure you want to stop this automated entry? This won't affect your past records, but no new entries will be added automatically."
+        title="Stop this auto-transaction?"
+        description="Are you sure you want to stop this automated transaction? This won't affect your past transactions, but no new ones will be added automatically."
         loading={isDeleting}
       />
     </div>

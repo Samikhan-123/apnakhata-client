@@ -261,7 +261,7 @@ export default function LandingPage() {
                 <div className="space-y-3">
                   <h4 className="text-3xl font-black tracking-tighter">Safe & Private</h4>
                   <p className="text-muted-foreground font-bold text-base leading-relaxed">
-                    Your data is yours. We use high-end encryption to keep your records private and secure.
+                    Your data is yours. We use high-end encryption to keep your transactions private and secure.
                   </p>
                 </div>
               </SpotlightCard>
@@ -306,7 +306,7 @@ export default function LandingPage() {
               <div className="space-y-10">
                 {[
                   { step: '01', title: 'Add Your Income', desc: 'Tell us your starting balance or monthly salary to set your budget.' },
-                  { step: '02', title: 'Record Spending', desc: 'Quickly log expenses as you spend them. Use categories to stay organized.' },
+                  { step: '02', title: 'Add Transactions', desc: 'Quickly log expenses as you spend them. Use categories to stay organized.' },
                   { step: '03', title: 'Relax & Review', desc: 'Check your dashboard weekly to see trends and stay on track.' }
                 ].map((item, idx) => (
                   <motion.div key={idx} variants={fadeInUp} className="flex gap-8 items-start">
@@ -375,7 +375,7 @@ export default function LandingPage() {
 
           <div className="grid gap-4">
             {[
-              { q: 'Is my data secure?', a: 'Completely. We use industry-standard encryption to ensure only you can access your financial records.' },
+              { q: 'Is my data secure?', a: 'Completely. We use industry-standard encryption to ensure only you can access your financial transactions.' },
               { q: 'Can I export my data?', a: 'Yes! You can download your reports in Excel or PDF formats at any time from your dashboard.' },
               { q: 'Is it free to use?', a: 'The core features of Apna Khata are free for personal use. We believe everyone deserves financial clarity.' },
               { q: 'How do I get started?', a: 'Just create an account, set your starting balance, and start logging. It takes less than 5 minutes.' }

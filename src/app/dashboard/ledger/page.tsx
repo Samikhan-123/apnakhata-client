@@ -85,7 +85,7 @@ export default function LedgerPage() {
       const { exportToCSV, exportToExcel, exportLedgerToPDF } = await import('@/lib/export-utils');
 
       const data = await ledgerEntryService.getExportData(filters);
-      const filename = `ApnaKhata_Records_${format(new Date(), 'dd_MMM_yyyy')}`;
+      const filename = `ApnaKhata_Transactions_${format(new Date(), 'dd_MMM_yyyy')}`;
 
       if (formatType === 'pdf') {
         await exportLedgerToPDF(data, user?.name || 'User', filters);
@@ -139,10 +139,10 @@ export default function LedgerPage() {
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div className="space-y-1">
             <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">
-              {isFiltered ? 'Financial Records' : 'Records'}
+              {isFiltered ? 'Transaction History' : 'Transactions'}
             </h1>
             <p className="text-muted-foreground font-medium text-base sm:text-lg">
-              {isFiltered ? `Viewing records for ${periodText}` : `Your complete Records history for ${periodText}`}
+              {isFiltered ? `Viewing transactions for ${periodText}` : `Your complete transaction history for ${periodText}`}
             </p>
           </div>
 
@@ -151,14 +151,14 @@ export default function LedgerPage() {
             className="w-auto md:w-auto h-11 px-8 rounded-xl gap-2 font-bold shadow-sm bg-primary hover:bg-primary/90 active:scale-95 transition-all text-sm"
           >
             <Plus className="h-5 w-5" />
-            <span>Add Record</span>
+            <span>Log Transaction</span>
           </Button>
 
           <CustomModal
             isOpen={isFormOpen}
             onClose={setIsFormOpen}
-            title="New Record"
-            description="Add a new income or expense to your history."
+            title="New Transaction"
+            description="Log a new income or expense transaction to your history."
             maxWidth="500px"
           >
             <LedgerEntryForm

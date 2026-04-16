@@ -167,7 +167,7 @@ export const ReportFilters = ({ onFilterChange, currentFilters }: ReportFiltersP
           )}
           <div className="bg-primary/5 px-6 h-12 rounded-2xl flex items-center gap-3 border border-primary/10">
             <Filter className="h-4 w-4 text-primary" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Global Analytics Active</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60">Filters Active</span>
           </div>
         </div>
       </div>

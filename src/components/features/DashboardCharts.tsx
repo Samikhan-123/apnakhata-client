@@ -8,10 +8,14 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  ResponsiveContainer
+  ResponsiveContainer,
+  ComposedChart,
+  Bar,
+  Line,
+  Legend
 } from 'recharts';
 import { useCurrency } from '@/context/CurrencyContext';
-import { capitalize } from '@/lib/utils';
+import { capitalize, cn } from '@/lib/utils';
 
 interface DashboardChartsProps {
   stats: any;
@@ -21,7 +25,7 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
   const { formatCurrency } = useCurrency();
 
   //  pre-computed monthly trends from service
-  const data = stats?.monthlyTrends || [];
+  const data = stats?.monthlyTrends?.map((m: any) => ({ ...m, netBalance: m.income - m.expense })) || [];
 
   if (data.length === 0) {
     return (
@@ -32,24 +36,24 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
   }
 
   return (
-    <div className="h-full w-full relative group min-h-[400px] overflow-hidden">
+    <div className="h-full w-full relative group min-h-[400px] overflow-hidden p-2">
       <ResponsiveContainer width="100%" height="100%" minHeight={400}>
-        <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+        <ComposedChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }} barGap={8}>
           <defs>
             <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+              <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#10b981" stopOpacity={0.4} />
             </linearGradient>
             <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.3} />
-              <stop offset="95%" stopColor="#f43f5e" stopOpacity={0} />
+              <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.4} />
             </linearGradient>
-            <linearGradient id="colorBalance" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+            <linearGradient id="colorBalanceTrend" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
               <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" opacity={0.2} />
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--primary))" opacity={0.05} />
           <XAxis
             dataKey="month"
             axisLine={false}
@@ -59,22 +63,37 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
           />
           <YAxis hide domain={['auto', 'auto']} />
           <Tooltip
-            cursor={{ stroke: 'hsl(var(--primary))', strokeWidth: 1, strokeDasharray: '4 4' }}
+            cursor={{ fill: 'hsl(var(--primary) / 0.03)', radius: 10 }}
             content={({ active, payload }) => {
               if (active && payload && payload.length) {
+                const item = payload[0].payload;
                 return (
-                  <div className="glass-card rounded-2xl p-5 shadow-[0_20px_50px_rgba(0,0,0,0.2)] border-white/10 backdrop-blur-xl transition-all duration-300">
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 mb-4">{payload[0].payload.month}</p>
-                    <div className="space-y-3">
-                      {payload.map((item: any) => (
-                        <div key={item.name} className="flex items-center justify-between gap-10">
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-2.5 h-2.5 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.2)]" style={{ backgroundColor: item.color }} />
-                            <span className="text-xs font-bold text-foreground/90">{item.name}</span>
-                          </div>
-                          <span className="text-xs font-black tabular-nums text-foreground">{formatCurrency(item.value)}</span>
+                  <div className="glass-card rounded-[2rem] p-6 shadow-2xl border-white/10 backdrop-blur-xl transition-all duration-300 min-w-[220px]">
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 mb-5">{item.month}</p>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm" />
+                          <span className="text-xs font-bold text-foreground/80">Monthly Income &nbsp;</span>
                         </div>
-                      ))}
+                        <span className="text-xs font-black tabular-nums text-emerald-500">{formatCurrency(item.income)}</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm" />
+                          <span className="text-xs font-bold text-foreground/80">Monthly Expense &nbsp;</span>
+                        </div>
+                        <span className="text-xs font-black tabular-nums text-rose-500">{formatCurrency(item.expense)}</span>
+                      </div>
+                      <div className="pt-3 border-t border-white/5 flex items-center justify-between">
+                         <span className="text-[10px] font-black uppercase tracking-widest text-primary/60">Net Balance</span>
+                         <span className={cn(
+                           "text-xs font-black tabular-nums",
+                           item.netBalance >= 0 ? "text-primary" : "text-rose-500"
+                         )}>
+                           {item.netBalance >= 0 ? '+' : ''}{formatCurrency(item.netBalance)}
+                         </span>
+                      </div>
                     </div>
                   </div>
                 );
@@ -82,40 +101,39 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
               return null;
             }}
           />
-          <Area
-            type="monotone"
-            name="Income"
+          <Bar
             dataKey="income"
-            stroke="#10b981"
-            strokeWidth={4}
-            fillOpacity={1}
             fill="url(#colorIncome)"
-            animationDuration={2000}
-            activeDot={{ r: 6, strokeWidth: 0, fill: '#10b981' }}
+            name="Income"
+            radius={[6, 6, 0, 0]}
+            barSize={24}
+            animationDuration={1500}
           />
-          <Area
-            type="monotone"
-            name="Expense"
+          <Bar
             dataKey="expense"
-            stroke="#f43f5e"
-            strokeWidth={4}
-            fillOpacity={1}
             fill="url(#colorExpense)"
-            animationDuration={2000}
-            activeDot={{ r: 6, strokeWidth: 0, fill: '#f43f5e' }}
+            name="Expense"
+            radius={[6, 6, 0, 0]}
+            barSize={24}
+            animationDuration={1500}
           />
-          <Area
+          <Line
             type="monotone"
-            name="Balance"
             dataKey="balance"
             stroke="#6366f1"
             strokeWidth={4}
-            fillOpacity={1}
-            fill="url(#colorBalance)"
-            animationDuration={2000}
+            dot={{ r: 4, strokeWidth: 2, fill: '#fff', stroke: '#6366f1' }}
             activeDot={{ r: 6, strokeWidth: 0, fill: '#6366f1' }}
+            name="Cumulative Trend"
+            animationDuration={2000}
           />
-        </AreaChart>
+          <Area
+            type="monotone"
+            dataKey="balance"
+            fill="url(#colorBalanceTrend)"
+            stroke="none"
+          />
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
