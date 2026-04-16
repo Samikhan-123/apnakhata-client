@@ -79,10 +79,16 @@ export function CategoryForm({ onSuccess, initialData }: CategoryFormProps) {
     setLoading(true);
     try {
       if (initialData?.id) {
-        await categoryService.update(initialData.id, data);
+        await categoryService.update(initialData.id, {
+          ...data,
+          name: data.name.toLowerCase()
+        });
         toast.success('Category updated');
       } else {
-        await categoryService.create(data);
+        await categoryService.create({
+          ...data,
+          name: data.name.toLowerCase()
+        });
         toast.success('Category created');
       }
       if (!initialData) reset();

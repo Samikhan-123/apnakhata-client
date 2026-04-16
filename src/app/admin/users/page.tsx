@@ -14,7 +14,7 @@ import { Tooltip } from '@/components/ui/tooltip';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ErrorState } from '@/components/ui/ErrorState';
 import { handleApiError } from '@/lib/error-handler';
-import { cn } from '@/lib/utils';
+import { cn, capitalize } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { PaginationPlus } from '@/components/ui/PaginationPlus';
@@ -296,7 +296,7 @@ export default function UserManagementPage() {
                           </div>
                           <div>
                             <div className="flex items-center gap-2 mb-1">
-                              <p className="text-xs md:text-sm font-bold text-foreground leading-none">{user.name || 'Anonymous'}</p>
+                              <p className="text-xs md:text-sm font-bold text-foreground leading-none">{user.name ? capitalize(user.name) : 'Anonymous'}</p>
                               {user.id === currentUser?.id && (
                                 <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-sm uppercase tracking-tighter border border-primary/20">Self</span>
                               )}

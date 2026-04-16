@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
-import { ShieldCheck, ShieldAlert, Shield, ShieldX, Info, CheckCircle2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { FadeIn, SlideIn } from '@/components/ui/FramerMotion';
+import { Tooltip } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
+import { CheckCircle2, Info, Shield, ShieldAlert, ShieldCheck, ShieldX } from 'lucide-react';
 
 interface Signal {
   type: 'TRUST' | 'RISK' | 'INFO';
@@ -47,19 +47,21 @@ export const RiskProfileCard = ({ riskProfile }: RiskProfileCardProps) => {
 
   return (
     <FadeIn>
-      <div className="premium-card p-8 rounded-[3rem] border border-border/10 h-full relative overflow-hidden group">
+      <div className="premium-card p-6 sm:p-8 rounded-[2.5rem] sm:rounded-[3.1rem] border border-border/10 h-full relative overflow-hidden group">
         {/* Background Accent */}
         <div className={cn(
           "absolute -right-20 -top-20 w-64 h-64 blur-3xl opacity-10 transition-colors duration-500 rounded-full",
           level === 'LOW' ? "bg-emerald-500" : level === 'MEDIUM' ? "bg-amber-500" : "bg-rose-500"
         )} />
 
-        <div className="flex justify-between items-start mb-10 relative z-10">
+        <div className="flex flex-col sm:flex-row justify-between items-start mb-10 relative z-10 gap-6">
           <div>
             <div className="flex items-center gap-2 mb-2">
-              <div className={cn("p-2 rounded-xl border", getLevelColor())}>
-                {getIcon()}
-              </div>
+              <Tooltip content={`Current Level: ${level}`}>
+                <div className={cn("p-2 rounded-xl border", getLevelColor())}>
+                  {getIcon()}
+                </div>
+              </Tooltip>
               <span className={cn("text-[10px] font-black uppercase tracking-widest", getScoreColor())}>
                 Risk Assessment: {level}
               </span>
@@ -68,11 +70,13 @@ export const RiskProfileCard = ({ riskProfile }: RiskProfileCardProps) => {
             <p className="text-xs font-bold text-muted-foreground mt-1">Real-time analytical trust score.</p>
           </div>
 
-          <div className="flex flex-col items-end">
-             <div className={cn("text-5xl font-black tracking-tighter tabular-nums", getScoreColor())}>
-               {score}<span className="text-xl text-muted-foreground/40 font-bold">%</span>
-             </div>
-             <div className="w-24 h-1.5 bg-muted rounded-full mt-2 overflow-hidden">
+          <div className="flex flex-col items-start sm:items-end w-full sm:w-auto">
+             <Tooltip content="Weighted Probability Score">
+               <div className={cn("text-5xl font-black tracking-tighter tabular-nums", getScoreColor())}>
+                 {score}<span className="text-xl text-muted-foreground/40 font-bold">%</span>
+               </div>
+             </Tooltip>
+             <div className="w-full sm:w-24 h-1.5 bg-muted rounded-full mt-2 overflow-hidden">
                 <div 
                   className={cn(
                     "h-full transition-all duration-1000",
@@ -87,14 +91,14 @@ export const RiskProfileCard = ({ riskProfile }: RiskProfileCardProps) => {
         <div className="space-y-4 relative z-10">
            <h3 className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">Behavioral Signals</h3>
            
-           <div className="grid grid-cols-1 gap-3">
+           <div className="grid grid-cols-1 gap-2.5">
               {signals.map((signal, i) => (
-                <SlideIn key={i} delay={i * 0.1}>
+                <SlideIn key={i} delay={i * 0.05}>
                   <div className={cn(
                     "flex items-center gap-3 p-3 rounded-2xl border transition-all",
                     signal.type === 'TRUST' ? "bg-emerald-500/5 border-emerald-500/10" : 
                     signal.type === 'RISK' ? "bg-rose-500/5 border-rose-500/10" : 
-                    "bg-muted/10 border-border/10"
+                    "bg-muted/10 border-border/10 shadow-sm"
                   )}>
                     <div className={cn(
                       "p-1.5 rounded-lg",
@@ -106,16 +110,20 @@ export const RiskProfileCard = ({ riskProfile }: RiskProfileCardProps) => {
                        signal.type === 'RISK' ? <ShieldAlert className="h-4 w-4" /> : 
                        <Info className="h-4 w-4" />}
                     </div>
-                    <div className="flex-1">
-                       <p className="text-[10px] font-bold text-foreground leading-tight">{signal.message}</p>
+                    <div className="flex-1 min-w-0">
+                       <p className="text-[10px] font-bold text-foreground leading-tight truncate px-1">
+                         {signal.message}
+                       </p>
                     </div>
                     {signal.impact !== 0 && (
-                      <div className={cn(
-                        "text-[10px] font-black tabular-nums whitespace-nowrap px-2 py-0.5 rounded-full bg-background/50",
-                        signal.impact > 0 ? "text-emerald-500" : "text-rose-500"
-                      )}>
-                        {signal.impact > 0 ? '+' : ''}{signal.impact} pts
-                      </div>
+                      <Tooltip content={`${signal.impact > 0 ? 'Adds' : 'Subtracts'} ${Math.abs(signal.impact)} points from trust baseline`}>
+                         <div className={cn(
+                          "text-[9px] font-black tabular-nums whitespace-nowrap px-2.5 py-1 rounded-full bg-background/50 border border-border/5",
+                          signal.impact > 0 ? "text-emerald-500" : "text-rose-500"
+                        )}>
+                          {signal.impact > 0 ? '+' : ''}{signal.impact}
+                        </div>
+                      </Tooltip>
                     )}
                   </div>
                 </SlideIn>
@@ -123,7 +131,7 @@ export const RiskProfileCard = ({ riskProfile }: RiskProfileCardProps) => {
            </div>
         </div>
 
-        <div className="mt-8 p-4 rounded-2xl bg-muted/20 border border-dashed border-border/20 flex items-center gap-3 relative z-10">
+        <div className="mt-8 p-4 rounded-2xl bg-muted/20 border border-dashed border-border/20 flex items-start gap-3 relative z-10 group-hover:border-primary/20 transition-all">
            <div className={cn(
              "p-1.5 rounded-lg shrink-0",
              level === 'LOW' ? "bg-emerald-500/10 text-emerald-500" :

@@ -23,6 +23,8 @@ import { format } from 'date-fns';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { useAuth } from '@/context/AuthContext';
 import { RiskProfileCard } from './RiskProfileCard';
+import { SecurityScoringTable } from './SecurityScoringTable';
+import { ChevronRight as LucideChevronRight } from 'lucide-react';
 
 export default function UserDetailPage() {
   const { id } = useParams();
@@ -220,31 +222,37 @@ export default function UserDetailPage() {
              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 font-black text-2xl text-primary shadow-sm">
                 {user.name ? user.name[0].toUpperCase() : 'U'}
              </div>
-             <div>
-               <h1 className="text-3xl font-black tracking-tight text-foreground">{user.name || 'Anonymous User'}</h1>
-               <div className="flex items-center gap-3 mt-1">
-                 <span className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 p-1 px-2.5 rounded-full bg-muted/30">
-                   <Mail className="h-3.5 w-3.5" />
-                   {user.email}
-                 </span>
-                 <span className={cn(
-                    "text-[10px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border",
-                    user.isActive ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-rose-500/10 text-rose-600 border-rose-500/20"
-                 )}>
-                    {user.isActive ? 'Active' : 'Banned'}
-                 </span>
-               </div>
-             </div>
+              <div className="flex-1 min-w-0">
+                <Tooltip content={user.name || 'Anonymous User'}>
+                  <h1 className="text-3xl font-black tracking-tight text-foreground truncate max-w-[250px] sm:max-w-md">
+                    {user.name ? capitalize(user.name) : 'Anonymous User'}
+                  </h1>
+                </Tooltip>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5 focus:outline-none">
+                  <Tooltip content={user.email}>
+                    <span className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 p-1 px-2.5 rounded-full bg-muted/30 truncate max-w-[180px] sm:max-w-xs">
+                      <Mail className="h-3.5 w-3.5 shrink-0" />
+                      <span className="truncate">{user.email}</span>
+                    </span>
+                  </Tooltip>
+                  <span className={cn(
+                     "text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border whitespace-nowrap",
+                     user.isActive ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                  )}>
+                     {user.isActive ? 'Active' : 'Banned'}
+                  </span>
+                </div>
+              </div>
           </div>
         </SlideIn>
 
         <SlideIn duration={0.5} delay={0.1}>
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
              {isAdmin && user.role !== 'ADMIN' && (
               <Tooltip content="Enter Diagnostic Session">
                 <Button 
                    variant="outline"
-                   className="h-12 px-6 rounded-xl font-bold gap-2 hover:bg-primary/10 transition-all shadow-sm border-primary/20 text-primary"
+                   className="h-12 px-6 rounded-xl font-bold gap-2 hover:bg-primary/10 transition-all shadow-sm border-primary/20 text-primary w-full sm:w-auto"
                    disabled={actionLoading}
                    onClick={handleImpersonate}
                 >
@@ -257,7 +265,7 @@ export default function UserDetailPage() {
              {user.deletionScheduledAt ? (
                <Button 
                  variant="outline" 
-                 className="h-12 px-6 rounded-xl font-bold gap-2 bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100 transition-all shadow-sm"
+                 className="h-12 px-6 rounded-xl font-bold gap-2 bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100 transition-all shadow-sm w-full sm:w-auto"
                  disabled={actionLoading}
                  onClick={handleCancelDeletion}
                >
@@ -269,7 +277,7 @@ export default function UserDetailPage() {
                  <Button 
                   variant="outline" 
                   className={cn(
-                    "h-12 px-6 rounded-xl font-bold gap-2 active:scale-95 transition-all shadow-sm",
+                    "h-12 px-6 rounded-xl font-bold gap-2 active:scale-95 transition-all shadow-sm w-full sm:w-auto",
                     user.isActive ? "hover:bg-rose-50 hover:text-rose-600 border-rose-100" : "hover:bg-emerald-50 hover:text-emerald-600 border-emerald-100",
                     isSelf && "opacity-20 grayscale cursor-not-allowed"
                   )}
@@ -286,7 +294,7 @@ export default function UserDetailPage() {
               <Tooltip content={user.role === 'MODERATOR' ? "Revoke Staff Privileges" : "Grant Security Clearance"}>
                 <Button 
                   className={cn(
-                    "h-12 px-6 rounded-xl font-bold gap-2 shadow-lg hover:shadow-primary/20 active:scale-95 transition-all",
+                    "h-12 px-6 rounded-xl font-bold gap-2 shadow-lg hover:shadow-primary/20 active:scale-95 transition-all w-full sm:w-auto",
                     isSelf && "opacity-50 cursor-not-allowed"
                   )}
                   disabled={actionLoading || isSelf}
@@ -351,7 +359,7 @@ export default function UserDetailPage() {
       )}
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
         {[
           { label: 'Total Transactions', value: user._count?.ledgerEntries || 0, icon: Activity, color: 'blue' },
           { label: 'Custom Categories', value: user._count?.categories || 0, icon: Tag, color: 'emerald' },
@@ -426,6 +434,8 @@ export default function UserDetailPage() {
         <div className="space-y-6">
           <RiskProfileCard riskProfile={user.riskProfile} />
           
+          <SecurityScoringTable />
+          
           <h2 className="text-xl font-black tracking-tight text-foreground px-2">Account Metadata</h2>
           <div className="premium-card p-6 rounded-3xl space-y-6 border border-border/10">
             <div className="flex items-start gap-4">
@@ -499,19 +509,27 @@ export default function UserDetailPage() {
                     <div className="grid grid-cols-2 gap-y-3 gap-x-4">
                        <div>
                           <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Organization</p>
-                          <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.org || 'N/A'}</p>
+                          <Tooltip content={user.metadata.org || 'N/A'}>
+                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.org || 'N/A'}</p>
+                           </Tooltip>
                        </div>
                        <div>
                           <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Hostname</p>
-                          <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.hostname || 'N/A'}</p>
+                          <Tooltip content={user.metadata.hostname || 'N/A'}>
+                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.hostname || 'N/A'}</p>
+                           </Tooltip>
                        </div>
                        <div>
                           <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Coordinates</p>
-                          <p className="text-[10px] font-bold text-foreground">{user.metadata.loc || 'N/A'}</p>
+                          <Tooltip content={user.metadata.loc || 'N/A'}>
+                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.loc || 'N/A'}</p>
+                           </Tooltip>
                        </div>
                        <div>
                           <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Postal Code</p>
-                          <p className="text-[10px] font-bold text-foreground">{user.metadata.postal || 'N/A'}</p>
+                          <Tooltip content={user.metadata.postal || 'N/A'}>
+                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.postal || 'N/A'}</p>
+                           </Tooltip>
                        </div>
                     </div>
                  </div>
@@ -573,5 +591,5 @@ export default function UserDetailPage() {
 }
 
 const ChevronRight = ({ className }: { className?: string }) => (
-  <svg className={className} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+  <LucideChevronRight className={className} />
 );
