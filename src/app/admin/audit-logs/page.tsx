@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
 import { adminService } from '@/services/admin.service';
-import { History, Clock, Info, CheckCircle2, Ban, Shield, UserMinus, AlertCircle, Search, Filter, UserX, UserCheck, Settings } from 'lucide-react';
+import { History, Clock, Info, CheckCircle2, Ban, Shield, UserMinus, AlertCircle, Search, Filter, UserX, UserCheck, Settings, ChevronRight } from 'lucide-react';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { Button } from '@/components/ui/button';
 import { PaginationPlus } from '@/components/ui/PaginationPlus';
@@ -44,7 +44,7 @@ export default function AuditLogPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await adminService.getAuditLogs(page, 15, currentFilters);
+      const response = await adminService.getAuditLogs(page, 20, currentFilters);
       if (response.success) {
         setLogs(response.data);
         setPagination(response.pagination);
@@ -57,22 +57,66 @@ export default function AuditLogPage() {
     }
   };
 
-  const getActionIcon = (action: string) => {
+  const getActionMetadata = (action: string) => {
+    const defaultMeta = { icon: Info, color: 'slate', bgColor: 'bg-slate-500/5', textColor: 'text-slate-600 dark:text-slate-400', borderColor: 'border-slate-500/10' };
+    
     switch (action) {
-      case 'BAN_USER': return <Ban className="h-4 w-4 text-rose-500" />;
-      case 'REACTIVATE_USER': return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
-      case 'PROMOTE_ADMIN': return <Shield className="h-4 w-4 text-primary" />;
-      case 'DEMOTE_USER': return <UserMinus className="h-4 w-4 text-amber-500" />;
-      case 'VERIFY_USER': return <CheckCircle2 className="h-4 w-4 text-blue-500" />;
-      case 'UNVERIFY_USER': return <AlertCircle className="h-4 w-4 text-slate-400" />;
-      case 'SCHEDULE_DELETION': return <Clock className="h-4 w-4 text-rose-500" />;
-      case 'CANCEL_DELETION': return <UserCheck className="h-4 w-4 text-emerald-500" />;
-      case 'USER_REQUESTED_DELETION': return <UserX className="h-4 w-4 text-rose-600" />;
-      case 'STAFF_LOGIN': return <Shield className="h-4 w-4 text-indigo-500" />;
-      case 'BATCH_BAN_USERS': return <Ban className="h-4 w-4 text-rose-700" />;
-      case 'BATCH_REACTIVATE_USERS': return <CheckCircle2 className="h-4 w-4 text-emerald-700" />;
-      case 'SYSTEM_MAINTENANCE': return <Settings className="h-4 w-4 text-purple-500" />;
-      default: return <Info className="h-4 w-4 text-muted-foreground" />;
+      case 'BAN_USER':
+      case 'BATCH_BAN_USERS':
+      case 'USER_REQUESTED_DELETION':
+      case 'SCHEDULE_DELETION':
+        return { 
+          icon: action === 'SCHEDULE_DELETION' ? Clock : (action === 'USER_REQUESTED_DELETION' ? UserX : Ban), 
+          color: 'rose',
+          bgColor: 'bg-rose-500/10',
+          textColor: 'text-rose-600 dark:text-rose-400',
+          borderColor: 'border-rose-500/20'
+        };
+      case 'REACTIVATE_USER':
+      case 'BATCH_REACTIVATE_USERS':
+      case 'CANCEL_DELETION':
+        return { 
+          icon: action === 'CANCEL_DELETION' ? UserCheck : CheckCircle2, 
+          color: 'emerald',
+          bgColor: 'bg-emerald-500/10',
+          textColor: 'text-emerald-600 dark:text-emerald-400',
+          borderColor: 'border-emerald-500/20'
+        };
+      case 'PROMOTE_ADMIN':
+      case 'STAFF_LOGIN':
+        return { 
+          icon: Shield, 
+          color: 'indigo',
+          bgColor: 'bg-indigo-500/10',
+          textColor: 'text-indigo-600 dark:text-indigo-400',
+          borderColor: 'border-indigo-500/20'
+        };
+      case 'DEMOTE_USER':
+      case 'UNVERIFY_USER':
+        return { 
+          icon: (action === 'DEMOTE_USER' ? UserMinus : AlertCircle), 
+          color: 'amber',
+          bgColor: 'bg-amber-500/10',
+          textColor: 'text-amber-600 dark:text-amber-400',
+          borderColor: 'border-amber-500/20'
+        };
+      case 'VERIFY_USER':
+        return { 
+          icon: CheckCircle2, 
+          color: 'blue',
+          bgColor: 'bg-blue-500/10',
+          textColor: 'text-blue-600 dark:text-blue-400',
+          borderColor: 'border-blue-500/20'
+        };
+      case 'SYSTEM_MAINTENANCE':
+        return { 
+          icon: Settings, 
+          color: 'purple',
+          bgColor: 'bg-purple-500/10',
+          textColor: 'text-purple-600 dark:text-purple-400',
+          borderColor: 'border-purple-500/20'
+        };
+      default: return defaultMeta;
     }
   };
 
@@ -124,29 +168,29 @@ export default function AuditLogPage() {
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Event Type</label>
-                <div className="relative">
+              <div className="space-y-1.5 group/select">
+                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1 group-focus-within/select:text-primary transition-colors">Event Type</label>
+                <div className="relative transition-transform active:scale-[0.98]">
                    <select
                     value={filters.action}
                     onChange={(e) => handleFilterChange('action', e.target.value)}
-                    className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 px-4 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer"
+                    className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 px-4 pr-10 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer hover:bg-muted/30 hover:border-border/60 sapphire-scrollbar-select"
                   >
-                    <option value="">All Actions</option>
-                    <option value="BAN_USER">Ban User</option>
-                    <option value="REACTIVATE_USER">Reactivate User</option>
-                    <option value="PROMOTE_ADMIN">Promote Admin</option>
-                    <option value="DEMOTE_USER">Demote User</option>
-                    <option value="VERIFY_USER">Verify User</option>
-                    <option value="UNVERIFY_USER">Unverify User</option>
-                    <option value="SCHEDULE_DELETION">Schedule Deletion</option>
-                    <option value="CANCEL_DELETION">Restore User</option>
-                    <option value="USER_REQUESTED_DELETION">Self-Deletion Request</option>
-                    <option value="STAFF_LOGIN">Staff Login</option>
-                    <option value="SYSTEM_MAINTENANCE">System Maintenance</option>
+                    <option value="" className="bg-background">All Action Anomalies</option>
+                    <option value="BAN_USER" className="bg-background">Ban User</option>
+                    <option value="REACTIVATE_USER" className="bg-background">Reactivate User</option>
+                    <option value="PROMOTE_ADMIN" className="bg-background">Promote Admin</option>
+                    <option value="DEMOTE_USER" className="bg-background">Demote User</option>
+                    <option value="VERIFY_USER" className="bg-background">Verify User</option>
+                    <option value="UNVERIFY_USER" className="bg-background">Unverify User</option>
+                    <option value="SCHEDULE_DELETION" className="bg-background">Schedule Deletion</option>
+                    <option value="CANCEL_DELETION" className="bg-background">Restore User</option>
+                    <option value="USER_REQUESTED_DELETION" className="bg-background">Self-Deletion Request</option>
+                    <option value="STAFF_LOGIN" className="bg-background">Staff Login</option>
+                    <option value="SYSTEM_MAINTENANCE" className="bg-background">System Maintenance</option>
                   </select>
-                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40">
-                      <Filter className="h-3 w-3" />
+                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 group-focus-within/select:opacity-100 group-focus-within/select:text-primary transition-all">
+                      <ChevronRight className="h-3 w-3 rotate-90" />
                    </div>
                 </div>
               </div>
@@ -244,14 +288,28 @@ export default function AuditLogPage() {
                           </div>
                         </td>
                         <td className="px-6 md:px-8 py-5 md:py-6">
-                          <div className="flex items-center gap-2">
-                            <div className="p-1.5 rounded-lg bg-muted/40 backdrop-blur-sm group-hover:bg-primary/5 transition-colors">
-                              {getActionIcon(log.action)}
-                            </div>
-                            <span className="text-[10px] md:text-xs font-black uppercase tracking-tighter text-foreground text-nowrap">
-                              {formatAction(log.action)}
-                            </span>
-                          </div>
+                          {(() => {
+                             const meta = getActionMetadata(log.action);
+                             const Icon = meta.icon;
+                             return (
+                               <div className="flex items-center gap-3">
+                                 <div className={cn(
+                                   "p-2 rounded-xl border transition-all duration-300",
+                                   meta.bgColor,
+                                   meta.borderColor,
+                                   meta.textColor
+                                 )}>
+                                   <Icon className="h-4 w-4" />
+                                 </div>
+                                 <span className={cn(
+                                   "text-[10px] md:text-xs font-black uppercase tracking-tighter text-nowrap",
+                                   meta.textColor
+                                 )}>
+                                   {formatAction(log.action)}
+                                 </span>
+                               </div>
+                             );
+                          })()}
                         </td>
                         <td className="px-6 md:px-8 py-5 md:py-6">
                           {log.target ? (
@@ -274,7 +332,7 @@ export default function AuditLogPage() {
                           <div className="flex items-center gap-2 text-muted-foreground/60">
                             <Clock className="h-3 w-3 md:h-3.5 md:w-3.5" />
                             <p className="text-[10px] md:text-xs font-bold text-nowrap tracking-tight">
-                              {format(new Date(log.createdAt), 'MMM dd, yyyy • HH:mm:ss')}
+                              {format(new Date(log.createdAt), 'MMM dd, yyyy • hh:mm:ss a')}
                             </p>
                           </div>
                         </td>
@@ -291,7 +349,7 @@ export default function AuditLogPage() {
                 <PaginationPlus
                   currentPage={currentPage}
                   totalPages={pagination.totalPages}
-                  totalResults={pagination.totalCount}
+                  totalResults={pagination.total}
                   limit={pagination.limit}
                   onPageChange={setCurrentPage}
                 />

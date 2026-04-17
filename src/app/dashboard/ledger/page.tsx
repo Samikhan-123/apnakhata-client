@@ -6,7 +6,7 @@ import { LedgerEntryList } from '@/components/features/LedgerEntryList';
 import { LedgerEntryForm } from '@/components/features/LedgerEntryForm';
 import { LedgerFilters } from '@/components/features/LedgerFilters';
 import { categoryService } from '@/services/category.service';
-import { Plus, Tag, ChevronLeft, ChevronRight, Wallet, ArrowUpCircle, ArrowDownCircle, Calendar as CalendarIcon } from 'lucide-react';
+import { Plus, Tag, ChevronLeft, ChevronRight, Wallet, ArrowUpCircle, ArrowDownCircle, Calendar as CalendarIcon, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/ui/input';
@@ -31,7 +31,7 @@ export default function LedgerPage() {
   const [categories, setCategories] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<any>({ startDate: defaultStart, endDate: defaultEnd });
-  const [pagination, setPagination] = useState<any>({ page: 1, limit: 15, total: 0 });
+  const [pagination, setPagination] = useState<any>({ page: 1, limit: 20, total: 0, totalPages: 0 });
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [overview, setOverview] = useState<any>(null);
   const [allTimeOverview, setAllTimeOverview] = useState<any>(null);
@@ -51,9 +51,13 @@ export default function LedgerPage() {
       setOverview(overviewData);
       setAllTimeOverview(allTimeOverview);
 
-      const total = pag?.total || 0;
-      const totalPages = Math.ceil(total / pagination.limit);
-      setPagination({ ...pag, total, totalPages });
+      // Directly use metadata from server
+      setPagination({
+        total: pag?.total || 0,
+        totalPages: pag?.totalPages || 0,
+        page: pag?.page || 1,
+        limit: pag?.limit || 20
+      });
     } catch (err: any) {
       setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
     } finally {
@@ -151,7 +155,7 @@ export default function LedgerPage() {
             className="w-auto md:w-auto h-11 px-8 rounded-xl gap-2 font-bold shadow-sm bg-primary hover:bg-primary/90 active:scale-95 transition-all text-sm"
           >
             <Plus className="h-5 w-5" />
-            <span>Log Transaction</span>
+            <span>Add Transaction</span>
           </Button>
 
           <CustomModal
@@ -177,8 +181,8 @@ export default function LedgerPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[
           { label: 'Available Balance', value: overview?.remainingBalance || 0, icon: Wallet, color: 'primary' },
-          { label: 'Income Received', value: overview?.totalIncome || 0, icon: ArrowUpCircle, color: 'emerald' },
-          { label: 'Total Spent', value: overview?.totalExpense || 0, icon: ArrowDownCircle, color: 'rose' },
+          { label: 'Income Received', value: overview?.totalIncome || 0, icon: ArrowUpRight, color: 'emerald' },
+          { label: 'Total Spent', value: overview?.totalExpense || 0, icon: ArrowDownLeft, color: 'rose' },
         ].map((stat, i) => (
           <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>
             <div className="premium-card rounded-2xl p-5 flex flex-col justify-between group h-full">
@@ -246,6 +250,8 @@ export default function LedgerPage() {
           ) : (
             <LedgerEntryList
               ledgerEntries={ledgerEntries}
+              currentPage={pagination.page}
+              limit={pagination.limit}
               onDelete={async (id) => {
                 await ledgerEntryService.delete(id);
                 fetchData(filters, pagination.page, true);

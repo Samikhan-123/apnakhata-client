@@ -365,10 +365,10 @@ export default function UserManagementPage() {
                                size="icon"
                                className={cn(
                                  "h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground/40",
-                                 (user.googleId || user.id === currentUser?.id) && "opacity-20 grayscale cursor-not-allowed"
+                                 (user.googleId || user.id === currentUser?.id || user.role === 'ADMIN') && "opacity-20 grayscale cursor-not-allowed"
                                )}
-                               onClick={() => !(user.googleId || user.id === currentUser?.id) && handleToggleVerification(user)}
-                               disabled={!!user.googleId || user.id === currentUser?.id}
+                               onClick={() => !(user.googleId || user.id === currentUser?.id || user.role === 'ADMIN') && handleToggleVerification(user)}
+                               disabled={!!user.googleId || user.id === currentUser?.id || user.role === 'ADMIN'}
                              >
                                {user.isVerified ? <UserX className="h-4 w-4 text-amber-600" /> : <UserCheck className="h-4 w-4 text-emerald-600" />}
                              </Button>
@@ -380,9 +380,9 @@ export default function UserManagementPage() {
                                size="icon"
                                className={cn(
                                  "h-8 w-8 md:h-9 md:w-9 rounded-lg md:rounded-xl hover:bg-muted group-hover:scale-105 transition-all text-muted-foreground/40",
-                                 user.id === currentUser?.id && "opacity-20 grayscale cursor-not-allowed"
+                                 (user.id === currentUser?.id || user.role === 'ADMIN' || (isModerator && user.role === 'MODERATOR')) && "opacity-20 grayscale cursor-not-allowed"
                                )}
-                               disabled={user.id === currentUser?.id}
+                               disabled={user.id === currentUser?.id || user.role === 'ADMIN' || (isModerator && user.role === 'MODERATOR')}
                                onClick={() => handleToggleStatus(user)}
                              >
                                {user.isActive ? <Ban className="h-4 w-4 text-rose-600" /> : <CheckCircle2 className="h-4 w-4 text-blue-600" />}
@@ -428,7 +428,7 @@ export default function UserManagementPage() {
                 <PaginationPlus
                   currentPage={currentPage}
                   totalPages={paginationData.totalPages}
-                  totalResults={paginationData.totalCount}
+                  totalResults={paginationData.total}
                   limit={paginationData.limit}
                   onPageChange={setCurrentPage}
                 />

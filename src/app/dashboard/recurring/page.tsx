@@ -20,6 +20,9 @@ import {
   Trash2,
   ArrowUpRight,
   ArrowDownLeft,
+  Info,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 import * as LucideIcons from 'lucide-react';
 import { format } from 'date-fns';
@@ -78,7 +81,7 @@ export default function RecurringPage() {
             throw new Error(response.message || 'Sync failed');
           }
           await fetchData(true);
-          return response.message || `Successfully synced ${response.successCount} tasks.`;
+          return response.message || `Synced ${response.successCount} tasks.`;
         } catch (err: any) { throw err; }
       })(),
       {
@@ -119,6 +122,7 @@ export default function RecurringPage() {
       toast.error("Diagnostic Session: Mutation actions are disabled.");
       return;
     }
+    setLoading(true);
     try {
       const executionDateTime = new Date(`${data.nextExecution}T12:00:00`);
 
@@ -136,6 +140,8 @@ export default function RecurringPage() {
       fetchData(true);
     } catch (error) {
       // Handled by global interceptor
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -192,7 +198,7 @@ export default function RecurringPage() {
                 <p className="text-2xl font-bold text-foreground tabular-nums">{patterns.length}</p>
               </div>
             </div>
-            <div className="h-8 w-[1px] bg-border/40" />
+            <div className="h-8 w-[1px] bg-border/40 hidden sm:block" />
 
             <Button
               onClick={() => !readOnly && setIsModalOpen(true)}
@@ -229,7 +235,7 @@ export default function RecurringPage() {
                       setValue('description', '');
                     }}
                   >
-                    <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                    <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-none shadow-2xl">
@@ -263,7 +269,7 @@ export default function RecurringPage() {
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl border-none shadow-2xl">
@@ -286,7 +292,7 @@ export default function RecurringPage() {
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground text-foreground">
                         <SelectValue placeholder="Select Source" />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl border-none shadow-2xl">
@@ -302,7 +308,7 @@ export default function RecurringPage() {
                   placeholder="e.g., Monthly Rent"
                   {...register('description')}
                   className={cn(
-                    "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6",
+                    "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6 text-foreground",
                     errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
                   )}
                 />
@@ -318,7 +324,7 @@ export default function RecurringPage() {
                   control={control}
                   render={({ field }) => (
                     <Select value={field.value || ''} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold">
+                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground text-foreground">
                         <SelectValue placeholder="Choose Category" />
                       </SelectTrigger>
                       <SelectContent className="rounded-xl border-none shadow-2xl">
@@ -339,7 +345,7 @@ export default function RecurringPage() {
                 type="date"
                 {...register('nextExecution')}
                 className={cn(
-                  "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6",
+                  "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6 text-foreground",
                   errors.nextExecution && "ring-2 ring-rose-500/20 bg-rose-500/5"
                 )}
               />
@@ -354,23 +360,52 @@ export default function RecurringPage() {
 
             <Button
               type="submit"
-              disabled={readOnly}
+              disabled={readOnly || loading}
               className={cn(
                 "w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all mt-4",
-                readOnly && "opacity-50 grayscale cursor-not-allowed"
+                (readOnly || loading) && "opacity-50 grayscale cursor-not-allowed"
               )}
             >
-              {readOnly ? 'Locked: Diagnostic Session' : 'Start Automated Task'}
+              {readOnly ? 'Locked: Diagnostic Session' : (loading ? 'Processing...' : 'Start Automated Task')}
             </Button>
           </form>
         </CustomModal>
       </div>
 
+      {/* Logic Alert Panel */}
+      <SlideIn delay={0.3} duration={0.6}>
+        <div className="relative overflow-hidden premium-card rounded-3xl p-6 lg:p-8 flex items-start gap-6 bg-gradient-to-br from-primary/5 to-background border-primary/10 group">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
+            <RefreshCcw size={120} />
+          </div>
+          <div className="h-12 w-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center shrink-0 shadow-sm border border-primary/20">
+            <Info size={24} />
+          </div>
+          <div className="space-y-2 relative z-10">
+            <h3 className="text-lg font-bold tracking-tight text-foreground">How Automation Works</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 ">Balance Guard 🛡️</p>
+                <p className="text-xs font-medium text-muted-foreground/80 leading-relaxed">
+                  Expenses only trigger if you have enough funds. If balance is low, the task is skipped and marked for your attention.
+                </p>
+              </div>
+              <div className="space-y-1">
+                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 ">Instant Sync ⚡</p>
+                <p className="text-xs font-medium text-muted-foreground/80 leading-relaxed">
+                  Tasks set for "Today" process immediately. Others will automatically sync at noon on their scheduled date.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </SlideIn>
+
       <div className="space-y-8">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-            <span className="text-xs font-bold text-muted-foreground/50 uppercase tracking-wide">Sync Active</span>
+            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-bold text-muted-foreground/50 uppercase tracking-wide">Sync Automation Active</span>
           </div>
           <Button
             variant="ghost"
@@ -378,7 +413,7 @@ export default function RecurringPage() {
             onClick={handleForceSync}
             disabled={readOnly}
           >
-            {readOnly ? 'Sync Disabled' : 'Force Sync'}
+            {readOnly ? 'Sync Disabled' : 'Force Sync Tasks'}
           </Button>
         </div>
 
@@ -392,10 +427,6 @@ export default function RecurringPage() {
                     <div className="h-5 w-40 bg-muted/30 rounded animate-pulse" />
                     <div className="h-3 w-24 bg-muted/20 rounded animate-pulse" />
                   </div>
-                </div>
-                <div className="flex flex-col items-end gap-3">
-                  <div className="h-8 w-32 bg-muted/30 rounded animate-pulse" />
-                  <div className="h-4 w-20 bg-muted/20 rounded animate-pulse" />
                 </div>
               </div>
             ))}
@@ -413,81 +444,87 @@ export default function RecurringPage() {
               <Plus size={32} className="text-primary/15" />
             </div>
             <h4 className="text-xl font-bold tracking-tight mb-2">No tasks found</h4>
-            <p className="text-muted-foreground font-medium text-sm max-w-sm mx-auto">Add a automated payment or income to see it here.</p>
+            <p className="text-muted-foreground font-medium text-sm max-w-sm mx-auto">Add an automated payment or income to see it here.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 gap-4">
             {patterns.map((pattern, index) => {
-              const Icon = pattern.category?.icon ? (LucideIcons as any)[pattern.category.icon] : (pattern.type === 'INCOME' ? ArrowUpRight : ArrowDownLeft);
+              const Icon = pattern.category?.icon ? (LucideIcons as any)[pattern.category.icon] || Info : (pattern.type === 'INCOME' ? ArrowUpRight : ArrowDownLeft);
               const isIncome = pattern.type === 'INCOME';
+              const lastSync = pattern.lastStatusDate ? format(new Date(pattern.lastStatusDate), 'MMM dd, yyyy') : 'Never';
+              const nextSync = format(new Date(pattern.nextExecution), 'MMM dd, yyyy');
 
               return (
                 <div
                   key={pattern.id}
-                  className="premium-card rounded-2xl p-6 lg:p-8 relative hover:bg-muted/5 transition-all border-border/40"
+                  className="premium-card rounded-3xl p-5 sm:p-6 lg:p-8 relative hover:bg-muted/5 transition-all border-border/40 overflow-hidden group/card"
                 >
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-                    <div className="flex items-center gap-6 w-full sm:w-auto">
+                  <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 sm:gap-8">
+                    <div className="flex items-center gap-4 sm:gap-6 w-full lg:w-auto">
                       <div className={cn(
-                        "h-12 w-12 rounded-xl flex items-center justify-center border shadow-sm",
+                        "h-12 w-12 sm:h-14 sm:w-14 rounded-2xl flex items-center justify-center border shadow-sm transition-transform group-hover/card:scale-105 duration-500",
                         isIncome ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/10" : "bg-rose-500/5 text-rose-600 border-rose-500/10"
                       )}>
-                        <Icon size={22} />
+                        <Icon size={isIncome ? 22 : 24} className="sm:size-26" />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2 mb-1">
-                          <h4 className="font-bold text-lg tracking-tight truncate">{capitalize(pattern.description)}</h4>
-                          <span className="px-2 py-0.5 rounded-lg bg-primary/5 text-[9px] font-bold text-primary/60 uppercase tracking-wider border border-primary/10">
+                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1 sm:mb-1.5">
+                          <h4 className="font-bold text-lg sm:text-xl tracking-tight text-foreground truncate">{capitalize(pattern.description)}</h4>
+                          <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-primary/10 text-[8px] sm:text-[9px] font-black text-primary uppercase tracking-[0.1em] border border-primary/20">
                             {pattern.frequency}
                           </span>
-                          <span className="px-2 py-0.5 rounded-lg bg-emerald-500/5 text-[9px] font-bold text-emerald-600 uppercase tracking-wider border border-emerald-500/10">
-                            {pattern.hits || 0} Syncs
-                          </span>
                         </div>
-                        <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-wider truncate">
-                          {pattern.category?.name ? capitalize(pattern.category.name) : 'Income Source'}
-                        </p>
+                        <div className="flex items-center gap-3 sm:gap-4 text-[9px] sm:text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest leading-none">
+                           <span className="truncate">{pattern.category?.name ? capitalize(pattern.category.name) : 'Income Source'}</span>
+                           <span className="w-1 h-1 rounded-full bg-border shrink-0" />
+                           <span className="text-emerald-500/60 shrink-0">{pattern.hits || 0} Syncs</span>
+                        </div>
                       </div>
                     </div>
 
-                    <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto gap-4">
-                      <div className="text-right">
-                        <p className={cn("text-2xl font-bold tabular-nums tracking-tight", isIncome ? "text-emerald-600" : "text-rose-600")}>
-                          {isIncome ? '+' : '−'} {formatCurrency(pattern.amount)}
-                        </p>
-                        {pattern.lastStatus === 'INSUFFICIENT_BALANCE' && (
-                          <div className="flex items-center justify-end gap-1.5 mt-2 px-2 py-1 rounded-lg bg-rose-500/5 text-rose-600 border border-rose-500/10">
-                            <LucideIcons.AlertCircle size={12} />
-                            <span className="text-[10px] font-bold uppercase tracking-wider">Low Balance</span>
-                          </div>
-                        )}
-                        {pattern.lastStatus === 'SUCCESS' && pattern.lastStatusDate && (
-                          <p className="text-[10px] font-bold text-muted-foreground/20 uppercase mt-1 text-right">
-                            Synced {format(new Date(pattern.lastStatusDate), 'MMM dd')}
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-10 w-full lg:w-auto">
+                      <div className="grid grid-cols-2 gap-6 sm:gap-12 flex-1 sm:flex-none w-full sm:w-auto">
+                        <div className="space-y-1">
+                          <p className="text-[8px] sm:text-[9px] font-black text-muted-foreground/30 uppercase tracking-[0.2em]">Last Sync</p>
+                          <p className="text-[11px] sm:text-xs font-bold text-muted-foreground/80 flex items-center gap-2 whitespace-nowrap">
+                             {pattern.lastStatus === 'SUCCESS' ? <CheckCircle2 size={12} className="text-emerald-500" /> : <AlertCircle size={12} className="text-rose-500" />}
+                             {lastSync}
                           </p>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex flex-col items-end gap-1 text-[10px] font-bold text-muted-foreground/40">
-                          <div className="flex items-center gap-1.5">
-                            <Calendar size={12} />
-                            Next: {format(new Date(pattern.nextExecution), 'MMM dd')}
-                          </div>
                         </div>
+                        <div className="space-y-1">
+                          <p className="text-[8px] sm:text-[9px] font-black text-primary/40 uppercase tracking-[0.2em]">Next Sync</p>
+                          <p className="text-[11px] sm:text-xs font-black text-foreground tabular-nums flex items-center gap-2 italic whitespace-nowrap">
+                             <Timer size={12} className="text-primary" />
+                             {nextSync}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-6 sm:gap-10 pt-4 sm:pt-0 border-t sm:border-none border-border/10">
+                        <div className="sm:text-right">
+                          <p className={cn("text-2xl sm:text-3xl font-black tabular-nums tracking-tighter leading-none mb-1", isIncome ? "text-emerald-600" : "text-rose-600")}>
+                            {isIncome ? '+' : '−'}{formatCurrency(pattern.amount)}
+                          </p>
+                          {pattern.lastStatus === 'INSUFFICIENT_BALANCE' && (
+                            <div className="flex items-center sm:justify-end gap-1.5 text-rose-600">
+                              <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest italic animate-pulse">Low Balance</span>
+                            </div>
+                          )}
+                        </div>
+                        
                         <Button
                           variant="ghost"
                           size="icon"
                           className={cn(
-                            "rounded-xl transition-all h-8 w-8 active:scale-90",
+                            "rounded-2xl transition-all h-10 w-10 sm:h-12 sm:w-12 shrink-0 active:scale-90",
                             readOnly
-                              ? "text-muted-foreground/10 cursor-not-allowed"
-                              : "text-muted-foreground/20 hover:text-rose-600 hover:bg-rose-500/10"
+                              ? "opacity-10 cursor-not-allowed"
+                              : "text-muted-foreground/20 hover:text-rose-600 hover:bg-rose-500/5 border border-transparent hover:border-rose-500/10"
                           )}
                           onClick={() => !readOnly && setDeleteId(pattern.id)}
                           disabled={readOnly}
-                          title={readOnly ? "Locked: Diagnostic Session" : "Delete"}
                         >
-                          <Trash2 size={16} />
+                          <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
                         </Button>
                       </div>
                     </div>
@@ -499,20 +536,6 @@ export default function RecurringPage() {
         )}
       </div>
 
-      {/* Footer Info Box */}
-      <div className="mt-12">
-        <div className="premium-card rounded-3xl p-8 flex flex-col md:flex-row gap-8 items-center bg-transparent border-dashed">
-          <div className="h-14 w-14 bg-primary/5 rounded-2xl flex items-center justify-center shrink-0 border border-primary/10">
-            <RefreshCcw size={28} className="text-primary/40" />
-          </div>
-          <div>
-            <h5 className="font-bold text-lg text-foreground tracking-tight mb-1">Scheduled Transactions</h5>
-            <p className="text-muted-foreground font-medium text-sm leading-relaxed max-w-2xl">
-              Apna Khata keeps your transactions effortless. We automatically track your regular payments and income so you can focus on your goals while we handle the data.
-            </p>
-          </div>
-        </div>
-      </div>
       <ConfirmDialog
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}

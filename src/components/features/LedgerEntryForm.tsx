@@ -41,6 +41,7 @@ export const LedgerEntryForm = ({
   const [loading, setLoading] = useState(false);
   const { currency } = useCurrency();
   const { readOnly } = useAuth();
+  const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const isIncomeRequired = totalIncome <= 0;
 
@@ -247,7 +248,7 @@ export const LedgerEntryForm = ({
             <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/40 px-1 flex items-center gap-2">
               <CalendarIcon className="h-3.5 w-3.5 text-primary" /> Record Date
             </Label>
-            <Popover>
+            <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button
                   variant="outline"
@@ -263,28 +264,29 @@ export const LedgerEntryForm = ({
                 <Calendar
                   mode="single"
                   selected={watch('date') ? new Date(watch('date')!) : undefined}
-                  onSelect={(date) => setValue('date', date?.toISOString())}
+                  onSelect={(date) => {
+                    setValue('date', date?.toISOString());
+                    setIsCalendarOpen(false);
+                  }}
                   disabled={(date) => {
                     const now = new Date();
-                    const today = now.getDate();
+                    
+                    // 1. Current Month Boundary
                     const currentMonth = now.getMonth();
                     const currentYear = now.getFullYear();
-                    
+
+                    // 2. Target Month
                     const targetMonth = date.getMonth();
                     const targetYear = date.getFullYear();
 
-                    // Disable future dates
-                    if (date > now) return true;
+                    // Calculate indices for 3-month window comparison
+                    const nowIdx = (currentYear * 12) + currentMonth;
+                    const targetIdx = (targetYear * 12) + targetMonth;
 
-                    // Current Month
-                    if (targetMonth === currentMonth && targetYear === currentYear) return false;
+                    const diff = targetIdx - nowIdx;
 
-                    // Previous Month (2-Day Grace Period)
-                    const isPrevMonth = (targetYear === currentYear && targetMonth === currentMonth - 1) ||
-                                        (targetYear === currentYear - 1 && targetMonth === 11 && currentMonth === 0);
-                    if (isPrevMonth) return today > 2;
-
-                    return true; // Older always locked
+                    // Allow only [Previous Month, Current Month, Next Month]
+                    return diff < -1 || diff > 1;
                   }}
                   initialFocus
                   className="p-4"

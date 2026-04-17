@@ -17,11 +17,15 @@ import { useAuth } from '@/context/AuthContext';
 export const LedgerEntryList = ({ 
   ledgerEntries, 
   onDelete,
-  onRefresh
+  onRefresh,
+  currentPage = 1,
+  limit = 20
 }: { 
   ledgerEntries: any[], 
   onDelete: (id: string) => Promise<void>,
-  onRefresh?: () => void
+  onRefresh?: () => void,
+  currentPage?: number,
+  limit?: number
 }) => {
   const { formatCurrency } = useCurrency();
   const { readOnly } = useAuth();
@@ -29,10 +33,19 @@ export const LedgerEntryList = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [editingEntry, setEditingEntry] = useState<any | null>(null);
 
-  const isCurrentMonth = (date: string) => {
-    const today = new Date();
-    const entryDate = new Date(date);
-    return today.getMonth() === entryDate.getMonth() && today.getFullYear() === entryDate.getFullYear();
+  const isWithinAuditingWindow = (dateStr: string) => {
+    const date = new Date(dateStr);
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const targetMonth = date.getMonth();
+    const targetYear = date.getFullYear();
+
+    const nowIdx = (currentYear * 12) + currentMonth;
+    const targetIdx = (targetYear * 12) + targetMonth;
+    const diff = targetIdx - nowIdx;
+
+    return diff >= -1 && diff <= 1;
   };
 
   if (!ledgerEntries || ledgerEntries.length === 0) {
@@ -54,23 +67,30 @@ export const LedgerEntryList = ({
       <div className="grid gap-3">
         {ledgerEntries.map((entry, index) => {
           const isIncome = entry.type === 'INCOME';
+          const displayIndex = ((currentPage - 1) * limit) + index + 1;
+          
           return (
             <div
               key={entry.id}
-              className="premium-car rounded-2xl p-2.5 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-4 group transition-all hover:bg-muted/5 border-border/40"
+              className="premium-card rounded-2xl p-2.5 sm:p-5 flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-4 group transition-all hover:bg-muted/5 border-border/40"
             >
               <div className="flex items-center flex-1 min-w-0">
-                {/* Icons Container */}
-                <div className={cn(
-                  "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105",
-                  isIncome
-                    ? "bg-emerald-500/5 text-emerald-600 border border-emerald-500/10"
-                    : "bg-rose-500/5 text-rose-600 border border-rose-500/10"
-                )}>
-                  {(() => {
-                    const Icon = entry.category?.icon ? (LucideIcons as any)[entry.category.icon] || LucideIcons.HelpCircle : (isIncome ? ArrowUpRight : ArrowDownLeft);
-                    return <Icon className="h-5 w-5" />;
-                  })()}
+                {/* Index & Icons Container */}
+                <div className="relative group/idx">
+                  <div className={cn(
+                    "w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105",
+                    isIncome
+                      ? "bg-emerald-500/5 text-emerald-600 border border-emerald-500/10"
+                      : "bg-rose-500/5 text-rose-600 border border-rose-500/10"
+                  )}>
+                    {(() => {
+                      const Icon = entry.category?.icon ? (LucideIcons as any)[entry.category.icon] || LucideIcons.HelpCircle : (isIncome ? ArrowUpRight : ArrowDownLeft);
+                      return <Icon className="h-5 w-5" />;
+                    })()}
+                  </div>
+                  <span className="absolute -top-1.5 -left-1.5 bg-background border border-border/60 text-[8px] font-black tabular-nums py-0.5 px-1.5 rounded-lg shadow-sm text-muted-foreground/40 group-hover/idx:text-primary group-hover/idx:border-primary/30 transition-colors">
+                    #{displayIndex}
+                  </span>
                 </div>
 
                 {/* Main Info */}
@@ -118,7 +138,7 @@ export const LedgerEntryList = ({
                 "opacity-100 lg:opacity-0 lg:group-hover:opacity-100" // Always visible on mobile, hover on desktop
               )}>
                 {(() => {
-                  const editable = isIncome ? isCurrentMonth(entry.date) : true;
+                  const editable = isWithinAuditingWindow(entry.date);
 
                   if (editable) {
                     return (
@@ -140,31 +160,28 @@ export const LedgerEntryList = ({
                           <LucideIcons.Edit3 className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
                         </Button> */}
 
-                        {/* Allow Delete for Income if Current Month or for any Expense */}
-                        {(!isIncome || isCurrentMonth(entry.date)) && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => !readOnly && setDeleteId(entry.id)}
-                            className={cn(
-                              "rounded-lg sm:rounded-2xl h-8 w-8 sm:h-11 sm:w-11 text-muted-foreground transition-all active:scale-90",
-                              readOnly 
-                                ? "opacity-20 cursor-not-allowed" 
-                                : "hover:text-rose-600 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20"
-                            )}
-                            title={readOnly ? "Locked: Diagnostic Session" : "Delete"}
-                            disabled={readOnly}
-                          >
-                            <Trash2 className="h-3.5 w-3.5 sm:h-5 sm:w-5" />
-                          </Button>
-                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => !readOnly && setDeleteId(entry.id)}
+                          className={cn(
+                            "rounded-lg sm:rounded-2xl h-8 w-8 sm:h-11 sm:w-11 text-muted-foreground transition-all active:scale-90",
+                            readOnly 
+                              ? "opacity-20 cursor-not-allowed" 
+                              : "hover:text-rose-600 hover:bg-rose-500/10 border border-transparent hover:border-rose-500/20"
+                          )}
+                          title={readOnly ? "Locked: Diagnostic Session" : "Delete"}
+                          disabled={readOnly}
+                        >
+                          <Trash2 className="h-4 w-4 sm:h-5 sm:w-5" />
+                        </Button>
                       </>
                     );
                   }
 
                   return (
-                    <div className="h-11 w-11 flex items-center justify-center text-muted-foreground/30" title="Income entries from previous months cannot be modified.">
-                      <Lock className="h-4 w-4" />
+                    <div className="p-3 opacity-20 cursor-help" title="Historical Record: Locked for Auditing">
+                      <Lock className="h-4 w-4 text-muted-foreground" />
                     </div>
                   );
                 })()}

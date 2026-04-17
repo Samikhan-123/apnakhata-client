@@ -19,7 +19,7 @@ export function PaginationPlus({
   currentPage,
   totalPages,
   totalResults,
-  limit = 15,
+  limit = 20,
   onPageChange,
   className
 }: PaginationPlusProps) {
