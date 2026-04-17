@@ -31,6 +31,7 @@ export const sanitizeErrorMessage = (message: string): string => {
 export const handleApiError = (error: any, options: { silent?: boolean; customMessage?: string } = {}) => {
   const status = error.response?.status;
   const backendErrors = error.response?.data?.errors;
+  const config = error.config;
   
   // Try to get a specific validation message if available
   let message = error.response?.data?.message;
@@ -41,21 +42,21 @@ export const handleApiError = (error: any, options: { silent?: boolean; customMe
   }
   
   message = message || error.message || 'An unexpected error occurred';
-  
   message = sanitizeErrorMessage(message);
+  
   const displayMessage = options.customMessage ? `${options.customMessage}: ${message}` : message;
 
-  // We don't toast for:
-  // 1. 401s (Auth context handles redirects)
-  // 2. Offline state (Banner provides the status)
+  // Final check for silence: either passed via options or via axios config
+  const shouldBeSilent = options.silent || (config as any)?.silent || false;
   const isOffline = typeof window !== 'undefined' && !window.navigator.onLine;
 
-  if (status !== 401 && !isOffline && !options.silent) {
-    toast.error(displayMessage);
+  if (status !== 401 && !isOffline && !shouldBeSilent) {
+    // Deduplicate by creating a light fingerprint of the message
+    const toastId = `api-error-${message.slice(0, 30)}`;
+    toast.error(displayMessage, { id: toastId });
     logger.error(displayMessage, error);
   } else {
-    // Even if silent or offline, we log it for debugging
-    logger.debug(`API Error (Silent: ${options.silent}, Offline: ${isOffline})`, { message, status, error });
+    logger.debug(`API Error (Silent: ${shouldBeSilent}, Offline: ${isOffline})`, { message, status, error });
   }
 
   return { message, status, error };

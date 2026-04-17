@@ -188,7 +188,7 @@ export default function RecurringPage() {
         </SlideIn>
 
         <SlideIn delay={0.2} duration={0.5}>
-          <div className="flex items-center justify-between flex-col sm:flex-row sm:gap-8  premium-card p-4 px-6 rounded-3xl border-border/40">
+          <div className="flex items-center justify-between flex-col sm:flex-row sm:gap-8 gap-4 premium-card p-4 px-6 rounded-3xl border-border/40">
             <div className="flex items-center justify-between gap-4">
               <div className="h-12 w-12 bg-primary/5 text-primary rounded-xl flex items-center justify-center border border-primary/10">
                 <Timer size={24} />
@@ -204,7 +204,7 @@ export default function RecurringPage() {
               onClick={() => !readOnly && setIsModalOpen(true)}
               disabled={readOnly}
               className={cn(
-                "w-full md:w-auto h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2",
+                "w-full md:w-auto h-11 px-8  rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2",
                 readOnly && "opacity-50 grayscale cursor-not-allowed"
               )}
             >
@@ -393,7 +393,7 @@ export default function RecurringPage() {
               <div className="space-y-1">
                 <p className="text-[10px] font-black uppercase tracking-[0.2em] text-primary/60 ">Instant Sync ⚡</p>
                 <p className="text-xs font-medium text-muted-foreground/80 leading-relaxed">
-                  Tasks set for "Today" process immediately. Others will automatically sync at noon on their scheduled date.
+                  Tasks set for "Today" process immediately. Others will automatically sync at day time on their scheduled date.
                 </p>
               </div>
             </div>

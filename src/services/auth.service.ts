@@ -30,7 +30,7 @@ export const authService = {
     // Proactively clear existing session to prevent mixing unverified/old states
     await this.logout().catch(() => {});
     
-    const { data: response } = await api.post('/auth/login', credentials);
+    const { data: response } = await api.post('/auth/login', credentials, { silent: true } as any);
     if (response.success) {
       const options = getCookieOptions();
       Cookies.set('isVerified', response.user.isVerified ? 'true' : 'false', options);
@@ -44,7 +44,7 @@ export const authService = {
     // Proactively clear existing session
     await this.logout().catch(() => {});
 
-    const { data: response } = await api.post('/auth/google', { idToken });
+    const { data: response } = await api.post('/auth/google', { idToken }, { silent: true } as any);
     if (response.success) {
       const options = getCookieOptions();
       Cookies.set('isVerified', response.user.isVerified ? 'true' : 'false', options);
@@ -56,7 +56,7 @@ export const authService = {
 
   async register(userData: any) {
     const clientTimestamp = new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium', hour12: true });
-    const { data: response } = await api.post('/auth/register', { ...userData, clientTimestamp });
+    const { data: response } = await api.post('/auth/register', { ...userData, clientTimestamp }, { silent: true } as any);
     if (response.success) {
       const options = getCookieOptions();
       Cookies.set('isVerified', 'false', options);
@@ -67,7 +67,7 @@ export const authService = {
   },
 
   async verifyEmail(email: string, otp: string) {
-    const { data: response } = await api.post('/auth/verify-email', { email, otp });
+    const { data: response } = await api.post('/auth/verify-email', { email, otp }, { silent: true } as any);
     if (response.success) {
       const options = getCookieOptions();
       Cookies.set('isVerified', 'true', options);
@@ -78,19 +78,19 @@ export const authService = {
 
   async resendOTP(email: string) {
     const clientTimestamp = new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium', hour12: true });
-    const { data: response } = await api.post('/auth/resend-otp', { email, clientTimestamp });
+    const { data: response } = await api.post('/auth/resend-otp', { email, clientTimestamp }, { silent: true } as any);
     return response;
   },
 
   async forgotPassword(email: string) {
     const clientTimestamp = new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium', hour12: true });
-    const { data: response } = await api.post('/auth/forgot-password', { email, clientTimestamp });
+    const { data: response } = await api.post('/auth/forgot-password', { email, clientTimestamp }, { silent: true } as any);
     return response;
   },
 
   async resetPassword(data: any) {
     const clientTimestamp = new Date().toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'medium', hour12: true });
-    const { data: response } = await api.post('/auth/reset-password', { ...data, clientTimestamp });
+    const { data: response } = await api.post('/auth/reset-password', { ...data, clientTimestamp }, { silent: true } as any);
     return response;
   },
 
@@ -162,7 +162,7 @@ api.interceptors.response.use(
     }
     // -----------------------
 
-    // Use Global Error Handler
+    // Use Global Error Handler (Passes config to check for silence)
     handleApiError(error);
 
     if (status === 401) {

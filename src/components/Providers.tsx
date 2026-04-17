@@ -17,7 +17,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
           <AuthProvider>
             <CurrencyProvider>
               {children}
-              <Toaster position="bottom-right" expand={false} richColors closeButton />
+              <Toaster position="bottom-right" visibleToasts={1} richColors />
             </CurrencyProvider>
           </AuthProvider>
         </NetworkProvider>
