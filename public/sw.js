@@ -29,7 +29,13 @@ self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // ONLY cache GET requests and EXCLUDE API calls
+  // 1. Skip non-http/https protocols (e.g., chrome-extension://, file://)
+  // The Cache API only supports http and https.
+  if (!url.protocol.startsWith('http')) {
+    return;
+  }
+
+  // 2. ONLY cache GET requests and EXCLUDE API calls
   if (request.method !== 'GET' || url.pathname.startsWith('/api/')) {
     return;
   }
