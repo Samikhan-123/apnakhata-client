@@ -15,6 +15,7 @@ export default function proxy(request: NextRequest) {
     }
 
     if (!isVerified) {
+      // If unverified user tries to access dashboard, send to verify-email
       const userStr = request.cookies.get('user')?.value;
       const user = userStr ? JSON.parse(decodeURIComponent(userStr)) : null;
       const verifyUrl = new URL('/verify-email', request.url);
@@ -25,7 +26,8 @@ export default function proxy(request: NextRequest) {
     }
   }
 
-  // Redirect verified/logged-in users away from auth pages
+  // ALLOW unverified users to access login/register/verify-email if they want to switch accounts
+  // Only redirect away if they are FULLY logged in AND verified
   if (token && isVerified && (pathname === '/login' || pathname === '/register' || pathname === '/verify-email')) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }

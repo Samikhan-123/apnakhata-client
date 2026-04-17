@@ -232,7 +232,7 @@ export default function RegisterPage() {
                   <span className="w-full border-t border-border/40" />
                 </div>
                 <div className="relative flex justify-center text-[9px] font-black uppercase tracking-[0.4em]">
-                  <span className="bg-card px-4 text-muted-foreground/30 text-center">Fast Registration</span>
+                  <span className="bg-card px-4 text-muted-foreground/30 text-center">Or continue with</span>
                 </div>
               </div>
 

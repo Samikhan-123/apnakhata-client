@@ -27,6 +27,9 @@ const getCookieOptions = () => ({
 
 export const authService = {
   async login(credentials: any) {
+    // Proactively clear existing session to prevent mixing unverified/old states
+    await this.logout().catch(() => {});
+    
     const { data: response } = await api.post('/auth/login', credentials);
     if (response.success) {
       const options = getCookieOptions();
@@ -38,6 +41,9 @@ export const authService = {
   },
 
   async googleLogin(idToken: string) {
+    // Proactively clear existing session
+    await this.logout().catch(() => {});
+
     const { data: response } = await api.post('/auth/google', { idToken });
     if (response.success) {
       const options = getCookieOptions();
