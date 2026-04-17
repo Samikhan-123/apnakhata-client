@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { resetPasswordSchema, ResetPasswordInput } from '@/lib/validations'
 import { useAuth } from '@/context/AuthContext'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -17,10 +20,6 @@ function ResetPasswordContent() {
   const router = useRouter()
   const { resetPassword, forgotPassword } = useAuth()
   
-  const [email, setEmail] = useState('')
-  const [otp, setOtp] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
   const [resendSuccess, setResendSuccess] = useState('')
@@ -28,16 +27,31 @@ function ResetPasswordContent() {
   const [timer, setTimer] = useState(60)
   const [canResend, setCanResend] = useState(false)
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors }
+  } = useForm<ResetPasswordInput>({
+    resolver: zodResolver(resetPasswordSchema),
+    defaultValues: {
+      email: '',
+      otp: '',
+      password: '',
+      confirmPassword: ''
+    }
+  })
+
+  const email = watch('email')
+
   useEffect(() => {
     const emailParam = searchParams.get('email')
-    if (emailParam) {
-      setEmail(emailParam)
-    }
+    if (emailParam) setValue('email', emailParam)
+    
     const otpParam = searchParams.get('otp')
-    if (otpParam) {
-      setOtp(otpParam)
-    }
-  }, [searchParams])
+    if (otpParam) setValue('otp', otpParam)
+  }, [searchParams, setValue])
 
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -51,40 +65,27 @@ function ResetPasswordContent() {
     return () => clearInterval(interval)
   }, [timer, canResend])
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match. Please ensure both fields are identical.')
-      return
-    }
-
-    if (otp.length !== 6) {
-      setError('OTP must be exactly 6 digits.')
-      return
-    }
-
+  const onSubmit = async (data: ResetPasswordInput) => {
     setLoading(true)
     setError('')
     setSuccess('')
     try {
       await resetPassword({
-        email,
-        otp,
-        password: newPassword
+        email: data.email,
+        otp: data.otp,
+        password: data.password
       })
       setSuccess('Your password has been securely reset. Redirecting to login...')
       setTimeout(() => {
         router.push('/login')
       }, 2000)
     } catch (err: any) {
-      const responseData = err.response?.data;
-      let message = responseData?.message || 'The code is invalid or has expired. Please request a new one.';
+      const responseData = err.response?.data
+      let message = responseData?.message || 'The code is invalid or has expired.'
       
-      // If there are specific validation errors, show the first one
       if (responseData?.errors && Array.isArray(responseData.errors) && responseData.errors.length > 0) {
-        message = responseData.errors[0].message || message;
+        message = responseData.errors[0].message || message
       }
-      
       setError(message)
     } finally {
       setLoading(false)
@@ -103,7 +104,7 @@ function ResetPasswordContent() {
       setTimer(60)
       setCanResend(false)
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to resend code. Please try again.')
+      setError(err.response?.data?.message || 'Failed to resend code.')
     } finally {
       setLoading(false)
     }
@@ -117,36 +118,35 @@ function ResetPasswordContent() {
         <FadeIn 
           className="w-full max-w-md flex flex-col gap-6 md:gap-10 premium-card p-6 md:p-14 rounded-[2.5rem] md:rounded-[3.5rem] border-border/40 shadow-2xl shadow-primary/5 py-8 md:py-12 relative overflow-hidden"
         >
-          {/* Background Accent */}
           <div className="absolute -top-20 -left-20 w-40 h-40 bg-primary/5 rounded-full blur-[50px]" />
           
           <div className="space-y-4 text-center relative z-10">
-            <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/5 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center mx-auto mb-4 md:mb-8 border border-primary/10 animate-pulse">
+            <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/5 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center mx-auto mb-4 md:mb-8 border border-primary/10">
               <LockKeyhole className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground">Set new password</h2>
+            <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground font-bold">Set new password</h2>
             <p className="text-muted-foreground font-bold text-sm md:text-base leading-snug max-w-[280px] mx-auto">
               Confirm your identity with the recovery code and secure your account.
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6 relative z-10">
              <HeightChange isVisible={!!error || !!success || !!resendSuccess}>
                 <div className="mb-6">
                   {error && (
-                    <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10 text-rose-600 text-xs font-bold flex items-center gap-3">
+                    <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10 text-rose-600 text-[10px] font-black uppercase flex items-center gap-3">
                       <div className="w-1.5 h-1.5 rounded-full bg-rose-500 shrink-0" />
                       {error}
                     </div>
                   )}
                   {success && (
-                    <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 text-emerald-600 text-xs font-bold flex items-center gap-3">
+                    <div className="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10 text-emerald-600 text-[10px] font-black uppercase flex items-center gap-3">
                       <CheckCircle2 className="h-4 w-4 shrink-0" />
                       {success}
                     </div>
                   )}
                   {resendSuccess && (
-                    <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 text-primary text-xs font-bold flex items-center gap-3">
+                    <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 text-primary text-[10px] font-black uppercase flex items-center gap-3">
                       <CheckCircle2 className="h-4 w-4 shrink-0" />
                       {resendSuccess}
                     </div>
@@ -164,12 +164,11 @@ function ResetPasswordContent() {
                         id="email" 
                         type="email" 
                         placeholder="name@email.com" 
-                        className="h-14 pl-12 rounded-2xl bg-muted/30 border-none focus:bg-background focus:ring-2 focus:ring-primary/10 font-bold transition-all shadow-inner placeholder:text-muted-foreground/20"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required 
+                        {...register('email')}
+                        className="h-14 pl-12 rounded-2xl bg-muted/30 border-none focus:bg-background focus:ring-2 focus:ring-primary/10 font-bold transition-all shadow-inner"
                       />
                   </div>
+                  {errors.email && <p className="text-[10px] font-black uppercase text-rose-500 ml-1 leading-none">{errors.email.message}</p>}
                 </div>
 
                 <div className="space-y-2.5">
@@ -180,24 +179,22 @@ function ResetPasswordContent() {
                         id="otp" 
                         placeholder="000000" 
                         maxLength={6}
-                        className="h-14 pl-12 rounded-2xl bg-muted/30 border-none focus:bg-background focus:ring-2 focus:ring-primary/10 font-black tracking-[0.5em] text-center transition-all shadow-inner placeholder:text-muted-foreground/10 tabular-nums"
-                        value={otp}
-                        onChange={(e) => setOtp(e.target.value)}
-                        required 
+                        {...register('otp')}
+                        className="h-14 pl-12 rounded-2xl bg-muted/30 border-none focus:bg-background focus:ring-2 focus:ring-primary/10 font-black tracking-[0.5em] text-center transition-all shadow-inner"
                       />
                   </div>
+                  {errors.otp && <p className="text-[10px] font-black uppercase text-rose-500 ml-1 leading-none">{errors.otp.message}</p>}
                 </div>
 
                 <div className="grid gap-5">
                   <div className="space-y-2.5">
-                    <Label htmlFor="newPassword" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1">New Password</Label>
+                    <Label htmlFor="password" className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1">New Password</Label>
                     <PasswordInput 
-                      id="newPassword" 
+                      id="password" 
                       placeholder="••••••••"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      required 
+                      {...register('password')}
                     />
+                    {errors.password && <p className="text-[9px] font-bold text-rose-500 ml-1 leading-tight">{errors.password.message}</p>}
                   </div>
 
                   <div className="space-y-2.5">
@@ -205,10 +202,9 @@ function ResetPasswordContent() {
                     <PasswordInput 
                       id="confirmPassword" 
                       placeholder="••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required 
+                      {...register('confirmPassword')}
                     />
+                    {errors.confirmPassword && <p className="text-[9px] font-bold text-rose-500 ml-1 leading-tight">{errors.confirmPassword.message}</p>}
                   </div>
                 </div>
 
@@ -220,7 +216,6 @@ function ResetPasswordContent() {
                   {loading ? (
                     <div className="flex items-center gap-3">
                       <div className="w-4 h-4 border-2 border-background/20 border-t-background rounded-full animate-spin" />
-                      <span>Saving password...</span>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center gap-2">
@@ -236,7 +231,7 @@ function ResetPasswordContent() {
           {!success && (
             <div className="text-center space-y-6 relative z-10">
               <div className="space-y-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/30 font-bold">
                   Didn't receive the code?
                 </p>
 
@@ -256,7 +251,7 @@ function ResetPasswordContent() {
               </div>
 
               <div className="pt-4 border-t border-border/40">
-                <Link href="/login" className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 hover:text-primary transition-colors flex items-center justify-center gap-3 group">
+                <Link href="/login" className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40 hover:text-primary transition-colors flex items-center justify-center gap-3 group font-bold">
                    <ArrowRight size={12} className="rotate-180 group-hover:-translate-x-1 transition-transform text-muted-foreground/20" />
                    Back to Login
                 </Link>
@@ -266,7 +261,7 @@ function ResetPasswordContent() {
 
           <div className="mt-8 flex items-center justify-center gap-3 opacity-10">
              <ShieldCheck size={14} className="text-primary" />
-             <span className="text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground">End-to-End Encrypted</span>
+             <span className="text-[10px] font-black uppercase tracking-[0.5em] text-muted-foreground font-bold">End-to-End Encrypted</span>
           </div>
         </FadeIn>
       </div>

@@ -1,17 +1,8 @@
 'use client';
 
-import * as React from 'react';
-import { format } from 'date-fns';
-import { Calendar as CalendarIcon, Filter, Search, X, Download } from 'lucide-react';
-import { DateRange } from 'react-day-picker';
-import { cn } from '@/lib/utils';
+import { MonthYearPicker } from './MonthYearPicker';
 import { Button } from '@/components/ui/button';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+
 // import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -28,7 +19,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
-import { FileDown, FileSpreadsheet, FileText, Printer, MoreVertical } from 'lucide-react';
+import { FileSpreadsheet, FileText, Download, X } from 'lucide-react';
+import React from 'react';
 
 interface LedgerFiltersProps {
   onFilterChange: (filters: any) => void;
@@ -38,7 +30,12 @@ interface LedgerFiltersProps {
 }
 
 export function LedgerFilters({ onFilterChange, categories, onExport, currentFilters }: LedgerFiltersProps) {
-  const [date, setDate] = React.useState<DateRange | undefined>(currentFilters?.startDate ? { from: new Date(currentFilters.startDate), to: currentFilters.endDate ? new Date(currentFilters.endDate) : undefined } : undefined);
+  const [selectedMonth, setSelectedMonth] = React.useState(
+    currentFilters?.startDate ? new Date(currentFilters.startDate).getMonth() + 1 : new Date().getMonth() + 1
+  );
+  const [selectedYear, setSelectedYear] = React.useState(
+    currentFilters?.startDate ? new Date(currentFilters.startDate).getFullYear() : new Date().getFullYear()
+  );
   const [search, setSearch] = React.useState(currentFilters?.search || '');
   const [categoryId, setCategoryId] = React.useState<string>(currentFilters?.categoryId || 'all');
   const [type, setType] = React.useState<string>(currentFilters?.type || 'all');
@@ -52,24 +49,40 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const handleApply = React.useCallback((newDate?: DateRange, newSearch?: string, newCat?: string, newType?: string) => {
+  const handleApply = React.useCallback((newMonth?: number, newYear?: number, newSearch?: string, newCat?: string, newType?: string) => {
     const filters: any = {};
-    const d = newDate || date;
+    const m = newMonth !== undefined ? newMonth : selectedMonth;
+    const y = newYear !== undefined ? newYear : selectedYear;
     const s = newSearch !== undefined ? newSearch : search;
     const c = newCat || categoryId;
     const t = newType || type;
 
-    if (d?.from) filters.startDate = d.from.toISOString();
-    if (d?.to) filters.endDate = d.to.toISOString();
+    // Calculate range based on month selection (0 = Whole Year)
+    let startDate: Date;
+    let endDate: Date;
+
+    if (m === 0) {
+      startDate = new Date(y, 0, 1);
+      endDate = new Date(y, 11, 31, 23, 59, 59, 999);
+    } else {
+      startDate = new Date(y, m - 1, 1);
+      endDate = new Date(y, m, 0, 23, 59, 59, 999);
+    }
+
+    filters.startDate = startDate.toISOString();
+    filters.endDate = endDate.toISOString();
+
     if (s) filters.search = s;
     if (c !== 'all') filters.categoryId = c;
     if (t !== 'all') filters.type = t;
     
     onFilterChange(filters);
-  }, [date, search, categoryId, type, onFilterChange]);
+  }, [selectedMonth, selectedYear, search, categoryId, type, onFilterChange]);
 
   const handleClear = () => {
-    setDate(undefined);
+    const now = new Date();
+    setSelectedMonth(now.getMonth() + 1);
+    setSelectedYear(now.getFullYear());
     setSearch('');
     setCategoryId('all');
     setType('all');
@@ -89,16 +102,13 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
     const propSearch = currentFilters?.search || '';
     if (propSearch !== search) setSearch(propSearch);
 
-    const propFrom = currentFilters?.startDate ? new Date(currentFilters.startDate).getTime() : undefined;
-    const propTo = currentFilters?.endDate ? new Date(currentFilters.endDate).getTime() : undefined;
-    const stateFrom = date?.from?.getTime();
-    const stateTo = date?.to?.getTime();
-
-    if (propFrom !== stateFrom || propTo !== stateTo) {
-      setDate(currentFilters?.startDate ? { 
-        from: new Date(currentFilters.startDate), 
-        to: currentFilters.endDate ? new Date(currentFilters.endDate) : undefined 
-      } : undefined);
+    const propFrom = currentFilters?.startDate ? new Date(currentFilters.startDate) : undefined;
+    
+    if (propFrom) {
+      const pMonth = propFrom.getMonth() + 1;
+      const pYear = propFrom.getFullYear();
+      if (pMonth !== selectedMonth) setSelectedMonth(pMonth);
+      if (pYear !== selectedYear) setSelectedYear(pYear);
     }
 
     // Reset syncing flag after a short delay to allow effects to run
@@ -107,59 +117,29 @@ export function LedgerFilters({ onFilterChange, categories, onExport, currentFil
     }, 50);
   }, [currentFilters]);
 
-  // Sync internal state with props
-  const isFiltered = !!(date?.from || date?.to || search || (categoryId && categoryId !== 'all') || (type && type !== 'all'));
+  const now = new Date();
+  const isFiltered = !!(search || (categoryId && categoryId !== 'all') || (type && type !== 'all') || 
+    selectedMonth !== (now.getMonth() + 1) || selectedYear !== now.getFullYear());
 
   // Auto-apply on select changes for "Sleek" feel
-  const dateKey = `${date?.from?.getTime()}-${date?.to?.getTime()}`;
   React.useEffect(() => {
-    // Only apply if it's a REAL user interaction, not a prop sync
     if (!isSyncingFromProps.current) {
       handleApply();
     }
-  }, [type, categoryId, dateKey]);
+  }, [type, categoryId, selectedMonth, selectedYear]);
 
   return (
     <div className="flex flex-col space-y-4 lg:space-y-0 lg:flex-row lg:items-center gap-4 premium-card p-5 md:p-6 rounded-3xl">
 
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button
-              variant="outline"
-              className={cn(
-                "h-11 justify-start text-left font-semibold rounded-xl border-border/60 hover:bg-muted/50 transition-all px-4 min-w-[180px]",
-                !date && "text-muted-foreground"
-              )}
-            >
-              <CalendarIcon className="mr-2 h-4 w-4 text-primary" />
-              <span className="truncate text-xs">
-                {date?.from ? (
-                  date.to ? (
-                    <>
-                      {format(date.from as Date, "MMM dd")} - {format(date.to as Date, "MMM dd")}
-                    </>
-                  ) : (
-                    format(date.from as Date, "MMM dd, yyyy")
-                  )
-                ) : (
-                  "Select Period"
-                )}
-              </span>
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0 rounded-3xl border border-border shadow-2xl overflow-hidden mt-2" align="start">
-            <Calendar
-              initialFocus
-              mode="range"
-              defaultMonth={date?.from}
-              selected={date}
-              onSelect={setDate}
-              numberOfMonths={isMobile ? 1 : 2}
-              className="p-4"
-            />
-          </PopoverContent>
-        </Popover>
+        <MonthYearPicker 
+          selectedMonth={selectedMonth} 
+          selectedYear={selectedYear} 
+          onChange={(m, y) => {
+            setSelectedMonth(m);
+            setSelectedYear(y);
+          }}
+        />
 
         <Select value={type} onValueChange={setType}>
           <SelectTrigger className="h-11 w-[130px] rounded-xl border-border/60 font-semibold bg-background hover:bg-muted/30 transition-all text-xs">

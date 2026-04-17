@@ -7,7 +7,7 @@ import { LedgerEntryForm } from '@/components/features/LedgerEntryForm';
 import { LedgerEntryList } from '@/components/features/LedgerEntryList';
 import { DashboardCharts } from '@/components/features/DashboardCharts';
 import { useCurrency } from '@/context/CurrencyContext';
-import { Wallet, ArrowUpCircle, ArrowDownCircle, Sparkles, TrendingUp, PlusCircle, ArrowRight } from 'lucide-react';
+import { Wallet, ArrowUpRight, ArrowDownLeft, Sparkles, TrendingUp, PlusCircle, ArrowRight } from 'lucide-react';
 import { cn } from "@/lib/utils";
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -87,8 +87,8 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {[
               { label: 'Total Balance', value: allTimeBalance, icon: Wallet, color: 'primary', description: 'Available funds' },
-              { label: 'Monthly Income', value: monthlyIncome, icon: ArrowUpCircle, color: 'emerald', description: 'Earned this month' },
-              { label: 'Monthly Expenses', value: monthlyExpense, icon: ArrowDownCircle, color: 'rose', description: 'Spent this month' },
+              { label: 'Monthly Income', value: monthlyIncome, icon: ArrowUpRight, color: 'emerald', description: 'Earned this month' },
+              { label: 'Monthly Expenses', value: monthlyExpense, icon: ArrowDownLeft, color: 'rose', description: 'Spent this month' },
             ].map((stat, i) => (
               <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>
                 <div className="premium-card rounded-3xl p-7 group relative overflow-hidden h-full">
