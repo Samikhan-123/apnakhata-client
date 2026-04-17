@@ -403,7 +403,7 @@ export default function ReportsPage() {
             </CardHeader>
             <CardContent className="p-8 h-[400px] min-h-[400px] w-full min-w-0">
               {hasMounted && (
-                <ResponsiveContainer width="100%" height="100%">
+                <ResponsiveContainer width="100%" height="100%" minHeight={400} minWidth={0}>
                 <ComposedChart data={stats?.monthlyTrends?.map((m: any) => ({ ...m, balance: m.income - m.expense }))} barGap={8}>
                   <defs>
                     <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
@@ -546,7 +546,7 @@ export default function ReportsPage() {
                   {/* Left: Visualization */}
                   <div className="xl:col-span-5 p-10 border-r border-border/5 flex flex-col items-center justify-center relative min-h-[450px] w-full min-w-0">
                     {hasMounted && (
-                      <ResponsiveContainer width="100%" height={350}>
+                      <ResponsiveContainer width="100%" height={350} minHeight={350} minWidth={0}>
                       <PieChart>
                         <Pie
                           data={stats?.categoryBreakdown}
