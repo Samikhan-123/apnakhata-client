@@ -60,6 +60,7 @@ export default function ReportsPage() {
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [hasMounted, setHasMounted] = useState(false);
   const { formatCurrency } = useCurrency();
   const { user } = useAuth();
 
@@ -99,6 +100,13 @@ export default function ReportsPage() {
   useEffect(() => {
     fetchStats(filters, !stats);
   }, [filters]);
+
+  useEffect(() => {
+    // A small delay ensures the browser has finished the first layout pass
+    // and Framer Motion animations have initialized their dimensions.
+    const timer = setTimeout(() => setHasMounted(true), 150);
+    return () => clearTimeout(timer);
+  }, []);
 
 
   const getSmartTips = () => {
@@ -393,8 +401,9 @@ export default function ReportsPage() {
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-8 h-[400px] min-h-[400px]">
-              <ResponsiveContainer width="100%" height="100%">
+            <CardContent className="p-8 h-[400px] min-h-[400px] w-full min-w-0">
+              {hasMounted && (
+                <ResponsiveContainer width="100%" height="100%">
                 <ComposedChart data={stats?.monthlyTrends?.map((m: any) => ({ ...m, balance: m.income - m.expense }))} barGap={8}>
                   <defs>
                     <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
@@ -510,6 +519,7 @@ export default function ReportsPage() {
                   />
                 </ComposedChart>
               </ResponsiveContainer>
+              )}
             </CardContent>
           </FadeIn>
         </Card>
@@ -534,8 +544,9 @@ export default function ReportsPage() {
             <CardContent className="p-0">
                <div className="grid grid-cols-1 xl:grid-cols-12">
                   {/* Left: Visualization */}
-                  <div className="xl:col-span-5 p-10 border-r border-border/5 flex flex-col items-center justify-center relative min-h-[450px]">
-                    <ResponsiveContainer width="100%" height={350}>
+                  <div className="xl:col-span-5 p-10 border-r border-border/5 flex flex-col items-center justify-center relative min-h-[450px] w-full min-w-0">
+                    {hasMounted && (
+                      <ResponsiveContainer width="100%" height={350}>
                       <PieChart>
                         <Pie
                           data={stats?.categoryBreakdown}
@@ -569,6 +580,7 @@ export default function ReportsPage() {
                         />
                       </PieChart>
                     </ResponsiveContainer>
+                    )}
                     <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                       <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-1">Global Spend</p>
                       <p className="text-3xl font-black tracking-tighter text-foreground">{formatCurrency(totalExpense)}</p>
