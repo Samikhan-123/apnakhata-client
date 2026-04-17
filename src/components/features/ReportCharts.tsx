@@ -79,7 +79,7 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
             </div>
           </CardHeader>
           <CardContent className="p-0 overflow-hidden">
-            <div className="p-4 sm:p-8 h-[320px] sm:h-[450px] w-full min-w-0">
+            <div className="p-4 sm:p-10 h-[450px] sm:h-[550px] w-full min-w-0">
               <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={100}>
                 <ComposedChart data={stats?.monthlyTrends} barGap={8} margin={{ bottom: 20 }}>
                   <defs>
@@ -197,8 +197,8 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
           </CardHeader>
           <CardContent className="p-0">
             <div className="grid grid-cols-1 xl:grid-cols-12">
-              <div className="xl:col-span-12 2xl:col-span-5 p-6 sm:p-10 border-b 2xl:border-b-0 2xl:border-r border-border/5 flex flex-col items-center justify-center relative min-h-[350px] sm:min-h-[450px] w-full min-w-0">
-                <ResponsiveContainer width="100%" height={300} minHeight={300} minWidth={0} debounce={100}>
+              <div className="xl:col-span-12 2xl:col-span-5 p-6 sm:p-10 border-b 2xl:border-b-0 2xl:border-r border-border/5 flex flex-col items-center justify-center relative min-h-[450px] sm:min-h-[550px] w-full min-w-0">
+                <ResponsiveContainer width="100%" height={400} minHeight={400} minWidth={0} debounce={100}>
                   <PieChart>
                     <Pie 
                       data={stats?.categoryBreakdown} 
