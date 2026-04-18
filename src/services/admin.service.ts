@@ -6,8 +6,16 @@ export const adminService = {
     return response;
   },
 
-  getUsers: async (page: number = 1, limit: number = 10) => {
-    const { data } = await api.get(`/admin/users?page=${page}&limit=${limit}`);
+  getUsers: async (page: number = 1, limit: number = 10, filters: any = {}) => {
+    const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
+    
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value != null && value !== '') {
+        params.append(key, value.toString());
+      }
+    });
+
+    const { data } = await api.get(`/admin/users?${params.toString()}`);
     return data;
   },
 

@@ -58,7 +58,7 @@ function FAQItem({ question, answer }: { question: string, answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div 
+    <div
       className={cn(
         "group bg-card border border-border/50 rounded-3xl p-6 transition-all cursor-pointer overflow-hidden shadow-sm hover:shadow-md",
         isOpen && "border-primary/30 bg-primary/5"
@@ -67,13 +67,13 @@ function FAQItem({ question, answer }: { question: string, answer: string }) {
     >
       <div className="flex items-center justify-between gap-4">
         <h4 className="text-xl md:text-2xl font-black tracking-tight flex items-center gap-3">
-          <span className={cn("text-primary opacity-30 transition-opacity", isOpen && "opacity-100")}>/</span> 
+          <span className={cn("text-primary opacity-30 transition-opacity", isOpen && "opacity-100")}>/</span>
           {question}
         </h4>
         <motion.div
-           animate={{ rotate: isOpen ? 180 : 0 }}
-           transition={{ duration: 0.3 }}
-           className="text-muted-foreground"
+          animate={{ rotate: isOpen ? 180 : 0 }}
+          transition={{ duration: 0.3 }}
+          className="text-muted-foreground"
         >
           <ChevronDown size={24} />
         </motion.div>
@@ -146,8 +146,7 @@ export default function LandingPage() {
             transition={{ delay: 0.1 }}
             className="max-w-2xl mx-auto text-muted-foreground text-lg md:text-xl font-bold leading-relaxed mb-12"
           >
-            Forget messy notebooks and confusing apps. Apna Khata helps you track every rupee with ease, so you can spend less time worrying and more time living.
-          </motion.p>
+            No more messy notebooks and apps that don't make sense. With Apna Khata, you can easily keep track of all your money matters, so you can spend less time worrying and more time living.          </motion.p>
 
           <motion.div
             variants={fadeInUp}
@@ -320,35 +319,35 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <motion.div 
-               variants={fadeInUp}
-               className="relative bg-card border border-border/40 rounded-[3rem] p-10 shadow-2xl overflow-hidden group"
+            <motion.div
+              variants={fadeInUp}
+              className="relative bg-card border border-border/40 rounded-[3rem] p-10 shadow-2xl overflow-hidden group"
             >
-               <div className="space-y-8 relative z-10">
-                  <div className="flex justify-between items-center">
-                    <div className="space-y-2">
-                       <div className="w-16 h-2 bg-primary/20 rounded-full" />
-                       <p className="text-2xl font-black tracking-tighter">Your Dashboard</p>
-                    </div>
-                    <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/10">
-                      <Activity className="text-primary size={24}" />
+              <div className="space-y-8 relative z-10">
+                <div className="flex justify-between items-center">
+                  <div className="space-y-2">
+                    <div className="w-16 h-2 bg-primary/20 rounded-full" />
+                    <p className="text-2xl font-black tracking-tighter">Your Dashboard</p>
+                  </div>
+                  <div className="w-12 h-12 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/10">
+                    <Activity className="text-primary size={24}" />
+                  </div>
+                </div>
+
+                <div className="bg-muted/10 rounded-2xl p-6 border border-border/40 space-y-4 font-bold text-muted-foreground/60 text-sm">
+                  <p>Sample View</p>
+                  <div className="space-y-3">
+                    <div className="h-4 bg-muted/20 w-3/4 rounded-full" />
+                    <div className="h-4 bg-muted/20 w-1/2 rounded-full" />
+                    <div className="h-12 bg-primary w-full rounded-2xl mt-8 flex items-center justify-center text-white text-[10px] font-black uppercase tracking-widest">
+                      Data Synchronized
                     </div>
                   </div>
-                  
-                  <div className="bg-muted/10 rounded-2xl p-6 border border-border/40 space-y-4 font-bold text-muted-foreground/60 text-sm">
-                    <p>Sample View</p>
-                    <div className="space-y-3">
-                      <div className="h-4 bg-muted/20 w-3/4 rounded-full" />
-                      <div className="h-4 bg-muted/20 w-1/2 rounded-full" />
-                      <div className="h-12 bg-primary w-full rounded-2xl mt-8 flex items-center justify-center text-white text-[10px] font-black uppercase tracking-widest">
-                        Data Synchronized
-                      </div>
-                    </div>
-                  </div>
-               </div>
-               <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform">
-                  <Zap size={200} />
-               </div>
+                </div>
+              </div>
+              <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform">
+                <Zap size={200} />
+              </div>
             </motion.div>
           </motion.div>
         </div>

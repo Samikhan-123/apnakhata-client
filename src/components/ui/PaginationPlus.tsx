@@ -13,6 +13,7 @@ interface PaginationPlusProps {
   limit?: number;
   onPageChange: (page: number) => void;
   className?: string;
+  compact?: boolean;
 }
 // pagination component custom feature
 export function PaginationPlus({
@@ -21,7 +22,8 @@ export function PaginationPlus({
   totalResults,
   limit = 20,
   onPageChange,
-  className
+  className,
+  compact = false
 }: PaginationPlusProps) {
   const [jumpValue, setJumpValue] = useState('');
 
@@ -68,9 +70,13 @@ export function PaginationPlus({
   const endResult = Math.min(currentPage * limit, totalResults || 0);
 
   return (
-    <div className={cn("flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 pt-10 border-t border-border/20 px-2", className)}>
+    <div className={cn(
+      "flex flex-col md:flex-row items-center justify-between gap-6 md:gap-8 border-border/20 px-2", 
+      compact ? "pt-2 border-t-0" : "pt-10 border-t",
+      className
+    )}>
       <div className="flex flex-col items-center md:items-start gap-1 group">
-         <p className="text-xs font-bold text-muted-foreground/60 transition-colors group-hover:text-primary/60 text-center md:text-left">
+         <p className="text-xs font-bold text-muted-foreground/70 transition-colors group-hover:text-primary/60 text-center md:text-left">
             {totalResults ? (
                <>Showing <span className="text-foreground font-black tabular-nums">{startResult}</span> to <span className="text-foreground font-black tabular-nums">{endResult}</span> of <span className="text-primary font-black tabular-nums">{totalResults}</span> records</>
             ) : (
@@ -105,30 +111,32 @@ export function PaginationPlus({
         </Button>
       </div>
 
-      {/* Go to Page Input */}
-      <div className="flex items-center gap-3 sm:gap-4 bg-muted/20 pl-4 sm:pl-6 pr-1.5 sm:pr-2 py-1.5 sm:py-2 rounded-2xl sm:rounded-[1.8rem] border border-border/40 group focus-within:border-primary/50 transition-all">
-        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Go to Page</span>
-        <div className="flex items-center gap-2">
-          <Input 
-            type="number" 
-            min={1} 
-            max={totalPages}
-            className="h-10 w-16 bg-background rounded-xl border-none text-center font-black text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-            value={jumpValue}
-            onChange={(e) => setJumpValue(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') handleJump();
-            }}
-            placeholder={String(currentPage)}
-          />
-          <Button 
-            onClick={handleJump}
-            className="h-10 px-4 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-black uppercase tracking-widest text-[9px] transition-all"
-          >
-            Go
-          </Button>
+      {/* Go to Page Input - Hidden in compact mode */}
+      {!compact && (
+        <div className="flex items-center gap-3 sm:gap-4 bg-muted/20 pl-4 sm:pl-6 pr-1.5 sm:pr-2 py-1.5 sm:py-2 rounded-2xl sm:rounded-[1.8rem] border border-border/40 group focus-within:border-primary/50 transition-all">
+          <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">Go to Page</span>
+          <div className="flex items-center gap-2">
+            <Input 
+              type="number" 
+              min={1} 
+              max={totalPages}
+              className="h-10 w-16 bg-background rounded-xl border-none text-center font-black text-xs [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              value={jumpValue}
+              onChange={(e) => setJumpValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleJump();
+              }}
+              placeholder={String(currentPage)}
+            />
+            <Button 
+              onClick={handleJump}
+              className="h-10 px-4 rounded-xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-black uppercase tracking-widest text-[9px] transition-all"
+            >
+              Go
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

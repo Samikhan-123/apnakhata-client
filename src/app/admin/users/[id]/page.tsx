@@ -13,6 +13,7 @@ import {
   TrendingUp, ShieldAlert, Scale, Globe, TrendingDown, 
   DollarSign, Eye
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ui/tooltip';
@@ -25,6 +26,7 @@ import { useAuth } from '@/context/AuthContext';
 import { RiskProfileCard } from './RiskProfileCard';
 import { SecurityScoringTable } from './SecurityScoringTable';
 import { ChevronRight as LucideChevronRight } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function UserDetailPage() {
   const { id } = useParams();
@@ -48,6 +50,13 @@ export default function UserDetailPage() {
     description: '',
     onConfirm: () => {}
   });
+
+  const isOnline = (dateStr: string) => {
+    if (!dateStr) return false;
+    const lastActive = new Date(dateStr).getTime();
+    const now = new Date().getTime();
+    return (now - lastActive) < 5 * 60 * 1000; // 5 minutes
+  };
 
   useEffect(() => {
     fetchUserDetails();
@@ -219,18 +228,28 @@ export default function UserDetailPage() {
             <span className="font-bold">Back to Registry</span>
           </Button>
           <div className="flex items-center gap-4">
-             <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 font-black text-2xl text-primary shadow-sm">
-                {user.name ? user.name[0].toUpperCase() : 'U'}
+             <div className="relative">
+                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 font-black text-2xl text-primary shadow-sm sapphire-glow/20">
+                    {user.name ? user.name[0].toUpperCase() : 'U'}
+                </div>
+                {isOnline(user.lastActive) && (
+                   <span className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-4 border-background rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.6)]" />
+                )}
              </div>
               <div className="flex-1 min-w-0">
-                <Tooltip content={user.name || 'Anonymous User'}>
-                  <h1 className="text-3xl font-black tracking-tight text-foreground truncate max-w-[250px] sm:max-w-md">
-                    {user.name ? capitalize(user.name) : 'Anonymous User'}
-                  </h1>
-                </Tooltip>
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5 focus:outline-none">
+                <div className="flex items-center gap-3">
+                   <Tooltip content={user.name || 'Anonymous User'}>
+                     <h1 className="text-3xl font-black tracking-tight text-foreground truncate max-w-[250px] sm:max-w-md">
+                       {user.name ? capitalize(user.name) : 'Anonymous User'}
+                     </h1>
+                   </Tooltip>
+                   {isOnline(user.lastActive) && (
+                     <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">Live Diagnostic Active</Badge>
+                   )}
+                </div>
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 focus:outline-none">
                   <Tooltip content={user.email}>
-                    <span className="text-sm font-medium text-muted-foreground flex items-center gap-1.5 p-1 px-2.5 rounded-full bg-muted/30 truncate max-w-[180px] sm:max-w-xs">
+                    <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5 p-1 px-3 rounded-full bg-muted/30 border border-border/5 truncate max-w-[180px] sm:max-w-xs">
                       <Mail className="h-3.5 w-3.5 shrink-0" />
                       <span className="truncate">{user.email}</span>
                     </span>
@@ -239,8 +258,14 @@ export default function UserDetailPage() {
                      "text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border whitespace-nowrap",
                      user.isActive ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-rose-500/10 text-rose-600 border-rose-500/20"
                   )}>
-                     {user.isActive ? 'Active' : 'Banned'}
+                     {user.isActive ? 'Clearance: Active' : 'Status: Restricted'}
                   </span>
+                  {user.lastActive && !isOnline(user.lastActive) && (
+                    <span className="text-[10px] font-bold text-muted-foreground/60 flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      Last seen {formatDistanceToNow(new Date(user.lastActive))} ago
+                    </span>
+                  )}
                 </div>
               </div>
           </div>
@@ -377,7 +402,7 @@ export default function UserDetailPage() {
                 )}>
                   <stat.icon className="h-4 w-4" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">{stat.label}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">{stat.label}</span>
               </div>
               <div className="text-3xl font-black tracking-tighter text-foreground">{stat.value}</div>
             </div>
@@ -385,157 +410,17 @@ export default function UserDetailPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="flex items-center justify-between px-2">
-            <h2 className="text-xl font-black tracking-tight text-foreground">Recent Activity</h2>
-            <Button variant="ghost" size="sm" className="text-xs font-bold text-primary gap-1">
-              View All <ChevronRight className="h-3 w-3" />
-            </Button>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        {/* Left Wing: Security & Risk Diagnostics */}
+        <div className="space-y-8">
+          <div className="flex items-center gap-2 px-2">
+            <h2 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest text-[14px]">Security Diagnostics</h2>
+            <div className="h-px flex-1 bg-border/40" />
           </div>
           
-          <div className="space-y-3">
-            {user.recentActivity?.length > 0 ? (
-              user.recentActivity.map((entry: any) => (
-                <div key={entry.id} className="premium-card p-4 rounded-2xl flex items-center justify-between gap-4 border border-border/10">
-                  <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center border",
-                      entry.type === 'INCOME' ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/10" : "bg-rose-500/5 text-rose-600 border-rose-500/10"
-                    )}>
-                      {entry.type === 'INCOME' ? <ArrowUpRight className="h-4 w-4" /> : <ArrowDownLeft className="h-4 w-4" />}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-foreground">{capitalize(entry.description)}</p>
-                      <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">{entry.category?.name || 'General'}</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className={cn(
-                      "text-sm font-black tabular-nums",
-                      entry.type === 'INCOME' ? "text-emerald-600" : "text-rose-600"
-                    )}>
-                      {entry.type === 'INCOME' ? '+' : '-'} {formatCurrency(Math.abs(entry.amount))}
-                    </p>
-                    <p className="text-[10px] text-muted-foreground">{format(new Date(entry.date), 'MMM dd, yyyy')}</p>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <div className="p-12 text-center bg-muted/10 rounded-3xl border border-dashed border-border/20">
-                <p className="text-muted-foreground font-bold">No recent records added.</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* System Info & Risk Profile */}
-        <div className="space-y-6">
           <RiskProfileCard riskProfile={user.riskProfile} />
           
           <SecurityScoringTable />
-          
-          <h2 className="text-xl font-black tracking-tight text-foreground px-2">Account Metadata</h2>
-          <div className="premium-card p-6 rounded-3xl space-y-6 border border-border/10">
-            <div className="flex items-start gap-4">
-              <div className="bg-muted/30 p-2.5 rounded-xl">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Joined Platform</p>
-                <p className="font-bold text-foreground">{format(new Date(user.createdAt), 'MMMM dd, yyyy')}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{format(new Date(user.createdAt), 'hh:mm a')}</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-4">
-              <div className="bg-muted/30 p-2.5 rounded-xl">
-                <Clock className="h-5 w-5 text-muted-foreground" />
-              </div>
-              <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Last Synchronized</p>
-                <p className="font-bold text-foreground">{format(new Date(user.updatedAt), 'MMMM dd, yyyy')}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{format(new Date(user.updatedAt), 'hh:mm a')}</p>
-              </div>
-            </div>
-
-            <div className="pt-4 border-t border-border/10 space-y-3">
-               <div className="flex items-center justify-between">
-                 <span className="text-xs font-bold text-muted-foreground">Internal ID</span>
-                 <code className="text-[10px] bg-muted/50 px-2 py-0.5 rounded-md font-mono">{user.id}</code>
-               </div>
-               <div className="flex items-center justify-between">
-                 <span className="text-xs font-bold text-muted-foreground">Currency Preference</span>
-                 <span className="text-xs font-black text-foreground">{user.baseCurrency}</span>
-               </div>
-               <div className="flex items-center justify-between">
-                 <span className="text-xs font-bold text-muted-foreground">Account Status</span>
-                 <span className={cn(
-                    "text-[10px] font-black px-2 py-0.5 rounded-md",
-                    user.isVerified ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
-                 )}>{user.isVerified ? 'VERIFIED' : 'UNVERIFIED'}</span>
-               </div>
-            </div>
-          </div>
-
-          <h2 className="text-xl font-black tracking-tight text-foreground px-2">Connectivity Intelligence</h2>
-          <div className="premium-card p-6 rounded-3xl space-y-5 border border-border/10">
-             <div className="flex items-start gap-4">
-               <div className="bg-primary/5 p-2.5 rounded-xl">
-                 <Globe className="h-5 w-5 text-primary" />
-               </div>
-               <div>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Last Known IP</p>
-                 <p className="font-bold text-foreground selection:bg-primary/30 uppercase tracking-tighter">{user.lastIp || 'Unknown'}</p>
-                 <p className="text-[10px] text-muted-foreground mt-0.5 font-bold">{user.lastLocation || 'N/A'}</p>
-               </div>
-             </div>
-
-             <div className="flex items-start gap-4">
-               <div className="bg-primary/5 p-2.5 rounded-xl">
-                 <Activity className="h-5 w-5 text-primary" />
-               </div>
-               <div>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Device Signature</p>
-                 <p className="font-bold text-foreground text-sm leading-tight">{user.lastDevice || 'Unknown Identity'}</p>
-               </div>
-             </div>
-
-             {user.metadata && (
-               <div className="pt-4 border-t border-border/10 space-y-4">
-                 <div className="bg-muted/30 p-4 rounded-2xl">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50 mb-3">Diagnostic Metadata</p>
-                    <div className="grid grid-cols-2 gap-y-3 gap-x-4">
-                       <div>
-                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Organization</p>
-                          <Tooltip content={user.metadata.org || 'N/A'}>
-                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.org || 'N/A'}</p>
-                           </Tooltip>
-                       </div>
-                       <div>
-                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Hostname</p>
-                          <Tooltip content={user.metadata.hostname || 'N/A'}>
-                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.hostname || 'N/A'}</p>
-                           </Tooltip>
-                       </div>
-                       <div>
-                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Coordinates</p>
-                          <Tooltip content={user.metadata.loc || 'N/A'}>
-                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.loc || 'N/A'}</p>
-                           </Tooltip>
-                       </div>
-                       <div>
-                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Postal Code</p>
-                          <Tooltip content={user.metadata.postal || 'N/A'}>
-                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.postal || 'N/A'}</p>
-                           </Tooltip>
-                       </div>
-                    </div>
-                 </div>
-               </div>
-             )}
-          </div>
 
           <div className="p-6 rounded-3xl bg-rose-500/5 border border-rose-500/10 space-y-4 shadow-sm group hover:border-rose-500/30 transition-all">
              <div className="flex items-center gap-2">
@@ -573,6 +458,113 @@ export default function UserDetailPage() {
              ) : (
                <div className="text-[10px] text-muted-foreground italic font-medium p-3 bg-muted/30 rounded-xl text-center">
                  {user.role === 'ADMIN' ? 'Administrative identity is protected from standard erasure.' : 'Only platform Administrators can initiate account deletions.'}
+               </div>
+             )}
+          </div>
+        </div>
+
+        {/* Right Wing: Identity & Connectivity Metadata */}
+        <div className="space-y-8">
+          <div className="flex items-center gap-2 px-2">
+            <h2 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest text-[14px]">Environmental Metadata</h2>
+            <div className="h-px flex-1 bg-border/40" />
+          </div>
+
+          <div className="premium-card p-6 rounded-3xl space-y-6 border border-border/10">
+            <div className="flex items-start gap-4">
+              <div className="bg-muted/30 p-2.5 rounded-xl">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Joined Platform</p>
+                <p className="font-bold text-foreground">{format(new Date(user.createdAt), 'MMMM dd, yyyy')}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{format(new Date(user.createdAt), 'hh:mm a')}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="bg-muted/30 p-2.5 rounded-xl">
+                <Clock className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Last Synchronized</p>
+                <p className="font-bold text-foreground">{format(new Date(user.updatedAt), 'MMMM dd, yyyy')}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{format(new Date(user.updatedAt), 'hh:mm a')}</p>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-border/10 space-y-3">
+               <div className="flex items-center justify-between">
+                 <span className="text-xs font-bold text-muted-foreground">Internal ID</span>
+                 <code className="text-[10px] bg-muted/50 px-2 py-0.5 rounded-md font-mono">{user.id}</code>
+               </div>
+               <div className="flex items-center justify-between">
+                 <span className="text-xs font-bold text-muted-foreground">Currency Preference</span>
+                 <span className="text-xs font-black text-foreground">{user.baseCurrency}</span>
+               </div>
+               <div className="flex items-center justify-between">
+                 <span className="text-xs font-bold text-muted-foreground">Account Status</span>
+                 <span className={cn(
+                    "text-[10px] font-black px-2 py-0.5 rounded-md",
+                    user.isVerified ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
+                 )}>{user.isVerified ? 'VERIFIED' : 'UNVERIFIED'}</span>
+               </div>
+            </div>
+          </div>
+
+          <div className="premium-card p-6 rounded-3xl space-y-5 border border-border/10">
+             <div className="flex items-start gap-4">
+               <div className="bg-primary/5 p-2.5 rounded-xl">
+                 <Globe className="h-5 w-5 text-primary" />
+               </div>
+               <div>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Last Known IP</p>
+                 <p className="font-bold text-foreground selection:bg-primary/30 uppercase tracking-tighter">{user.lastIp || 'Unknown'}</p>
+                 <p className="text-[10px] text-muted-foreground mt-0.5 font-bold">{user.lastLocation || 'N/A'}</p>
+               </div>
+             </div>
+
+             <div className="flex items-start gap-4">
+               <div className="bg-primary/5 p-2.5 rounded-xl">
+                 <Activity className="h-5 w-5 text-primary" />
+               </div>
+               <div>
+                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Device Signature</p>
+                 <p className="font-bold text-foreground text-sm leading-tight">{user.lastDevice || 'Unknown Identity'}</p>
+               </div>
+             </div>
+
+             {user.metadata && (
+               <div className="pt-4 border-t border-border/10 space-y-4">
+                 <div className="bg-muted/30 p-4 rounded-2xl">
+                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/70 mb-3">Diagnostic Metadata</p>
+                    <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+                       <div>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Organization</p>
+                          <Tooltip content={user.metadata.org || 'N/A'}>
+                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.org || 'N/A'}</p>
+                           </Tooltip>
+                       </div>
+                       <div>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Hostname</p>
+                          <Tooltip content={user.metadata.hostname || 'N/A'}>
+                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.hostname || 'N/A'}</p>
+                           </Tooltip>
+                       </div>
+                       <div>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Coordinates</p>
+                          <Tooltip content={user.metadata.loc || 'N/A'}>
+                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.loc || 'N/A'}</p>
+                           </Tooltip>
+                       </div>
+                       <div>
+                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Postal Code</p>
+                          <Tooltip content={user.metadata.postal || 'N/A'}>
+                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.postal || 'N/A'}</p>
+                           </Tooltip>
+                       </div>
+                    </div>
+                 </div>
                </div>
              )}
           </div>

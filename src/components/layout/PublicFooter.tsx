@@ -15,7 +15,7 @@ export function PublicFooter() {
             <span className="text-2xl font-black tracking-tighter text-foreground">Apna <span className="text-primary">Khata</span></span>
           </div>
 
-          <div className="flex flex-wrap items-center justify-center gap-10 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/40">
+          <div className="flex flex-wrap items-center justify-center gap-10 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
             <Link href="/guide" className="hover:text-primary cursor-pointer transition-colors">Help Center</Link>
             <Link href="/manifesto" className="hover:text-primary cursor-pointer transition-colors">Manifesto</Link>
             <Link href="/contact" className="hover:text-primary cursor-pointer transition-colors">Contact</Link>

@@ -6,13 +6,16 @@ import { adminService } from '@/services/admin.service';
 import { 
   Users, Shield, ShieldCheck, UserCheck, UserX, 
   Search, Filter, MoreHorizontal, CheckCircle2, 
-  AlertCircle, Ban, Activity, ChevronRight, HelpCircle, Eye 
+  AlertCircle, Ban, Activity, ChevronRight, HelpCircle, Eye,
+  X, ChevronDown, Check, DollarSign
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { Button } from '@/components/ui/button';
 import { Tooltip } from '@/components/ui/tooltip';
 import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { handleApiError } from '@/lib/error-handler';
 import { cn, capitalize } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -32,6 +35,12 @@ export default function UserManagementPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [paginationData, setPaginationData] = useState<any>(null);
   const [selectedUsers, setSelectedUsers] = useState<Set<string>>(new Set());
+  const [showFilters, setShowFilters] = useState(false);
+  const [filters, setFilters] = useState({
+    role: '',
+    isActive: '',
+    isVerified: ''
+  });
   
   const [confirmConfig, setConfirmConfig] = useState<{
     isOpen: boolean;
@@ -49,13 +58,23 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     fetchUsers(currentPage);
-  }, [currentPage]);
+    
+    // Auto-polling for real-time status updates every 60 seconds
+    const interval = setInterval(() => {
+      fetchUsers(currentPage);
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [currentPage, filters]); // Added filters to dependency array
 
   const fetchUsers = async (page: number = 1) => {
     setLoading(true);
     setError(null);
     try {
-      const response = await adminService.getUsers(page);
+      const response = await adminService.getUsers(page, 20, {
+        ...filters,
+        search
+      });
       if (response.success) {
         setUsers(response.data);
         setPaginationData(response.pagination);
@@ -67,6 +86,22 @@ export default function UserManagementPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (currentPage === 1) fetchUsers(1);
+      else setCurrentPage(1);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [search]);
+
+  const isOnline = (dateStr: string) => {
+    if (!dateStr) return false;
+    const lastActive = new Date(dateStr).getTime();
+    const now = new Date().getTime();
+    return (now - lastActive) < 5 * 60 * 1000; // 5 minutes
   };
 
   const handleToggleStatus = (user: any) => {
@@ -178,10 +213,8 @@ export default function UserManagementPage() {
     });
   };
 
-  const filteredUsers = users.filter(u =>
-    u.email.toLowerCase().includes(search.toLowerCase()) ||
-    (u.name && u.name.toLowerCase().includes(search.toLowerCase()))
-  );
+  // Filtering is now handled on the backend
+  const filteredUsers = users;
 
   return (
     <div className="flex flex-col h-full space-y-4 md:space-y-8 relative">
@@ -218,7 +251,7 @@ export default function UserManagementPage() {
       {/* Responsive Filter & Search Section */}
       <div className="flex flex-col md:flex-row gap-3 md:gap-4 flex-none">
         <div className="relative flex-1 group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/40 group-focus-within:text-primary transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-primary transition-colors" />
           <input
             type="text"
             placeholder="Search by name or email..."
@@ -227,14 +260,259 @@ export default function UserManagementPage() {
             className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-11 md:h-12 pl-12 pr-6 font-medium text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
           />
         </div>
-        <Button className="h-11 md:h-12 px-6 md:px-8 rounded-xl md:rounded-2xl font-bold gap-2 text-xs md:text-sm sapphire-glow">
-          <Filter className="h-4 w-4" />
-          <span>Filters</span>
-        </Button>
+        <div className="flex gap-2">
+          <Popover open={showFilters} onOpenChange={setShowFilters}>
+            <PopoverTrigger asChild>
+              <Button 
+                variant={Object.values(filters).some(v => v !== '') ? 'default' : 'outline'}
+                className={cn(
+                  "h-11 md:h-12 px-6 md:px-8 rounded-xl md:rounded-2xl font-bold gap-2 text-xs md:text-sm transition-all",
+                  Object.values(filters).some(v => v !== '') ? "sapphire-glow" : "border-border/40 hover:bg-muted"
+                )}
+                onClick={() => setShowFilters(!showFilters)}
+              >
+                <Filter className="h-4 w-4" />
+                <span>Filters</span>
+                {Object.values(filters).some(v => v !== '') && (
+                  <Badge className="ml-2 bg-primary-foreground text-primary h-5 w-5 p-0 flex items-center justify-center rounded-full text-[10px]">
+                    {Object.values(filters).filter(v => v !== '').length}
+                  </Badge>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80 p-6 rounded-[2rem] premium-card border-border/20 shadow-2xl sapphire-glow">
+              <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-black text-xs uppercase tracking-widest text-foreground">Advanced Filters</h3>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-8 w-8 rounded-full"
+                    onClick={() => {
+                      setFilters({ role: '', isActive: '', isVerified: '' });
+                      setShowFilters(false);
+                    }}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/70 ml-1">Account Role</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['ADMIN', 'MODERATOR', 'USER'].map((r) => (
+                        <Button
+                          key={r}
+                          variant="ghost"
+                          size="sm"
+                          className={cn(
+                            "h-9 rounded-xl text-[10px] font-bold border border-transparent",
+                            filters.role === r ? "bg-primary/10 text-primary border-primary/20" : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                          )}
+                          onClick={() => setFilters(prev => ({ ...prev, role: filters.role === r ? '' : r }))}
+                        >
+                          {r}
+                        </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/70 ml-1">Member Status</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          "h-9 rounded-xl text-[10px] font-bold border border-transparent",
+                          filters.isActive === 'true' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                        )}
+                        onClick={() => setFilters(prev => ({ ...prev, isActive: filters.isActive === 'true' ? '' : 'true' }))}
+                      >
+                        ACTIVE ONLY
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          "h-9 rounded-xl text-[10px] font-bold border border-transparent",
+                          filters.isActive === 'false' ? "bg-rose-500/10 text-rose-600 border-rose-500/20" : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                        )}
+                        onClick={() => setFilters(prev => ({ ...prev, isActive: filters.isActive === 'false' ? '' : 'false' }))}
+                      >
+                        BANNED ONLY
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-tighter text-muted-foreground/70 ml-1">Identity Clearance</label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          "h-9 rounded-xl text-[10px] font-bold border border-transparent",
+                          filters.isVerified === 'true' ? "bg-blue-500/10 text-blue-600 border-blue-500/20" : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                        )}
+                        onClick={() => setFilters(prev => ({ ...prev, isVerified: filters.isVerified === 'true' ? '' : 'true' }))}
+                      >
+                        VERIFIED
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className={cn(
+                          "h-9 rounded-xl text-[10px] font-bold border border-transparent",
+                          filters.isVerified === 'false' ? "bg-amber-500/10 text-amber-600 border-amber-500/20" : "bg-muted/30 text-muted-foreground hover:bg-muted/50"
+                        )}
+                        onClick={() => setFilters(prev => ({ ...prev, isVerified: filters.isVerified === 'false' ? '' : 'false' }))}
+                      >
+                        PENDING
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-border/10">
+                  <Button 
+                    variant="ghost" 
+                    className="w-full h-10 rounded-xl text-[10px] font-black text-muted-foreground hover:text-rose-500"
+                    onClick={() => {
+                        setFilters({ role: '', isActive: '', isVerified: '' });
+                        setShowFilters(false);
+                    }}
+                  >
+                    RESET ALL CLEARANCES
+                  </Button>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          {Object.values(filters).some(v => v !== '') && (
+            <Button 
+              variant="outline"
+              size="icon"
+              className="h-11 md:h-12 w-11 md:w-12 rounded-xl md:rounded-2xl border-rose-500/20 text-rose-500 hover:bg-rose-500/5 transition-all"
+              onClick={() => setFilters({ role: '', isActive: '', isVerified: '' })}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
-      {/* Hybrid Scrolling User Table Card Container */}
-      <div className="w-full flex-none">
+      {/* Mobile Card View (shown only on small screens) */}
+      <div className="md:hidden space-y-4">
+        {loading ? (
+             Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="premium-card p-6 rounded-3xl animate-pulse space-y-4">
+                   <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 bg-muted rounded-2xl" />
+                      <div className="space-y-2">
+                         <div className="h-4 w-32 bg-muted rounded-md" />
+                         <div className="h-3 w-48 bg-muted rounded-md" />
+                      </div>
+                   </div>
+                   <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/5">
+                      <div className="h-8 bg-muted rounded-xl" />
+                      <div className="h-8 bg-muted rounded-xl" />
+                   </div>
+                </div>
+             ))
+        ) : filteredUsers.length === 0 ? (
+             <div className="py-20 text-center glass-card rounded-3xl border border-dashed border-border/20">
+                <Users className="h-10 w-10 text-muted-foreground/30 mx-auto mb-4" />
+                <p className="text-muted-foreground font-bold">No strategic identities found.</p>
+             </div>
+        ) : filteredUsers.map((user) => (
+            <FadeIn key={user.id} className="premium-card p-6 rounded-3xl border border-border/10 space-y-5">
+               <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="w-12 h-12 bg-primary/5 rounded-2xl flex items-center justify-center border border-primary/10 font-black text-primary text-lg">
+                          {user.name ? user.name[0].toUpperCase() : 'U'}
+                        </div>
+                        {isOnline(user.lastActive) && (
+                          <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-background rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                        )}
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                           <p className="text-sm font-bold text-foreground leading-none">{user.name ? capitalize(user.name) : 'Anonymous'}</p>
+                           {isOnline(user.lastActive) && (
+                              <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-500/10 px-1 rounded-sm">LIVE</span>
+                           )}
+                        </div>
+                        <p className="text-[10px] text-muted-foreground font-medium mt-1.5">{user.email}</p>
+                      </div>
+                  </div>
+                  <input 
+                    type="checkbox" 
+                    className="h-5 w-5 rounded-lg border-border/40 focus:ring-emerald-500 accent-emerald-500"
+                    checked={selectedUsers.has(user.id)}
+                    onChange={() => toggleSelectUser(user.id)}
+                  />
+               </div>
+
+               <div className="grid grid-cols-2 gap-3">
+                  <div className={cn(
+                    "flex flex-col gap-1 p-3 rounded-2xl border",
+                    user.role === 'ADMIN' ? "bg-primary/5 border-primary/10" : "bg-muted/30 border-transparent"
+                  )}>
+                     <span className="text-[8px] font-black uppercase tracking-tighter text-muted-foreground/60">Access Clearanc</span>
+                     <div className="flex items-center gap-2">
+                        <Shield className={cn("h-3 w-3", user.role === 'ADMIN' ? "text-primary" : "text-muted-foreground/60")} />
+                        <span className="text-[10px] font-black text-foreground">{user.role}</span>
+                     </div>
+                  </div>
+                  <div className={cn(
+                    "flex flex-col gap-1 p-3 rounded-2xl border",
+                    user.isActive ? "bg-emerald-500/5 border-emerald-500/10" : "bg-rose-500/5 border-rose-500/10"
+                  )}>
+                     <span className="text-[8px] font-black uppercase tracking-tighter text-muted-foreground/60">Status</span>
+                     <div className="flex items-center gap-2">
+                        {user.isActive ? <CheckCircle2 className="h-3 w-3 text-emerald-600" /> : <Ban className="h-3 w-3 text-rose-600" />}
+                        <span className={cn("text-[10px] font-black", user.isActive ? "text-emerald-700" : "text-rose-700")}>{user.isActive ? 'ACTIVE' : 'BANNED'}</span>
+                     </div>
+                  </div>
+               </div>
+
+               <div className="flex items-center justify-between pt-4 border-t border-border/5">
+                  <div className="flex flex-col gap-0.5">
+                    <p className="text-[11px] font-black text-foreground selection:bg-primary/30 uppercase tracking-tighter">{user.lastIp || 'No IP'}</p>
+                    <span className="text-[9px] text-muted-foreground font-bold uppercase tracking-tighter">{user.lastLocation || 'Global Deployment'}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10 rounded-xl bg-muted/30 hover:bg-primary/10 text-primary"
+                        onClick={() => router.push(`/admin/users/${user.id}`)}
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </Button>
+                  </div>
+               </div>
+            </FadeIn>
+        ))}
+        {paginationData && paginationData.totalPages > 1 && (
+           <div className="pt-4">
+              <PaginationPlus
+                currentPage={currentPage}
+                totalPages={paginationData.totalPages}
+                totalResults={paginationData.total}
+                limit={paginationData.limit}
+                onPageChange={setCurrentPage}
+                compact
+              />
+           </div>
+        )}
+      </div>
+
+      {/* Hybrid Table (Hidden on mobile) */}
+      <div className="w-full flex-none hidden md:block">
         <FadeIn className="w-full" duration={0.7}>
           <div className="premium-card rounded-2xl md:rounded-[2rem] overflow-hidden border border-border/10">
             <div className="w-full overflow-x-auto sapphire-scrollbar pb-2">
@@ -291,8 +569,13 @@ export default function UserManagementPage() {
                       </td>
                       <td className="px-6 md:px-8 py-5 md:py-6">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/5 rounded-xl md:rounded-2xl flex items-center justify-center border border-primary/10 font-black text-primary sapphire-glow/20">
-                            {user.name ? user.name[0].toUpperCase() : 'U'}
+                          <div className="relative">
+                            <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/5 rounded-xl md:rounded-2xl flex items-center justify-center border border-primary/10 font-black text-primary sapphire-glow/20 overflow-hidden">
+                              {user.name ? user.name[0].toUpperCase() : 'U'}
+                            </div>
+                            {isOnline(user.lastActive) && (
+                              <span className="absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-emerald-500 border-2 border-background rounded-full animate-pulse shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
+                            )}
                           </div>
                           <div>
                             <div className="flex items-center gap-2 mb-1">
@@ -301,7 +584,12 @@ export default function UserManagementPage() {
                                 <span className="text-[8px] font-black bg-primary/10 text-primary px-1.5 py-0.5 rounded-sm uppercase tracking-tighter border border-primary/20">Self</span>
                               )}
                             </div>
-                            <p className="text-[10px] text-muted-foreground font-medium">{user.email}</p>
+                            <div className="flex items-center gap-1.5">
+                               <p className="text-[10px] text-muted-foreground font-medium">{user.email}</p>
+                               {isOnline(user.lastActive) && (
+                                 <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-500/10 px-1 rounded-sm">LIVE</span>
+                               )}
+                            </div>
                           </div>
                         </div>
                       </td>
