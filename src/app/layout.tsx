@@ -17,8 +17,19 @@ export const metadata: Metadata = {
   alternates: {
     canonical: '/',
   },
-  description: "Take back control of your financial story. Apna Khata offers a serene and secure harbor for your daily ledger, helping you track money while building the future your family deserves.",
-  keywords: ["financial clarity", "secure money management", "personal ledger", "family wealth", "honest tracking", "modern finance sanctuary", "Apna Khata"],
+  description: "Take charge of your financial story again. Apna Khata is a calm and safe place for your daily ledger.",
+  keywords: ["financial clarity", "secure money management", "personal ledger", "family wealth", "honest tracking", "modern finance system", "Apna Khata", "expense tracker", "budget planner", "secure ledger"],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
   manifest: "/manifest.json",
   openGraph: {
     title: "Apna Khata - Elegant & Secure Money Management",
@@ -70,28 +81,37 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "SoftwareApplication",
-              "name": "Apna Khata",
-              "operatingSystem": "Web",
-              "applicationCategory": "FinancialApplication",
-              "applicationSubCategory": "Personal Ledger & Budgeting",
-              "description": "Master your personal finances with a secure, elegant, and beautifully simple ledger.",
-              "offers": {
-                "@type": "Offer",
-                "price": "0",
-                "priceCurrency": "PKR",
-                "availability": "https://schema.org/InStock"
-              },
-              "author": {
-                "@type": "Organization",
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "WebSite",
                 "name": "Apna Khata",
-                "url": "https://apnakhata.online"
+                "alternateName": ["ApnaKhata", "Apna Khata Online"],
+                "url": "https://apnakhata.online",
               },
-              "featureList": "Daily Expense Tracking, PDF Reports, Budget Management, Secure Encryption",
-              "genre": "Finance"
-            }),
+              {
+                "@context": "https://schema.org",
+                "@type": "SoftwareApplication",
+                "name": "Apna Khata",
+                "operatingSystem": "Web",
+                "applicationCategory": "FinancialApplication",
+                "applicationSubCategory": "Personal Ledger & Budgeting",
+                "description": "Master your personal finances with a secure, elegant, and beautifully simple ledger.",
+                "offers": {
+                  "@type": "Offer",
+                  "price": "0",
+                  "priceCurrency": "PKR",
+                  "availability": "https://schema.org/InStock"
+                },
+                "author": {
+                  "@type": "Organization",
+                  "name": "Apna Khata",
+                  "url": "https://apnakhata.online"
+                },
+                "featureList": "Daily Expense Tracking, PDF Reports, Budget Management, Secure Encryption",
+                "genre": "Finance"
+              }
+            ]),
           }}
         />
       </head>

@@ -8,13 +8,17 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/login',
     '/register',
     '/forgot-password',
-    '/reset-password',
     '/verify-email',
+    '/contact',
+    '/guide',
+    '/manifesto',
+    '/privacy',
+    '/terms',
   ].map((route) => ({
     url: `${baseUrl}${route}`,
     lastModified: new Date(),
     changeFrequency: 'weekly' as const,
-    priority: route === '' ? 1 : 0.8,
+    priority: route === '' ? 1 : 0.7,
   }));
 
   return routes;
