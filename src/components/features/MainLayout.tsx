@@ -18,7 +18,7 @@ export const MainLayout = ({ children, isFixed = false }: { children: React.Reac
   React.useEffect(() => {
     const checkStatus = async () => {
       try {
-        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/status`);
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/system/status`);
         if (data.success && data.data.maintenanceMode && !isStaff) {
           setIsMaintenance(true);
         } else {
@@ -30,7 +30,7 @@ export const MainLayout = ({ children, isFixed = false }: { children: React.Reac
     };
 
     checkStatus();
-    const interval = setInterval(checkStatus, 30000); // Poll every 30s
+    const interval = setInterval(checkStatus, 15000); // Poll every 15s (Ultra-fast detection, Zero DB cost)
     return () => clearInterval(interval);
   }, [isStaff]);
 

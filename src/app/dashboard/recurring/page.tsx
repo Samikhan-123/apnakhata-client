@@ -32,6 +32,7 @@ import { CustomModal } from '@/components/ui/CustomModal';
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 import { ErrorState } from '@/components/ui/ErrorState';
 import { useAuth } from '@/context/AuthContext';
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay';
 
 export default function RecurringPage() {
   const [patterns, setPatterns] = useState<any[]>([]);
@@ -103,7 +104,7 @@ export default function RecurringPage() {
       setPatterns(patternData || []);
       setCategories(catData || []);
 
-      if (catData?.length > 0) {
+      if (catData?.length > 0 && !watch('categoryId')) {
         setValue('categoryId', catData[0].id);
       }
     } catch (err: any) {
@@ -176,201 +177,280 @@ export default function RecurringPage() {
     }
   };
 
+  const calculateStats = () => {
+    const totalVolume = patterns.reduce((sum, p) => sum + (Number(p.amount) * (p.hits || 0)), 0);
+    const totalExecutions = patterns.reduce((sum, p) => sum + (p.hits || 0), 0);
+    const activeFailures = patterns.filter(p => p.lastStatus === 'INSUFFICIENT_BALANCE').length;
+    const isHealthy = activeFailures === 0 && patterns.length > 0;
+    
+    return { totalVolume, totalExecutions, activeFailures, isHealthy };
+  };
+
+  const stats = calculateStats();
+
   return (
     <div className="space-y-12 pb-20 w-full">
-      {/* Header & Status Center */}
-      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-10">
-        <SlideIn duration={0.5}>
-          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Transaction Automation</h1>
-          <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-lg">
-            Manage your automated payments and regular income transactions in one place. No need to log the same transaction again and again.
-          </p>
-        </SlideIn>
-
-        <SlideIn delay={0.2} duration={0.5}>
-          <div className="flex items-center justify-between flex-col sm:flex-row sm:gap-8 gap-4 premium-card p-4 px-6 rounded-3xl border-border/40">
-            <div className="flex items-center justify-between gap-4">
-              <div className="h-12 w-12 bg-primary/5 text-primary rounded-xl flex items-center justify-center border border-primary/10">
-                <Timer size={24} />
-              </div>
-              <div>
-                <p className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/50 mb-0.5 leading-none">Active Tasks</p>
-                <p className="text-2xl font-bold text-foreground tabular-nums">{patterns.length}</p>
-              </div>
-            </div>
-            <div className="h-8 w-[1px] bg-border/40 hidden sm:block" />
-
-            <Button
-              onClick={() => !readOnly && setIsModalOpen(true)}
-              disabled={readOnly}
-              className={cn(
-                "w-full md:w-auto h-11 px-8  rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2",
-                readOnly && "opacity-50 grayscale cursor-not-allowed"
-              )}
-            >
-              <Plus size={18} />
-              <span>{readOnly ? 'Locked' : 'Add Task'}</span>
-            </Button>
+      {/* Header Section */}
+      <SlideIn duration={0.5}>
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-4">
+          <div className="space-y-2">
+            <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Protocol Automation</h1>
+            <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-xl">
+               Manage your financial autopilot. Automated income and recurring payments system-wide.
+            </p>
           </div>
-        </SlideIn>
+          <Button
+            onClick={() => !readOnly && setIsModalOpen(true)}
+            disabled={readOnly}
+            className={cn(
+              "w-full sm:w-auto h-12 px-8 rounded-xl bg-primary text-primary-foreground font-bold shadow-xl active:scale-95 transition-all gap-2",
+              readOnly && "opacity-50 grayscale"
+            )}
+          >
+            <Plus size={18} />
+            <span>{readOnly ? 'Locked' : 'New Protocol'}</span>
+          </Button>
+        </div>
+      </SlideIn>
 
-        <CustomModal
-          isOpen={isModalOpen}
-          onClose={setIsModalOpen}
-          title="New Automated Task"
-          description="Setup a regular payment or automated income."
-          maxWidth="550px"
-        >
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Automation Command Center (Stats Grid) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
+        <LoadingOverlay isVisible={loading} />
+        
+        {/* Card 1: System Health (Current) */}
+        <FadeIn delay={0.1}>
+          <div className="premium-card p-6 rounded-[2rem] border border-border/10 h-32 flex flex-col justify-between group overflow-hidden relative">
+             <div className="flex justify-between items-start z-10">
+                <div className={cn(
+                  "h-10 w-10 rounded-xl flex items-center justify-center border transition-all duration-500",
+                  stats.isHealthy ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-[0_0_15px_-5px_#10b981]" : "bg-primary/5 text-primary border-primary/10"
+                )}>
+                  {stats.isHealthy ? <CheckCircle2 className="h-5 w-5" /> : <RefreshCcw className="h-5 w-5" />}
+                </div>
+                <div className="text-right">
+                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">System Health</p>
+                   {stats.isHealthy && <div className="flex items-center gap-1.5 justify-end mt-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[8px] font-black text-emerald-500 uppercase tracking-tighter">Operational</span>
+                   </div>}
+                </div>
+             </div>
+             <p className="text-lg font-bold tracking-tight text-foreground z-10">
+               {stats.isHealthy ? 'All Protocols Good' : (patterns.length === 0 ? 'Awaiting Protocol' : 'Protocols Active')}
+             </p>
+          </div>
+        </FadeIn>
+
+        {/* Card 2: Automation Volume (All-time) */}
+        <FadeIn delay={0.2}>
+          <div className="premium-card p-6 rounded-[2rem] border border-border/10 h-32 flex flex-col justify-between group">
+             <div className="flex justify-between items-start">
+                <div className="h-10 w-10 bg-primary/5 text-primary rounded-xl flex items-center justify-center border border-primary/10">
+                  <ArrowUpRight className="h-5 w-5" />
+                </div>
+                <div className="text-right">
+                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Automation Volume</p>
+                   <span className="text-[8px] font-black text-primary/40 uppercase tracking-tighter">All-time Value</span>
+                </div>
+             </div>
+             <p className="text-xl font-black tracking-tighter text-foreground tabular-nums">{formatCurrency(stats.totalVolume)}</p>
+          </div>
+        </FadeIn>
+
+        {/* Card 3: Failed Protocols (Current Active) */}
+        <FadeIn delay={0.3}>
+          <div className="premium-card p-6 rounded-[2rem] border border-border/10 h-32 flex flex-col justify-between">
+             <div className="flex justify-between items-start">
+                <div className={cn(
+                  "h-10 w-10 rounded-xl flex items-center justify-center border transition-all",
+                  stats.activeFailures > 0 ? "bg-rose-500/10 text-rose-500 border-rose-500/20" : "bg-muted/10 text-muted-foreground/30 border-transparent"
+                )}>
+                  <AlertCircle className="h-5 w-5" />
+                </div>
+                <div className="text-right">
+                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Failed Protocols</p>
+                   {stats.activeFailures > 0 && <span className="text-[8px] font-black text-rose-500 uppercase tracking-tighter">Needs Attention</span>}
+                </div>
+             </div>
+             <p className={cn("text-xl font-black tracking-tighter tabular-nums", stats.activeFailures > 0 ? "text-rose-500" : "text-foreground")}>
+               {stats.activeFailures} {stats.activeFailures === 1 ? 'Task' : 'Tasks'}
+             </p>
+          </div>
+        </FadeIn>
+
+        {/* Card 4: Total Executions (All-time) */}
+        <FadeIn delay={0.4}>
+          <div className="premium-card p-6 rounded-[2rem] border border-border/10 h-32 flex flex-col justify-between">
+             <div className="flex justify-between items-start">
+                <div className="h-10 w-10 bg-indigo-500/5 text-indigo-500 rounded-xl flex items-center justify-center border border-indigo-500/10">
+                  <LucideIcons.Zap className="h-5 w-5" />
+                </div>
+                <div className="text-right">
+                   <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Total Executions</p>
+                   <span className="text-[8px] font-black text-indigo-500/40 uppercase tracking-tighter">Bot Actions</span>
+                </div>
+             </div>
+             <p className="text-xl font-black tracking-tighter tabular-nums text-foreground">{stats.totalExecutions.toLocaleString()}</p>
+          </div>
+        </FadeIn>
+      </div>
+
+      <CustomModal
+        isOpen={isModalOpen}
+        onClose={setIsModalOpen}
+        title="New Automated Task"
+        description="Setup a regular payment or automated income."
+        maxWidth="550px"
+      >
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <div className="space-y-3">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Type</Label>
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(val: any) => {
+                    field.onChange(val);
+                    setValue('description', '');
+                  }}
+                >
+                  <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-none shadow-2xl">
+                    <SelectItem value="EXPENSE" className="rounded-lg font-bold">Expense</SelectItem>
+                    <SelectItem value="INCOME" className="rounded-lg font-bold">Income</SelectItem>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.type && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.type as any).message}</p>}
+          </div>
+
+          <div className="grid grid-cols-2 gap-6">
             <div className="space-y-3">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Type</Label>
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Amount ({currency})</Label>
+              <Input
+                type="number"
+                placeholder="0.00"
+                {...register('amount')}
+                className={cn(
+                  "h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6",
+                  errors.amount && "ring-2 ring-rose-500/20 bg-rose-500/5"
+                )}
+              />
+              {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.amount as any).message}</p>}
+            </div>
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Frequency</Label>
               <Controller
-                name="type"
+                name="frequency"
                 control={control}
                 render={({ field }) => (
-                  <Select
-                    value={field.value}
-                    onValueChange={(val: any) => {
-                      field.onChange(val);
-                      setValue('description', '');
-                    }}
-                  >
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-none shadow-2xl">
-                      <SelectItem value="EXPENSE" className="rounded-lg font-bold">Expense</SelectItem>
-                      <SelectItem value="INCOME" className="rounded-lg font-bold">Income</SelectItem>
+                      <SelectItem value="WEEKLY" className="rounded-lg font-bold">Weekly</SelectItem>
+                      <SelectItem value="MONTHLY" className="rounded-lg font-bold">Monthly</SelectItem>
+                      <SelectItem value="YEARLY" className="rounded-lg font-bold">Yearly</SelectItem>
                     </SelectContent>
                   </Select>
                 )}
               />
-              {errors.type && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.type as any).message}</p>}
+              {errors.frequency && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.frequency as any).message}</p>}
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-3">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Amount ({currency})</Label>
-                <Input
-                  type="number"
-                  placeholder="0.00"
-                  {...register('amount')}
-                  className={cn(
-                    "h-14 rounded-2xl bg-muted/40 border-none font-black text-xl px-6",
-                    errors.amount && "ring-2 ring-rose-500/20 bg-rose-500/5"
-                  )}
-                />
-                {errors.amount && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.amount as any).message}</p>}
-              </div>
-              <div className="space-y-3">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Frequency</Label>
-                <Controller
-                  name="frequency"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl border-none shadow-2xl">
-                        <SelectItem value="WEEKLY" className="rounded-lg font-bold">Weekly</SelectItem>
-                        <SelectItem value="MONTHLY" className="rounded-lg font-bold">Monthly</SelectItem>
-                        <SelectItem value="YEARLY" className="rounded-lg font-bold">Yearly</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.frequency && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.frequency as any).message}</p>}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Description</Label>
-              {type === 'INCOME' ? (
-                <Controller
-                  name="description"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground text-foreground">
-                        <SelectValue placeholder="Select Source" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl border-none shadow-2xl">
-                        <SelectItem value="salary" className="rounded-lg font-bold">Salary</SelectItem>
-                        <SelectItem value="business" className="rounded-lg font-bold">Business</SelectItem>
-                        <SelectItem value="freelance" className="rounded-lg font-bold">Freelance</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-              ) : (
-                <Input
-                  placeholder="e.g., Monthly Rent"
-                  {...register('description')}
-                  className={cn(
-                    "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6 text-foreground",
-                    errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
-                  )}
-                />
-              )}
-              {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.description as any).message}</p>}
-            </div>
-
-            {type === 'EXPENSE' && (
-              <div className="space-y-3">
-                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Category</Label>
-                <Controller
-                  name="categoryId"
-                  control={control}
-                  render={({ field }) => (
-                    <Select value={field.value || ''} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground text-foreground">
-                        <SelectValue placeholder="Choose Category" />
-                      </SelectTrigger>
-                      <SelectContent className="rounded-xl border-none shadow-2xl">
-                        {categories.map(cat => (
-                          <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.categoryId as any).message}</p>}
-              </div>
-            )}
-
-            <div className="space-y-3">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">First Payment Date</Label>
-              <Input
-                type="date"
-                {...register('nextExecution')}
-                className={cn(
-                  "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6 text-foreground",
-                  errors.nextExecution && "ring-2 ring-rose-500/20 bg-rose-500/5"
+          <div className="space-y-3">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Description</Label>
+            {type === 'INCOME' ? (
+              <Controller
+                name="description"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground text-foreground">
+                      <SelectValue placeholder="Select Source" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-none shadow-2xl">
+                      <SelectItem value="salary" className="rounded-lg font-bold">Salary</SelectItem>
+                      <SelectItem value="business" className="rounded-lg font-bold">Business</SelectItem>
+                      <SelectItem value="freelance" className="rounded-lg font-bold">Freelance</SelectItem>
+                    </SelectContent>
+                  </Select>
                 )}
               />
-              {errors.nextExecution && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.nextExecution as any).message}</p>}
-            </div>
+            ) : (
+              <Input
+                placeholder="e.g., Monthly Rent"
+                {...register('description')}
+                className={cn(
+                  "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6 text-foreground",
+                  errors.description && "ring-2 ring-rose-500/20 bg-rose-500/5"
+                )}
+              />
+            )}
+            {errors.description && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.description as any).message}</p>}
+          </div>
 
-            <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
-              <p className="text-[11px] font-bold text-primary/70 italic leading-snug">
-                {getFrequencyNote()}
-              </p>
+          {type === 'EXPENSE' && (
+            <div className="space-y-3">
+              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Category</Label>
+              <Controller
+                name="categoryId"
+                control={control}
+                render={({ field }) => (
+                  <Select value={field.value || ''} onValueChange={field.onChange}>
+                    <SelectTrigger className="h-14 rounded-2xl bg-muted/40 border-none font-bold text-foreground text-foreground">
+                      <SelectValue placeholder="Choose Category" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl border-none shadow-2xl">
+                      {categories.map(cat => (
+                        <SelectItem key={cat.id} value={cat.id} className="rounded-lg font-bold">{capitalize(cat.name)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.categoryId && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.categoryId as any).message}</p>}
             </div>
+          )}
 
-            <Button
-              type="submit"
-              disabled={readOnly || loading}
+          <div className="space-y-3">
+            <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">First Payment Date</Label>
+            <Input
+              type="date"
+              {...register('nextExecution')}
               className={cn(
-                "w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all mt-4",
-                (readOnly || loading) && "opacity-50 grayscale cursor-not-allowed"
+                "h-14 rounded-2xl bg-muted/40 border-none font-bold px-6 text-foreground",
+                errors.nextExecution && "ring-2 ring-rose-500/20 bg-rose-500/5"
               )}
-            >
-              {readOnly ? 'Locked: Diagnostic Session' : (loading ? 'Processing...' : 'Start Automated Task')}
-            </Button>
-          </form>
-        </CustomModal>
-      </div>
+            />
+            {errors.nextExecution && <p className="text-[10px] font-black uppercase text-rose-500 px-1">{(errors.nextExecution as any).message}</p>}
+          </div>
+
+          <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+            <p className="text-[11px] font-bold text-primary/70 italic leading-snug">
+              {getFrequencyNote()}
+            </p>
+          </div>
+
+          <Button
+            type="submit"
+            disabled={readOnly || loading}
+            className={cn(
+              "w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all mt-4",
+              (readOnly || loading) && "opacity-50 grayscale cursor-not-allowed"
+            )}
+          >
+            {readOnly ? 'Locked: Diagnostic Session' : (loading ? 'Processing...' : 'Start Automated Task')}
+          </Button>
+        </form>
+      </CustomModal>
 
       {/* Logic Alert Panel */}
       <SlideIn delay={0.3} duration={0.6}>
@@ -439,13 +519,24 @@ export default function RecurringPage() {
             className="py-20"
           />
         ) : patterns.length === 0 ? (
-          <div className="premium-card rounded-3xl p-24 text-center border-dashed">
-            <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-primary/10">
-              <Plus size={32} className="text-primary/15" />
+          <FadeIn delay={0.3}>
+            <div className="premium-card rounded-[3rem] p-24 text-center border-dashed border-2 border-border/20 bg-muted/5 group">
+              <div className="w-20 h-20 bg-primary/5 rounded-[2rem] flex items-center justify-center mx-auto mb-6 border border-primary/10 group-hover:scale-110 transition-transform duration-500">
+                <Plus size={32} className="text-primary/20" />
+              </div>
+              <h4 className="text-2xl font-black tracking-tight mb-2">Automation Hub is Empty</h4>
+              <p className="text-muted-foreground font-medium text-base max-w-sm mx-auto">
+                No active protocols found. Start by adding your first automated wealth record.
+              </p>
+              <Button 
+                onClick={() => !readOnly && setIsModalOpen(true)}
+                variant="outline" 
+                className="mt-8 rounded-xl h-12 px-8 font-black uppercase tracking-widest text-[10px] gap-2"
+              >
+                <Plus size={14} /> Create Protocol
+              </Button>
             </div>
-            <h4 className="text-xl font-bold tracking-tight mb-2">No tasks found</h4>
-            <p className="text-muted-foreground font-medium text-sm max-w-sm mx-auto">Add an automated payment or income to see it here.</p>
-          </div>
+          </FadeIn>
         ) : (
           <div className="grid grid-cols-1 gap-4">
             {patterns.map((pattern, index) => {
@@ -540,8 +631,8 @@ export default function RecurringPage() {
         isOpen={!!deleteId}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDelete}
-        title="Stop this auto-transaction?"
-        description="Are you sure you want to stop this automated transaction? This won't affect your past transactions, but no new ones will be added automatically."
+        title="Stop this automated record?"
+        description="Are you sure you want to stop this automated record? This won't affect your past records, but no new ones will be added automatically."
         loading={isDeleting}
       />
     </div>

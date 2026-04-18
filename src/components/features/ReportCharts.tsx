@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Bar,
   CartesianGrid,
@@ -43,6 +43,22 @@ const monthsList = [
 ];
 
 export default function ReportCharts({ stats, formatCurrency, filters }: ReportChartsProps) {
+  const [timeframe, setTimeframe] = useState<'1M' | '6M' | '1Y'>('6M');
+
+  const getSlicingLogic = () => {
+    const rawData = stats?.monthlyTrends || [];
+    if (rawData.length === 0) return [];
+
+    switch (timeframe) {
+      case '1M': return rawData.slice(-2); // Show recent 2 months for context
+      case '6M': return rawData.slice(-6);
+      case '1Y': return rawData.slice(-12);
+      default: return rawData.slice(-6);
+    }
+  };
+
+  const visibleData = getSlicingLogic();
+
   const getPeriodLabel = () => {
     if (!filters?.startDate) return 'Global Period';
     const start = new Date(filters.startDate);
@@ -64,24 +80,44 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
       {/* Cash Flow Timeline */}
       <Card className="lg:col-span-12 xl:col-span-12 rounded-[2.5rem] border-border/40 shadow-sm overflow-hidden bg-card">
         <div>
-          <CardHeader className="p-8 pb-0 flex flex-row items-center justify-between font-bold">
-            <div>
+          <CardHeader className="p-8 pb-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-bold">
+            <div className="flex-1">
               <CardTitle className="text-2xl font-bold tracking-tight text-foreground">Financial Flow</CardTitle>
-              <CardDescription className="text-sm font-medium text-emerald-600 uppercase tracking-widest mt-1">Recent 6-Month Trend</CardDescription>
+              <CardDescription className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mt-1.5 leading-none">
+                {`${timeframe} Performance Analytics`}
+              </CardDescription>
             </div>
-            <div className="hidden sm:flex gap-3">
+            
+            <div className="flex items-center gap-1.5 p-1.5 bg-muted/30 rounded-2xl border border-border/10">
+              {(['1M', '6M', '1Y'] as const).map((t) => (
+                <button
+                  key={t}
+                  onClick={() => setTimeframe(t)}
+                  className={cn(
+                    "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                    timeframe === t 
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105" 
+                      : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/50"
+                  )}
+                >
+                  {t}
+                </button>
+              ))}
+            </div>
+
+            <div className="hidden xl:flex gap-3">
               <div className="flex items-center gap-2 bg-emerald-500/5 px-3 py-1.5 rounded-lg text-emerald-600 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/10">
-                <div className="w-2 h-2 rounded-full bg-emerald-500" /> Income
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Inflow
               </div>
               <div className="flex items-center gap-2 bg-rose-500/5 px-3 py-1.5 rounded-lg text-rose-600 text-[10px] font-bold uppercase tracking-wider border border-rose-500/10">
-                <div className="w-2 h-2 rounded-full bg-rose-500" /> Expenses
+                <div className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Outflow
               </div>
             </div>
           </CardHeader>
           <CardContent className="p-0 overflow-hidden">
-            <div className="p-4 sm:p-10 h-[450px] sm:h-[550px] w-full min-w-0">
+            <div className="p-4 sm:p-10 h-[450px] sm:h-[550px] w-full min-w-0 min-h-[400px]">
               <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={100}>
-                <ComposedChart data={stats?.monthlyTrends} barGap={8} margin={{ bottom: 20 }}>
+                <ComposedChart data={visibleData} barGap={8} margin={{ bottom: 20 }}>
                   <defs>
                     <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
                       <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
@@ -124,14 +160,14 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                   <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                  <span className="text-[10px] sm:text-xs font-bold text-foreground/80 lowercase">Income</span>
+                                  <span className="text-[10px] sm:text-xs font-bold text-foreground/80 lowercase">Inflow</span>
                                 </div>
                                 <span className="text-[10px] sm:text-xs font-black tabular-nums text-emerald-500">{formatCurrency(data.income)}</span>
                               </div>
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                   <div className="w-2 h-2 rounded-full bg-rose-500" />
-                                  <span className="text-[10px] sm:text-xs font-bold text-foreground/80 lowercase">Expenses</span>
+                                  <span className="text-[10px] sm:text-xs font-bold text-foreground/80 lowercase">Outflow</span>
                                 </div>
                                 <span className="text-[10px] sm:text-xs font-black tabular-nums text-rose-500">{formatCurrency(data.expense)}</span>
                               </div>
@@ -197,7 +233,7 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
           </CardHeader>
           <CardContent className="p-0">
             <div className="grid grid-cols-1 xl:grid-cols-12">
-              <div className="xl:col-span-12 2xl:col-span-5 p-6 sm:p-10 border-b 2xl:border-b-0 2xl:border-r border-border/5 flex flex-col items-center justify-center relative min-h-[450px] sm:min-h-[550px] w-full min-w-0">
+              <div className="xl:col-span-12 2xl:col-span-5 p-6 sm:p-10 border-b 2xl:border-b-0 2xl:border-r border-border/5 flex flex-col items-center justify-center relative min-h-[450px] sm:min-h-[550px] w-full min-w-0 min-h-[400px]">
                 <ResponsiveContainer width="100%" height={400} minHeight={400} minWidth={0} debounce={100}>
                   <PieChart>
                     <Pie 

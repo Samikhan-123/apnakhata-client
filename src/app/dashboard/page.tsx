@@ -67,7 +67,7 @@ export default function DashboardPage() {
             <Link href="/dashboard/ledger">
               <Button className="rounded-xl h-11 px-6 font-bold shadow-sm gap-2 hover:bg-primary/90 active:scale-95 transition-all">
                 <PlusCircle className="h-4 w-4" />
-                <span>Go to Transaction</span>
+                <span>Go to Ledger</span>
               </Button>
             </Link>
           </div>
@@ -87,8 +87,8 @@ export default function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {[
               { label: 'Total Balance', value: allTimeBalance, icon: Wallet, color: 'primary', description: 'Available funds' },
-              { label: 'Monthly Income', value: monthlyIncome, icon: ArrowUpRight, color: 'emerald', description: 'Earned this month' },
-              { label: 'Monthly Expenses', value: monthlyExpense, icon: ArrowDownLeft, color: 'rose', description: 'Spent this month' },
+              { label: 'Monthly Inflow', value: monthlyIncome, icon: ArrowUpRight, color: 'emerald', description: 'Total received' },
+              { label: 'Monthly Outflow', value: monthlyExpense, icon: ArrowDownLeft, color: 'rose', description: 'Total spent' },
             ].map((stat, i) => (
               <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>
                 <div className="premium-card rounded-3xl p-7 group relative overflow-hidden h-full">
@@ -122,7 +122,7 @@ export default function DashboardPage() {
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div>
                   <h3 className="text-2xl font-bold text-foreground tracking-tight">Finance Flow</h3>
-                  <p className="text-sm font-medium text-muted-foreground/60 mt-1">Overview of your income and expenses</p>
+                  <p className="text-sm font-medium text-muted-foreground/60 mt-1">Rolling 6-month pulse of your wealth movement</p>
                 </div>
                 <div className="flex flex-wrap gap-6 bg-muted/20 p-3.5 rounded-xl border border-border/20">
                   <div className="flex items-center gap-2">
@@ -131,37 +131,17 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Income</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Inflow</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Expense</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Outflow</span>
                   </div>
                 </div>
               </div>
-              <div className="h-[400px]">
+              <div className="h-[450px]">
                 <DashboardCharts stats={stats} />
               </div>
-            </div>
-          </FadeIn>
-
-          {/* Recent History */}
-          <FadeIn delay={0.6} duration={0.6}>
-            <div className="space-y-6">
-              <div className="flex items-center justify-between px-2">
-                <h2 className="text-xl font-bold tracking-tight">Recent Activity</h2>
-                <Link href="/dashboard/ledger" className="text-sm font-semibold text-primary hover:text-primary/80 transition-colors">
-                  View History &rarr;
-                </Link>
-              </div>
-              <LedgerEntryList
-                ledgerEntries={ledgerEntries}
-                onDelete={async (id) => {
-                  await ledgerEntryService.delete(id);
-                  fetchData(true);
-                }}
-                onRefresh={() => fetchData(true)}
-              />
             </div>
           </FadeIn>
         </>

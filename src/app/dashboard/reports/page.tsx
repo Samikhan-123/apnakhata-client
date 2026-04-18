@@ -23,9 +23,13 @@ import { useAuth } from '@/context/AuthContext';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { LoadingOverlay } from '@/components/ui/LoadingOverlay';
+import { ReportsSkeleton } from '@/components/ui/ReportsSkeleton';
+import { toast } from 'sonner';
 
 export default function ReportsPage() {
   const [stats, setStats] = useState<any>(null);
+  const [allTimeStats, setAllTimeStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -54,8 +58,12 @@ export default function ReportsPage() {
         setIsRefreshing(true);
       }
 
-      const data = await ledgerEntryService.getStats(currentFilters);
+      const [data, allTimeData] = await Promise.all([
+        ledgerEntryService.getStats(currentFilters),
+        ledgerEntryService.getOverview({}) // Global all-time context
+      ]);
       setStats(data);
+      setAllTimeStats(allTimeData);
     } catch (err: any) {
       if (isInitial) setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
     } finally {
@@ -123,15 +131,7 @@ export default function ReportsPage() {
     return () => clearInterval(interval);
   }, [tips.length]);
 
-  if (loading) return (
-    <div className="space-y-12 pb-20 animate-in fade-in duration-500 px-6">
-      <div className="h-10 w-64 bg-muted/30 rounded-xl animate-pulse" />
-      <div className="h-24 w-full bg-muted/20 rounded-3xl animate-pulse" />
-      <div className="grid grid-cols-4 gap-6">
-        {[1, 2, 3, 4].map(i => <div key={i} className="h-36 bg-muted/20 rounded-[2rem] animate-pulse" />)}
-      </div>
-    </div>
-  );
+  if (loading) return <ReportsSkeleton />;
 
   if (error) return (
     <div className="min-h-[60vh] flex items-center justify-center p-6">
@@ -173,15 +173,18 @@ export default function ReportsPage() {
         </div>
       </div>
 
-      <div className="no-print">
-        <ReportFilters onFilterChange={setFilters} currentFilters={filters} />
-      </div>
+      <div className="relative space-y-8">
+        <LoadingOverlay isVisible={isRefreshing} />
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 no-print">
+        <div className="no-print">
+          <ReportFilters onFilterChange={setFilters} currentFilters={filters} />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 no-print">
         {[
-          { label: 'Total Income', value: stats?.overview?.totalIncome || 0, icon: ArrowUpRight, color: 'emerald' },
-          { label: 'Total Expenses', value: stats?.overview?.totalExpense || 0, icon: ArrowDownLeft, color: 'rose' },
-          { label: 'Net Savings', value: (stats?.overview?.totalIncome || 0) - (stats?.overview?.totalExpense || 0), icon: Wallet, color: 'primary' },
+          { label: 'Total Inflow', value: stats?.overview?.totalIncome || 0, icon: ArrowUpRight, color: 'emerald' },
+          { label: 'Total Outflow', value: stats?.overview?.totalExpense || 0, icon: ArrowDownLeft, color: 'rose' },
+          { label: 'Available Balance', value: allTimeStats?.remainingBalance || 0, icon: Wallet, color: 'primary', isGlobal: true },
           { label: 'Savings Rate', value: stats?.overview?.totalIncome > 0 ? (((stats.overview.totalIncome - stats.overview.totalExpense) / stats.overview.totalIncome) * 100).toFixed(1) : 0, icon: TrendingUp, color: 'indigo', isPercentage: true },
         ].map((metric, i) => (
           <FadeIn key={metric.label} delay={0.1 * i}>
@@ -197,7 +200,10 @@ export default function ReportsPage() {
                 <metric.icon className="h-4 w-4" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-1">{metric.label}</p>
+                <div className="flex items-center justify-between mb-1">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">{metric.label}</p>
+                  {metric.isGlobal && <span className="text-[8px] font-black uppercase tracking-tighter text-primary/40">Global</span>}
+                </div>
                 <div className="text-2xl font-black tracking-tighter text-foreground">
                   {metric.isPercentage ? `${metric.value}%` : formatCurrency(metric.value)}
                 </div>
@@ -214,7 +220,7 @@ export default function ReportsPage() {
         </p>
       </div>
 
-      <div className={cn("grid grid-cols-1 gap-0 transition-opacity duration-300", isRefreshing && "opacity-50 pointer-events-none")}>
+      <div className={cn("grid grid-cols-1 gap-0 transition-opacity duration-300 relative", isRefreshing && "pointer-events-none")}>
         <ReportCharts stats={stats} formatCurrency={formatCurrency} />
 
         {/* Smart Tips */}
@@ -235,6 +241,7 @@ export default function ReportsPage() {
               </Button>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>

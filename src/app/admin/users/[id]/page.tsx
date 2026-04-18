@@ -361,10 +361,10 @@ export default function UserDetailPage() {
       {/* Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
         {[
-          { label: 'Total Transactions', value: user._count?.ledgerEntries || 0, icon: Activity, color: 'blue' },
+          { label: 'Total Records', value: user._count?.ledgerEntries || 0, icon: Activity, color: 'blue' },
           { label: 'Custom Categories', value: user._count?.categories || 0, icon: Tag, color: 'emerald' },
           { label: 'Monthly Budgets', value: user._count?.budgets || 0, icon: Wallet, color: 'amber' },
-          { label: 'Automated Transactions', value: user._count?.recurringEntries || 0, icon: Clock, color: 'purple' },
+          { label: 'Automated Records', value: user._count?.recurringEntries || 0, icon: Clock, color: 'purple' },
         ].map((stat, i) => (
           <FadeIn key={stat.label} delay={0.2 + i * 0.1}>
             <div className="premium-card p-6 rounded-3xl flex flex-col justify-between h-32 border border-border/10 group hover:border-primary/20 transition-all">
@@ -424,7 +424,7 @@ export default function UserDetailPage() {
               ))
             ) : (
               <div className="p-12 text-center bg-muted/10 rounded-3xl border border-dashed border-border/20">
-                <p className="text-muted-foreground font-bold">No recent transactions added.</p>
+                <p className="text-muted-foreground font-bold">No recent records added.</p>
               </div>
             )}
           </div>

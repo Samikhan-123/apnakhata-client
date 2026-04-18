@@ -19,8 +19,8 @@ export default function UserGuidePage() {
       description: "Get up and running in less than 2 minutes.",
       points: [
         "Create Categories: Set up your 'Food', 'Salary', or 'Rent' spaces first.",
-        "Add Your First Transaction: Use the '+ Add Transaction' button to add income or expenses.",
-        "Income-First Rule: Always add income transactions first to see your net balance."
+        "Add Your First Record: Use the '+ New Record' button to add income or expenses.",
+        "Wealth-First Rule: Always add income records first to see your net balance."
       ]
     },
     {
@@ -29,9 +29,9 @@ export default function UserGuidePage() {
       color: "emerald",
       description: "Learn how we protect your financial history.",
       points: [
-        "Filter: Find any transaction by description, date, or category.",
+        "Filter: Find any record by description, date, or category.",
         "Locked Months: Previous months are automatically locked for editing after 2 days of the new month.",
-        "Precision Tracking: Use the date picker to log historical transactions specifically."
+        "Precision Tracking: Use the date picker to log historical records specifically."
       ]
     },
     {
@@ -151,9 +151,9 @@ export default function UserGuidePage() {
           <div className="space-y-4">
             {[
               { q: "How do I change my currency preference?", a: "Go to Dashboard > Settings. You can select your base currency from our global list of supported currencies." },
-              { q: "Is my data private from other users?", a: "Yes. Apna Khata follows strict privacy protocols. only you can see your individual transaction details unless you authorize support." },
-              { q: "What happens after the 30-day deletion period?", a: "After 30 days, your account and all associated transactions are permanently purged from our primary database and cannot be recovered." },
-              { q: "How often do recurring transactions sync?", a: "Our maintenance engine processes recurring patterns every 24 hours at midnight UTC." }
+              { q: "Is my data private from other users?", a: "Yes. Apna Khata follows strict privacy protocols. only you can see your individual record details unless you authorize support." },
+              { q: "What happens after the 30-day deletion period?", a: "After 30 days, your account and all associated records are permanently purged from our primary database and cannot be recovered." },
+              { q: "How often do recurring records sync?", a: "Our maintenance engine processes recurring patterns every 24 hours at midnight UTC." }
             ].map((faq, i) => (
               <FadeIn key={i} delay={0.1 * i}>
                 <div className="p-8 rounded-3xl bg-muted/20 border border-border/10 hover:border-primary/20 transition-all group">

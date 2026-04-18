@@ -79,7 +79,7 @@ export const LedgerPDF = ({ transactions, userName, filters }: Props) => {
           </View>
         </View>
 
-        <Text style={theme.sectionTitle}>Transactions</Text>
+        <Text style={theme.sectionTitle}>Digital Ledger Records</Text>
         
         <View style={theme.table}>
           {/* Header */}

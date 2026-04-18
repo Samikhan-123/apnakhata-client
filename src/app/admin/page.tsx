@@ -104,7 +104,7 @@ export default function AdminDashboardPage() {
       icon: TrendingUp, 
       color: 'emerald', 
       suffix: 'Income',
-      subtext: `${stats?.incomeCount || 0} Transactions`
+      subtext: `${stats?.incomeCount || 0} Records`
     },
     { 
       title: 'Monthly Out-flow', 
@@ -112,7 +112,7 @@ export default function AdminDashboardPage() {
       icon: TrendingDown, 
       color: 'rose', 
       suffix: 'Expenses',
-      subtext: `${stats?.expenseCount || 0} Transactions`
+      subtext: `${stats?.expenseCount || 0} Records`
     },
     { 
       title: 'Active Engagement', 
@@ -184,7 +184,7 @@ export default function AdminDashboardPage() {
             <div className="flex justify-between items-start mb-10">
               <div>
                 <h2 className="text-xl font-black text-foreground tracking-tight">Platform Activity</h2>
-                <p className="text-xs font-bold text-muted-foreground mt-1">Daily interaction measures and transactions logged.</p>
+                <p className="text-xs font-bold text-muted-foreground mt-1">Daily interaction measures and records logged.</p>
               </div>
               <div className="flex h-10 items-center gap-1 bg-muted/30 p-1 rounded-xl">
                  <Button variant="ghost" size="sm" className="bg-background text-primary shadow-sm h-8 font-black text-[10px] px-4 rounded-lg">LIVE</Button>

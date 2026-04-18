@@ -282,7 +282,7 @@ export default function SettingsPage() {
                         </div>
                         <div>
                            <CardTitle className="text-xl font-bold tracking-tight">Data & Privacy</CardTitle>
-                           <CardDescription className="text-xs font-medium text-muted-foreground/60">Manage your financial transactions</CardDescription>
+                           <CardDescription className="text-xs font-medium text-muted-foreground/60">Manage your financial wealth records</CardDescription>
                         </div>
                      </div>
   
@@ -330,7 +330,7 @@ export default function SettingsPage() {
         onConfirm={handlePurgeData}
         loading={isPurging}
         title="Delete all data?"
-        description="This is a permanent action. All your transactions, goals, and recurring patterns will be deleted forever. This cannot be undone."
+        description="This is a permanent action. All your ledger records, goals, and recurring patterns will be deleted forever. This cannot be undone."
       />
 
       <ConfirmDialog 

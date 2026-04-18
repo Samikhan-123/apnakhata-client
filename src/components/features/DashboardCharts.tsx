@@ -24,8 +24,8 @@ interface DashboardChartsProps {
 export function DashboardCharts({ stats }: DashboardChartsProps) {
   const { formatCurrency } = useCurrency();
 
-  // pre-computed monthly trends from service (now includes year context from backend)
-  const data = stats?.monthlyTrends?.map((m: any) => ({ ...m, netBalance: m.income - m.expense })) || [];
+  // pre-computed monthly trends from service (Sliced to 6 months for focused pulse view)
+  const data = stats?.monthlyTrends?.slice(-6).map((m: any) => ({ ...m, netBalance: m.income - m.expense })) || [];
 
   if (data.length === 0) {
     return (
@@ -75,14 +75,14 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
                           <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-sm" />
-                          <span className="text-xs font-bold text-foreground/80 lowercase">Income &nbsp;</span>
+                          <span className="text-xs font-bold text-foreground/80 lowercase">Inflow &nbsp;</span>
                         </div>
                         <span className="text-xs font-black tabular-nums text-emerald-500">{formatCurrency(item.income)}</span>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2.5">
                           <div className="w-2.5 h-2.5 rounded-full bg-rose-500 shadow-sm" />
-                          <span className="text-xs font-bold text-foreground/80 lowercase">Expense &nbsp;</span>
+                          <span className="text-xs font-bold text-foreground/80 lowercase">Outflow &nbsp;</span>
                         </div>
                         <span className="text-xs font-black tabular-nums text-rose-500">{formatCurrency(item.expense)}</span>
                       </div>
@@ -105,7 +105,7 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
           <Bar
             dataKey="income"
             fill="url(#colorIncomeDash)"
-            name="Income"
+            name="Inflow"
             radius={[4, 4, 0, 0]}
             barSize={typeof window !== 'undefined' && window.innerWidth < 640 ? 12 : 24}
             animationDuration={1500}
@@ -113,7 +113,7 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
           <Bar
             dataKey="expense"
             fill="url(#colorExpenseDash)"
-            name="Expense"
+            name="Outflow"
             radius={[4, 4, 0, 0]}
             barSize={typeof window !== 'undefined' && window.innerWidth < 640 ? 12 : 24}
             animationDuration={1500}

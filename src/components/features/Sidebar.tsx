@@ -36,7 +36,7 @@ const menuGroups = [
   {
     title: 'Financials',
     items: [
-      { name: 'Transactions', icon: ReceiptText, href: '/dashboard/ledger' },
+      { name: 'Digital Ledger', icon: ReceiptText, href: '/dashboard/ledger' },
       { name: 'Categories', icon: Tags, href: '/dashboard/categories' },
       { name: 'Budgets', icon: PiggyBank, href: '/dashboard/budgets' },
       { name: 'Schedules', icon: RefreshCcw, href: '/dashboard/recurring' },
