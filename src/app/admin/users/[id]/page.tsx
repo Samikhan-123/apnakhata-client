@@ -244,8 +244,13 @@ export default function UserDetailPage() {
                      </h1>
                    </Tooltip>
                    {isOnline(user.lastActive) && (
-                     <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">Live Diagnostic Active</Badge>
-                   )}
+                     <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">Live Session Active</Badge>
+                )}
+
+                {!isOnline(user.lastActive) && (
+                  <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">Session InActive</Badge>
+                )}
+                
                 </div>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 focus:outline-none">
                   <Tooltip content={user.email}>

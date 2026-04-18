@@ -443,7 +443,10 @@ export default function UserManagementPage() {
                            <p className="text-sm font-bold text-foreground leading-none">{user.name ? capitalize(user.name) : 'Anonymous'}</p>
                            {isOnline(user.lastActive) && (
                               <span className="text-[8px] font-black text-emerald-600 uppercase tracking-widest bg-emerald-500/10 px-1 rounded-sm">LIVE</span>
-                           )}
+                    )}
+                    {!isOnline(user.lastActive) && (
+                      <span className="text-[8px] font-black text-red-600 uppercase tracking-widest bg-red-500/10 px-1 rounded-sm">INACTIVE</span>
+                    )}
                         </div>
                         <p className="text-[10px] text-muted-foreground font-medium mt-1.5">{user.email}</p>
                       </div>
