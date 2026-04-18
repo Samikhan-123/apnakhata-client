@@ -4,7 +4,7 @@ import { logger } from './logger';
 const technicalKeywords = [
   'Prisma', 'database', 'table', 'relation', 'public.', 
   'invocation', 'constraint', 'unique', 'foreign key',
-  'select', 'where', 'findUnique', 'findMany', 'create', 'update', 'delete'
+  'findUnique', 'findMany'
 ];
 
 /**

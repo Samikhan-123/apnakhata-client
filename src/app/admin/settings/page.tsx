@@ -223,7 +223,12 @@ export default function SystemSettingsPage() {
                 placeholder="Limit"
               />
               <Button 
-                onClick={() => handleUpdate({ maxEntriesLimit: settings.maxEntriesLimit })}
+                onClick={() => handleUpdate(
+                  { maxEntriesLimit: settings.maxEntriesLimit }, 
+                  true, 
+                  'Update System Limits', 
+                  `This will set the global record limit to ${settings.maxEntriesLimit} for all users. Users exceeding this limit will be blocked from creating new entries.`
+                )}
                 disabled={saving}
                 className="h-16 px-10 rounded-2xl font-black text-xs uppercase tracking-widest bg-blue-600 hover:bg-blue-700 shadow-blue-500/20"
               >

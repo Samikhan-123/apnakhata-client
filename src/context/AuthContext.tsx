@@ -55,12 +55,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     initAuth();
   }, []);
 
+  const handleAuthRedirect = (user: any) => {
+    if (!user) return;
+    const isStaff = user.role === 'ADMIN' || user.role === 'MODERATOR';
+    if (isStaff) {
+      router.push('/admin');
+    } else {
+      router.push('/dashboard');
+    }
+  };
+
   const login = async (credentials: any) => {
     try {
       const response = await authService.login(credentials);
       if (response.success && response.user) {
         setUser(response.user);
-        router.push('/dashboard');
+        handleAuthRedirect(response.user);
       }
     } catch (err: any) {
       // If unverified, redirect to verify-email
@@ -80,7 +90,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       const response = await authService.googleLogin(idToken);
       if (response.success && response.user) {
         setUser(response.user);
-        router.push('/dashboard');
+        handleAuthRedirect(response.user);
       }
     } catch (err: any) {
       if (err.response?.status === 403 && err.response?.data?.unverified) {
@@ -103,7 +113,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const response = await authService.verifyEmail(email, otp);
     if (response.success && response.user) {
       setUser(response.user);
-      router.push('/dashboard');
+      handleAuthRedirect(response.user);
     }
   };
 

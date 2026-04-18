@@ -15,6 +15,8 @@ import { loginSchema, LoginInput } from '@/lib/validations';
 import { cn } from '@/lib/utils';
 import { FadeIn, HeightChange } from '@/components/ui/FramerMotion';
 import { useGoogleLogin } from '@react-oauth/google';
+import axios from 'axios';
+import { Settings, ShieldAlert } from 'lucide-react';
 
 export default function LoginPage() {
   const { login, loginWithGoogle } = useAuth();
@@ -59,9 +61,28 @@ export default function LoginPage() {
         setLoading(false);
       }
     },
-    onError: () => setServerError('Google Sign-In was cancelled'),
-    scope: 'email profile openid',
   });
+
+  const [isMaintenance, setIsMaintenance] = useState(false);
+
+  React.useEffect(() => {
+    const checkStatus = async () => {
+      try {
+        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/system/status`);
+        if (data.success && data.data.maintenanceMode) {
+          setIsMaintenance(true);
+        } else {
+          setIsMaintenance(false);
+        }
+      } catch (error) {
+        // Silently fail
+      }
+    };
+
+    checkStatus();
+    const interval = setInterval(checkStatus, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="min-h-screen bg-background font-sans">
@@ -110,6 +131,18 @@ export default function LoginPage() {
               <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground"> Login</h2>
               <p className="text-muted-foreground font-bold text-base leading-snug">Log in to reach your savings goals and manage your wealth.</p>
             </div>
+
+            <HeightChange isVisible={isMaintenance}>
+               <div className="p-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 flex items-center gap-3 mb-2 animate-pulse">
+                  <div className="bg-amber-500/10 p-2 rounded-lg">
+                    <ShieldAlert className="h-4 w-4 text-amber-600" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600">Platform Maintenance Active</p>
+                    <p className="text-[9px] font-bold text-amber-600/60 leading-tight">Standard access restricted. System under optimization.</p>
+                  </div>
+               </div>
+            </HeightChange>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
               <HeightChange isVisible={!!serverError}>

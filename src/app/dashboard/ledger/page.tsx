@@ -6,7 +6,7 @@ import { LedgerEntryList } from '@/components/features/LedgerEntryList';
 import { LedgerEntryForm } from '@/components/features/LedgerEntryForm';
 import { LedgerFilters } from '@/components/features/LedgerFilters';
 import { categoryService } from '@/services/category.service';
-import { Plus, Tag, ChevronLeft, ChevronRight, Wallet, ArrowUpCircle, ArrowDownCircle, Calendar as CalendarIcon, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Plus, Tag, ChevronLeft, ChevronRight, Wallet, ArrowUpCircle, ArrowDownCircle, Calendar as CalendarIcon, ArrowUpRight, ArrowDownLeft, AlertTriangle, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
 import { Input } from '@/components/ui/input';
@@ -39,6 +39,7 @@ export default function LedgerPage() {
   const [allTimeOverview, setAllTimeOverview] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [dismissWarning, setDismissWarning] = useState(false);
 
   const fetchData = useCallback(async (currentFilters: any = {}, page: number = 1, silent: boolean = false, forceGlobal: boolean = false) => {
     if (!silent) setLoading(true);
@@ -141,8 +142,36 @@ export default function LedgerPage() {
     return <LedgerSkeleton />;
   }
 
+  const usagePercentage = allTimeOverview ? (allTimeOverview.totalRecords / allTimeOverview.maxEntriesLimit) * 100 : 0;
+  const showWarning = usagePercentage >= 90 && !dismissWarning;
+
   return (
     <div className=" space-y-10  pb-20">
+      {showWarning && (
+        <FadeIn>
+          <div className="bg-rose-500/10 border border-rose-500/20 rounded-[1.5rem] p-4 md:p-6 mb-8 flex items-center gap-4 md:gap-6 sapphire-glow/5 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-rose-500/5 blur-3xl -mr-16 -mt-16 rounded-full" />
+            <div className="bg-rose-500/20 p-3 rounded-xl text-rose-600 animate-pulse">
+              <AlertTriangle className="h-6 w-6" />
+            </div>
+            <div className="flex-1">
+              <h4 className="text-sm md:text-base font-black text-rose-600 uppercase tracking-widest mb-1">Storage Alert: {usagePercentage.toFixed(0)}% Used</h4>
+              <p className="text-xs md:text-sm text-muted-foreground font-medium max-w-2xl">
+                You are approaching your global limit of <span className="text-foreground font-bold">{allTimeOverview?.maxEntriesLimit}</span> records. Please delete old entries to ensure you can continue adding new data.
+              </p>
+            </div>
+            <Button 
+                variant="ghost" 
+                size="icon" 
+                onClick={() => setDismissWarning(true)}
+                className="h-8 w-8 rounded-lg hover:bg-rose-500/10 text-muted-foreground hover:text-rose-600 shrink-0"
+            >
+                <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </FadeIn>
+      )}
+
       <SlideIn duration={0.5}>
         <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
           <div className="space-y-1">

@@ -59,12 +59,6 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     fetchData();
-    // Add 12-hour background synchronization (Silent Refresh)
-    const interval = setInterval(() => {
-       fetchData(true);
-    }, 1000 * 60 * 60 * 12); // 12 hours
-
-    return () => clearInterval(interval);
   }, []);
 
   if (loading) {
@@ -391,7 +385,7 @@ export default function AdminDashboardPage() {
                       </div>
                       <div className="bg-background/80 border border-border/10 px-3 py-1 rounded-full text-right ml-4">
                          <span className="text-[10px] font-black text-indigo-600">{user.activityCount}</span>
-                         <span className="text-[8px] font-bold text-muted-foreground ml-1 uppercase">Hits</span>
+                         <span className="text-[8px] font-bold text-muted-foreground ml-1 uppercase">Records</span>
                       </div>
                     </div>
                   ))}
