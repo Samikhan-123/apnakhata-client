@@ -132,7 +132,7 @@ export const LedgerEntryList = ({
                   {/* Main Info - Flexible Layout */}
                   <div className="flex-1 min-w-0 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="min-w-0 pr-2">
-                      <h4 className="text-sm sm:text-lg font-bold text-foreground truncate tracking-tight">
+                      <h4 className="text-sm sm:text-lg font-bold text-foreground tracking-tight">
                         {capitalize(entry.description)}
                       </h4>
                       <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-0.5 sm:mt-1">

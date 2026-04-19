@@ -8,7 +8,7 @@ import { ledgerEntryService } from '../../services/ledger-entry.service';
 import { categoryService } from '../../services/category.service';
 import { budgetService } from '../../services/budget.service';
 import { useAuth } from '@/context/AuthContext';
-import { useCurrency } from '@/context/CurrencyContext';
+import { useCurrency, currencies } from '@/context/CurrencyContext';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -39,8 +39,10 @@ export const LedgerEntryForm = ({
   const [categories, setCategories] = useState<any[]>([]);
   const [budgets, setBudgets] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const { currency } = useCurrency();
+  const { currency, formatCurrency } = useCurrency();
   const { readOnly } = useAuth();
+
+  const selectedCurrency = currencies.find(c => c.code === currency) || currencies[0];
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
 
   const isIncomeRequired = totalIncome <= 0;
@@ -129,7 +131,7 @@ export const LedgerEntryForm = ({
         return;
       }
       if (Number(values.amount) > (remainingBalance || 0)) {
-        toast.error(`Insufficient Balance! Your current balance is ${currency === 'PKR' ? 'Rs.' : '$'}${(remainingBalance || 0).toLocaleString()}.`);
+        toast.error(`Insufficient Balance! Your current balance is ${formatCurrency(remainingBalance || 0)}.`);
         return;
       }
     }
@@ -228,7 +230,7 @@ export const LedgerEntryForm = ({
             </Label>
             <div className="relative group/val">
               <span className="absolute left-6 top-1/2 -translate-y-1/2 text-2xl font-black text-muted-foreground/20 group-focus-within/val:text-primary transition-all">
-                {currency === 'PKR' ? 'Rs' : '$'}
+                {selectedCurrency.symbol}
               </span>
               <Input 
                 type="number" 
@@ -360,7 +362,7 @@ export const LedgerEntryForm = ({
                       </span>
                     </div>
                     <span className="text-[10px] font-black tabular-nums">
-                      {remainingBudget?.toLocaleString()} {currency} Left
+                      {remainingBudget?.toLocaleString()} {selectedCurrency.symbol} Left
                     </span>
                   </div>
                   
