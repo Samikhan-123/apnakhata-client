@@ -2,11 +2,22 @@ import { Metadata } from 'next';
 import LoginPageClient from './LoginClient';
 
 export const metadata: Metadata = {
-  title: 'Login | Apna Khata - Access Your Sovereign Ledger',
-  description: 'Log in to your Apna Khata account to safely manage your daily records, track expenses, and view financial clarity reports.',
+  title: 'Login | Apna Khata - Secure Access to Your Personal Ledger',
+  description: 'Securely log in to your Apna Khata account. Manage your daily finance records, track spending, and view automated financial reports with industry-grade encryption.',
+  alternates: {
+    canonical: '/login',
+  },
   openGraph: {
     title: 'Login to Apna Khata',
-    description: 'Secure access to your personal financial peace.',
+    description: 'Enter your secure sanctuary for financial clarity. Simple, safe, and sovereign.',
+    url: 'https://apnakhata.online/login',
+    images: ['/og-image.png'],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Login to Apna Khata',
+    description: 'Access your secure daily ledger and financial reports.',
+    images: ['/og-image.png'],
   }
 };
 

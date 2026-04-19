@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { LayoutDashboard, ArrowRight, User, Sun, Moon } from 'lucide-react'
 import { useAuth } from '@/context/AuthContext'
@@ -10,7 +10,13 @@ import { useTheme } from 'next-themes'
 
 export function PublicHeader() {
   const { user } = useAuth()
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme, resolvedTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  // Avoid hydration mismatch by waiting for mount
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
@@ -30,11 +36,19 @@ export function PublicHeader() {
           <Button
             variant="ghost"
             size="icon"
-            className="rounded-xl w-11 h-11 text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all duration-500 relative"
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+            className="rounded-xl w-11 h-11 text-muted-foreground hover:bg-primary/5 hover:text-primary transition-all duration-300 relative"
+            onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+            title="Toggle theme"
           >
-            <Sun className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-            <Moon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
+            {mounted ? (
+               resolvedTheme === 'dark' ? (
+                <Sun className="h-5 w-5 transition-all text-yellow-400" />
+              ) : (
+                <Moon className="h-5 w-5 transition-all text-blue-600" />
+              )
+            ) : (
+              <Sun className="h-5 w-5 opacity-0" />
+            )}
             <span className="sr-only">Toggle theme</span>
           </Button>
 
