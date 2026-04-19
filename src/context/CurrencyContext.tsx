@@ -3,9 +3,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 
+import { authService } from '../services/auth.service';
+import { toast } from 'sonner';
+
 interface CurrencyContextType {
   currency: string;
-  setCurrency: (currency: string) => void;
+  setCurrency: (currency: string) => Promise<void>;
   formatCurrency: (amount: number) => string;
 }
 
@@ -20,14 +23,45 @@ export const currencies = [
 ];
 
 export const CurrencyProvider = ({ children }: { children: React.ReactNode }) => {
-  const { user } = useAuth();
-  const [currency, setCurrency] = useState('PKR');
+  const { user, updateUser, readOnly } = useAuth();
+  const [currency, setCurrencyState] = useState('PKR');
 
   useEffect(() => {
     if (user?.baseCurrency) {
-      setCurrency(user.baseCurrency);
+      setCurrencyState(user.baseCurrency);
     }
   }, [user]);
+
+  const setCurrency = async (newCurrency: string) => {
+    if (newCurrency === currency) return;
+
+    if (readOnly) {
+      toast.error("Diagnostic Session: Mutation actions are disabled.");
+      return;
+    }
+
+    const previousCurrency = currency;
+    
+    // 1. Update UI immediately (Optimistic)
+    setCurrencyState(newCurrency);
+
+    try {
+      // 2. Persist to DB
+      const response = await authService.updatePreferences({ baseCurrency: newCurrency });
+      
+      if (response.success && response.user) {
+        // 3. Update global AuthContext to keep user object in sync
+        updateUser(response.user);
+        toast.success(`Currency changed to ${newCurrency}`);
+      } else {
+        throw new Error('Failed to update preferences');
+      }
+    } catch (error) {
+      // 4. Rollback on failure
+      setCurrencyState(previousCurrency);
+      toast.error("Failed to save currency preference");
+    }
+  };
 
   const formatCurrency = (amount: number) => {
     const selectedCurrency = currencies.find(c => c.code === currency) || currencies[0];

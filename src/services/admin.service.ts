@@ -78,5 +78,10 @@ export const adminService = {
   stopImpersonation: async () => {
     const { data: response } = await api.post('/admin/impersonate/stop');
     return response;
+  },
+
+  getSystemStatus: async () => {
+    const { data } = await api.get('/system/status');
+    return data;
   }
 };

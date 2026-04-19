@@ -7,7 +7,6 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   User, 
@@ -41,6 +40,10 @@ export default function SettingsPage() {
   const [isPurging, setIsPurging] = useState(false);
   const [isDeletionOpen, setIsDeletionOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isCurrencyOpen, setIsCurrencyOpen] = useState(false);
+  const [pendingCurrency, setPendingCurrency] = useState('');
+  const [isChangingCurrency, setIsChangingCurrency] = useState(false);
+
 
   // Form states (stubbed for now as we focus on UI)
   const [name, setName] = useState(user?.name || '');
@@ -77,6 +80,24 @@ export default function SettingsPage() {
     } finally {
       setIsDeleting(false);
       setIsDeletionOpen(false);
+    }
+  };
+
+  const handleCurrencySelect = (code: string) => {
+    if (code === currency) return;
+    setPendingCurrency(code);
+    setIsCurrencyOpen(true);
+  };
+
+  const onConfirmCurrencyChange = async () => {
+    setIsChangingCurrency(true);
+    try {
+      await setCurrency(pendingCurrency);
+      setIsCurrencyOpen(false);
+    } catch (error) {
+      // Error handled by CurrencyContext/toast
+    } finally {
+      setIsChangingCurrency(false);
     }
   };
 
@@ -204,7 +225,7 @@ export default function SettingsPage() {
                            {currencies.map((cur) => (
                               <div 
                                 key={cur.code}
-                                onClick={() => setCurrency(cur.code)}
+                               onClick={() => handleCurrencySelect(cur.code)}
                                 className={cn(
                                   "p-5 rounded-2xl border-2 transition-all cursor-pointer active:scale-95",
                                   currency === cur.code 
@@ -340,6 +361,15 @@ export default function SettingsPage() {
         loading={isDeleting}
         title="Delete your account?"
         description="WARNING: Your account will be DEACTIVATED immediately and PERMANENTLY ERASED in 30 days. You can contact support within this period to cancel the request. All your data will be gone forever after the deadline."
+      />
+
+      <ConfirmDialog 
+        isOpen={isCurrencyOpen}
+        onClose={() => !isChangingCurrency && setIsCurrencyOpen(false)}
+        onConfirm={onConfirmCurrencyChange}
+        loading={isChangingCurrency}
+        title="Change Preferred Currency?"
+        description={`Are you sure you want to change your currency to ${pendingCurrency}? This change is for display purposes only; your existing ledger amounts will NOT be converted at the current exchange rate.`}
       />
     </div>
   );

@@ -130,6 +130,15 @@ export const authService = {
       Cookies.remove('isLoggedIn', { path: '/' });
     }
     return response;
+  },
+  
+  async updatePreferences(data: { baseCurrency: string }) {
+    const { data: response } = await api.patch('/auth/preferences', data);
+    if (response.success && response.user) {
+      const options = getCookieOptions();
+      Cookies.set('user', JSON.stringify(response.user), options);
+    }
+    return response;
   }
 };
 

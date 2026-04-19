@@ -185,7 +185,14 @@ export default function SystemSettingsPage() {
 
             <Button 
                variant="outline"
-               onClick={() => handleUpdate({ registrationEnabled: !settings.registrationEnabled }, !settings.registrationEnabled, 'Enable Registration')}
+                onClick={() => handleUpdate(
+                  { registrationEnabled: !settings.registrationEnabled }, 
+                  true, 
+                  settings.registrationEnabled ? 'Pause Public Signups' : 'Resume Public Signups',
+                  settings.registrationEnabled 
+                    ? 'Disabling registration will block all new account creations, including Google OAuth signups. Existing users can still log in.' 
+                    : 'Enabling registration will allow new users to sign up and create accounts on the platform.'
+                )}
                disabled={saving}
                className={cn(
                  "w-full h-16 rounded-2xl font-black text-xs uppercase tracking-widest border-2 transition-all duration-300",

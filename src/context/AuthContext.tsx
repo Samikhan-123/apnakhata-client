@@ -19,6 +19,7 @@ interface AuthContextType {
   forgotPassword: (email: string) => Promise<void>;
   resetPassword: (data: any) => Promise<void>;
   logout: () => void;
+  updateUser: (updatedUser: any) => void;
   impersonate: (userId: string) => Promise<void>;
   stopImpersonating: () => Promise<void>;
 }
@@ -137,6 +138,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     router.replace('/login');
   };
 
+  const updateUser = (updatedUser: any) => {
+    setUser(updatedUser);
+  };
+
   const impersonate = async (userId: string) => {
     try {
       const response = await adminService.impersonateUser(userId);
@@ -182,6 +187,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       forgotPassword, 
       resetPassword, 
       logout,
+      updateUser,
       impersonate,
       stopImpersonating
     }}>
