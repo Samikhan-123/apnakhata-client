@@ -34,7 +34,7 @@ export const MaintenanceOverlay = () => {
           {/* Content */}
           <div className="relative space-y-4 mb-12">
             <h2 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">
-              Evolution in Progress
+              Maintenance in Progress
             </h2>
             <p className="text-muted-foreground font-medium leading-relaxed max-w-sm mx-auto text-sm md:text-base">
               The Apna Khata platform is currently undergoing scheduled maintenance to improve your financial experience.
@@ -57,7 +57,7 @@ export const MaintenanceOverlay = () => {
               Sign Out Securely
             </Button>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">
-              Estimated completion: A few moments
+              Automaticly get access back once maintenance is done
             </p>
           </div>
         </div>
