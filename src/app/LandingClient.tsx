@@ -3,9 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { motion, Variants, AnimatePresence } from 'framer-motion';
-import { 
-  ArrowRight, ShieldCheck, PieChart, Zap, CheckCircle2, 
-  TrendingUp, Wallet, Activity, Sparkles as SparklesIcon, 
+import {
+  ArrowRight, ShieldCheck, PieChart, Zap, CheckCircle2,
+  TrendingUp, Wallet, Activity, Sparkles as SparklesIcon,
   ChevronDown, Globe, Lock
 } from 'lucide-react';
 import { PublicHeader } from '@/components/layout/PublicHeader';
@@ -130,7 +130,7 @@ export default function LandingPageClient() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="max-w-2xl mx-auto text-muted-foreground/80 text-base md:text-xl font-medium leading-relaxed mb-12 px-4"
             >
-              Ditch the spreadsheets. Apna Khata gives you the clarity to manage your daily ledger, track expenses, and reach your goals with a premium experience.
+              Ditch the Notebooks. Apna Khata gives you the clarity to manage your daily ledger, track expenses, and reach your goals with a premium experience.
             </motion.p>
 
             <motion.div
@@ -228,27 +228,15 @@ export default function LandingPageClient() {
               viewport={{ once: true }}
               className="relative bg-card border border-border/40 rounded-[2.5rem] md:rounded-[3rem] p-8 md:p-10 shadow-2xl overflow-hidden group max-w-lg mx-auto lg:max-w-full"
             >
-              <div className="space-y-8 relative z-10">
+              <div className="space-y-8 h-full relative z-10">
                 <div className="flex justify-between items-center">
-                  <div className="space-y-2 text-left">
-                    <div className="w-12 h-1.5 bg-primary/20 rounded-full" />
-                    <p className="text-xl md:text-2xl font-black tracking-tighter">Your Dashboard</p>
-                  </div>
-                  <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/10">
-                    <Activity className="text-primary" size={24} />
-                  </div>
+                  <img src="/Dashboard-photo.png" alt="ApnaKhata" width={1000} height={1000} />
+                </div>
+                <div className="flex flex-col justify-between items-center">
+                  <p className="text-2xl font-bold">Dashboard view</p>
+                  <p className="text-muted-foreground">See your income and expenses in one place</p>
                 </div>
 
-                <div className="bg-muted/10 rounded-2xl p-6 border border-border/40 space-y-4 font-bold text-muted-foreground/60 text-xs md:text-sm text-left">
-                  <p>Sample View</p>
-                  <div className="space-y-3">
-                    <div className="h-3 md:h-4 bg-muted/20 w-3/4 rounded-full" />
-                    <div className="h-3 md:h-4 bg-muted/20 w-1/2 rounded-full" />
-                    <div className="h-10 md:h-12 bg-primary w-full rounded-2xl mt-8 flex items-center justify-center text-white text-[9px] md:text-[10px] font-black uppercase tracking-widest">
-                      Data Synchronized
-                    </div>
-                  </div>
-                </div>
               </div>
             </motion.div>
           </div>
@@ -339,7 +327,7 @@ export default function LandingPageClient() {
             <div className="pt-4">
               <Link href="/register">
                 <Button size="lg" variant="secondary" className="h-14 md:h-16 px-10 rounded-2xl text-base md:text-lg font-black hover:scale-105 transition-all shadow-2xl active:scale-95 w-full sm:w-auto">
-                   Get Started for Free
+                  Get Started for Free
                 </Button>
               </Link>
             </div>
