@@ -11,29 +11,40 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://apnakhata.online'),
   title: {
-    default: "Apna Khata - Financial Clarity & Secure Mastery",
+    default: "Apna Khata - Smart Personal Finance & Expense Tracker",
     template: "%s | Apna Khata"
   },
   alternates: {
     canonical: '/',
   },
-  description: "Take charge of your financial story again. Apna Khata is a calm and safe place for your daily ledger.",
-  keywords: ["financial clarity", "secure money management", "personal ledger", "family wealth", "honest tracking", "modern finance system", "Apna Khata", "expense tracker", "budget planner", "secure ledger"],
+  description:
+    "Apna Khata is a modern personal finance management system to track income, manage expenses, set budgets, and handle recurring transactions with a structured ledger-based approach.",
+  keywords: [
+    "personal finance app",
+    "expense tracker",
+    "budget planner",
+    "income tracking",
+    "ledger management system",
+    "financial dashboard",
+    "recurring expenses tracker",
+    "Apna Khata"
+  ],
   robots: {
     index: true,
     follow: true,
     googleBot: {
       index: true,
       follow: true,
-      'max-video-preview': -1,
       'max-image-preview': 'large',
       'max-snippet': -1,
     },
   },
   manifest: "/manifest.json",
+
   openGraph: {
-    title: "Apna Khata - Elegant & Secure Money Management",
-    description: "Experience the safe haven of financial clarity. Simple, secure, and thoughtfully designed for your personal mastery.",
+    title: "Apna Khata - Smart Personal Finance Management",
+    description:
+      "Track income, manage expenses, set budgets, and analyze your financial activity with a powerful ledger-based system.",
     url: "https://apnakhata.online",
     siteName: "Apna Khata",
     images: [
@@ -41,20 +52,22 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Apna Khata - Financial Clarity",
+        alt: "Apna Khata - Personal Finance Dashboard",
       },
     ],
     locale: "en_US",
     type: "website",
   },
+
   twitter: {
     card: "summary_large_image",
-    title: "Apna Khata - Financial Clarity & Secure Mastery",
-    description: "Your personal financial haven. Simple, secure, and made for clarity.",
+    title: "Apna Khata - Personal Finance Manager",
+    description:
+      "Manage your income, expenses, and budgets with a clean and powerful finance tracking system.",
     images: ["/og-image.png"],
     site: "@apnakhata",
-    creator: "@apnakhata",
   },
+
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
@@ -92,24 +105,28 @@ export default function RootLayout({
               {
                 "@context": "https://schema.org",
                 "@type": "SoftwareApplication",
-                "name": "Apna Khata",
-                "operatingSystem": "Web",
-                "applicationCategory": "FinancialApplication",
-                "applicationSubCategory": "Personal Ledger & Budgeting",
-                "description": "Master your personal finances with a secure, elegant, and beautifully simple ledger.",
-                "offers": {
+                name: "Apna Khata",
+                applicationCategory: "FinanceApplication",
+                description:
+                  "Track income, expenses, budgets, and recurring transactions with a structured finance system.",
+                operatingSystem: "Web",
+                offers: {
                   "@type": "Offer",
-                  "price": "0",
-                  "priceCurrency": "PKR",
-                  "availability": "https://schema.org/InStock"
+                  price: "0",
+                  priceCurrency: "PKR",
                 },
+                featureList: [
+                  "Income & Expense Tracking",
+                  "Budget Management",
+                  "Recurring Entries",
+                  "Financial Reports",
+                  "Category Tracking"
+                ],
                 "author": {
                   "@type": "Organization",
                   "name": "Apna Khata",
                   "url": "https://apnakhata.online"
                 },
-                "featureList": "Daily Expense Tracking, PDF Reports, Budget Management, Secure Encryption",
-                "genre": "Finance"
               }
             ]),
           }}

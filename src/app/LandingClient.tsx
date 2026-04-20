@@ -109,7 +109,7 @@ export default function LandingPageClient() {
               className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-8 border border-primary/20 backdrop-blur-sm"
             >
               <Zap className="h-3 w-3 fill-current" />
-              Revolutionizing Personal Finance
+              Simple • Secure • Built for real financial tracking
             </motion.div>
 
             <motion.h1
@@ -118,9 +118,9 @@ export default function LandingPageClient() {
               transition={{ duration: 0.8, delay: 0.1 }}
               className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tighter leading-[0.95] mb-8 max-w-5xl text-balance mx-auto"
             >
-              Master your money <br />
+              Master your finances <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-indigo-500 animate-gradient-x">
-                without the mess.
+                with clarity and control.
               </span>
             </motion.h1>
 
@@ -130,8 +130,7 @@ export default function LandingPageClient() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="max-w-2xl mx-auto text-muted-foreground/80 text-base md:text-xl font-medium leading-relaxed mb-12 px-4"
             >
-              Ditch the Notebooks. Apna Khata gives you the clarity to manage your daily ledger, track expenses, and reach your goals with a premium experience.
-            </motion.p>
+              Track income, manage expenses, and stay on budget — all in one smart financial workspace.            </motion.p>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -141,7 +140,7 @@ export default function LandingPageClient() {
             >
               <Link href={user ? "/dashboard" : "/register"}>
                 <Button size="lg" className="h-14 md:h-16 px-8 md:px-10 rounded-2xl bg-primary text-white hover:bg-primary/90 text-base md:text-lg font-black transition-all shadow-2xl shadow-primary/30 active:scale-95 group w-full sm:w-auto">
-                  <span>{user ? "View My Ledger" : "Get Started Now"}</span>
+                  <span>{user ? "View My Dashboard" : "Start Tracking Your Finances"}</span>
                   <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
@@ -154,7 +153,7 @@ export default function LandingPageClient() {
                   ))}
                 </div>
                 <div className="flex flex-col justify-center text-center sm:text-left">
-                  <p className="text-[10px] font-black uppercase tracking-tighter text-foreground/80 leading-none">Trusted by 1k+</p>
+                  <p className="text-[10px] font-bold uppercase tracking-tighter text-foreground/80 leading-none">Built for individuals & families</p>
                   <p className="text-[9px] text-muted-foreground uppercase tracking-widest mt-1">Smart savers worldwide</p>
                 </div>
               </div>
@@ -178,14 +177,14 @@ export default function LandingPageClient() {
               <div className="mb-6 w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mx-auto md:mx-0">
                 <PieChart size={24} />
               </div>
-              <h3 className="text-xl md:text-2xl font-bold mb-4">Detailed Insights</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-4">Financial Reports & Insights</h3>
               <p className="text-muted-foreground text-sm md:text-base">Get clear reports on your income and expenses to understand your spending habits.</p>
             </motion.div>
             <motion.div variants={fadeInUp} initial="initial" whileInView="whileInView" viewport={{ once: true }} transition={{ delay: 0.2 }} className="p-6 md:p-0">
               <div className="mb-6 w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center text-primary mx-auto md:mx-0">
                 <TrendingUp size={24} />
               </div>
-              <h3 className="text-xl md:text-2xl font-bold mb-4">Easy Tracking</h3>
+              <h3 className="text-xl md:text-2xl font-bold mb-4">Quick Ledger Entries</h3>
               <p className="text-muted-foreground text-sm md:text-base">Log your daily transactions in seconds with our simple and intuitive interface.</p>
             </motion.div>
           </div>
@@ -230,7 +229,7 @@ export default function LandingPageClient() {
             >
               <div className="space-y-8 h-full relative z-10">
                 <div className="flex justify-between items-center">
-                  <img src="/Dashboard-photo.png" alt="ApnaKhata" width={1000} height={1000} />
+                  <img src="/Dashboard-photo.png" alt="Apna Khata Personal Finance Dashboard" width={1000} height={1000} />
                 </div>
                 <div className="flex flex-col justify-between items-center">
                   <p className="text-2xl font-bold">Dashboard view</p>
