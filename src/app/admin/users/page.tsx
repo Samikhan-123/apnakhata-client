@@ -7,7 +7,8 @@ import {
   Users, Shield, ShieldCheck, UserCheck, UserX, 
   Search, Filter, MoreHorizontal, CheckCircle2, 
   AlertCircle, Ban, Activity, ChevronRight, HelpCircle, Eye,
-  X, ChevronDown, Check, DollarSign
+  X, ChevronDown, Check, DollarSign,
+  Clock
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
@@ -93,15 +94,26 @@ export default function UserManagementPage() {
     const timer = setTimeout(() => {
       if (currentPage === 1) fetchUsers(1);
       else setCurrentPage(1);
-    }, 500);
+    }, 1000); // 1-second debounce (Server efficiency)
     return () => clearTimeout(timer);
   }, [search]);
+
+  // Reset all active search and filter parameters
+  const resetFilters = () => {
+    setSearch('');
+    setFilters({
+      role: '',
+      isActive: '',
+      isVerified: ''
+    });
+    setCurrentPage(1);
+  };
 
   const isOnline = (dateStr: string) => {
     if (!dateStr) return false;
     const lastActive = new Date(dateStr).getTime();
     const now = new Date().getTime();
-    return (now - lastActive) < 5 * 60 * 1000; // 5 minutes
+    return (now - lastActive) < 20 * 60 * 1000; // 20 minutes (Matches 15-min backend throttle + buffer)
   };
 
   const handleToggleStatus = (user: any) => {
@@ -231,19 +243,6 @@ export default function UserManagementPage() {
               <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-4xl">User Registry</h1>
               <p className="text-muted-foreground font-medium mt-1 text-xs md:text-sm">Manage platform identities and security clearances.</p>
             </div>
-            {selectedUsers.size > 0 && (
-              <div className="bg-primary/5 border border-primary/20 px-4 py-2 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-300">
-                 <span className="text-xs font-black text-primary uppercase tracking-widest">{selectedUsers.size} Selected</span>
-                 <Button 
-                   variant="ghost" 
-                   size="sm" 
-                   className="h-7 text-[10px] font-bold text-muted-foreground hover:text-rose-600 px-2"
-                   onClick={() => setSelectedUsers(new Set())}
-                 >
-                   Deselect All
-                 </Button>
-              </div>
-            )}
           </div>
         </SlideIn>
       </header>
@@ -257,8 +256,18 @@ export default function UserManagementPage() {
             placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-11 md:h-12 pl-12 pr-6 font-medium text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+            className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-11 md:h-12 pl-12 pr-12 font-medium text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
           />
+          {search && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSearch('')}
+              className="absolute right-3 top-1/5 h-8 w-8 rounded-lg hover:bg-muted text-muted-foreground/60 transition-all active:scale-95"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
         <div className="flex gap-2">
           <Popover open={showFilters} onOpenChange={setShowFilters}>
@@ -451,12 +460,17 @@ export default function UserManagementPage() {
                         <p className="text-[10px] text-muted-foreground font-medium mt-1.5">{user.email}</p>
                       </div>
                   </div>
-                  <input 
-                    type="checkbox" 
-                    className="h-5 w-5 rounded-lg border-border/40 focus:ring-emerald-500 accent-emerald-500"
-                    checked={selectedUsers.has(user.id)}
-                    onChange={() => toggleSelectUser(user.id)}
-                  />
+                   <div 
+                     className={cn(
+                       "w-6 h-6 rounded-lg border-2 transition-all cursor-pointer flex items-center justify-center",
+                       selectedUsers.has(user.id) 
+                         ? "bg-primary border-primary sapphire-glow" 
+                         : "bg-muted/50 border-border/40"
+                     )}
+                     onClick={() => toggleSelectUser(user.id)}
+                   >
+                     {selectedUsers.has(user.id) && <Check className="h-4 w-4 text-white" />}
+                   </div>
                </div>
 
                <div className="grid grid-cols-2 gap-3">
@@ -523,12 +537,17 @@ export default function UserManagementPage() {
                 <thead className="sticky top-0 z-20">
                   <tr className="bg-muted/90 backdrop-blur-xl border-b border-border/10">
                     <th className="px-4 py-4 md:py-5 w-12 text-center">
-                       <input 
-                         type="checkbox" 
-                         className="h-4 w-4 rounded border-border/40 focus:ring-primary accent-primary cursor-pointer"
-                         checked={users.length > 0 && selectedUsers.size === users.length}
-                         onChange={toggleSelectAll}
-                       />
+                        <div 
+                          className={cn(
+                            "w-5 h-5 mx-auto rounded-md border-2 transition-all cursor-pointer flex items-center justify-center",
+                            users.length > 0 && selectedUsers.size === users.length 
+                              ? "bg-primary border-primary sapphire-glow" 
+                              : "bg-transparent border-border/40 hover:border-primary/40"
+                          )}
+                          onClick={toggleSelectAll}
+                        >
+                          {(users.length > 0 && selectedUsers.size === users.length) && <Check className="h-3 w-3 text-white" />}
+                        </div>
                     </th>
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Platform Member</th>
                     <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Status</th>
@@ -547,7 +566,7 @@ export default function UserManagementPage() {
                     ))
                   ) : error ? (
                     <tr>
-                      <td colSpan={6} className="px-8 py-20 text-center">
+                      <td colSpan={7} className="px-8 py-20 text-center">
                         <ErrorState
                            title="Registry Unavailable"
                            message={error.message || "Failed to synchronize platform identities."}
@@ -557,18 +576,67 @@ export default function UserManagementPage() {
                         />
                       </td>
                     </tr>
+                  ) : filteredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-8 py-24 text-center">
+                        <FadeIn>
+                          <div className="flex flex-col items-center justify-center max-w-md mx-auto">
+                            <div className="relative mb-6">
+                              <div className="w-20 h-20 bg-primary/5 rounded-3xl flex items-center justify-center border border-primary/10 sapphire-glow/20">
+                                {search || filters.role || filters.isActive || filters.isVerified ? (
+                                  <Search className="h-10 w-10 text-primary animate-pulse" />
+                                ) : (
+                                  <Users className="h-10 w-10 text-primary opacity-40" />
+                                )}
+                              </div>
+                              <div className="absolute -bottom-1 -right-1 bg-background p-1.5 rounded-full border border-border">
+                                <X className="h-3 w-3 text-rose-500" />
+                              </div>
+                            </div>
+                            
+                            <h3 className="text-xl font-black text-foreground tracking-tight mb-2">
+                              {search || filters.role || filters.isActive || filters.isVerified 
+                                ? "No Identities Found" 
+                                : "Platform is Silent"}
+                            </h3>
+                            <p className="text-sm text-muted-foreground font-medium mb-8">
+                              {search || filters.role || filters.isActive || filters.isVerified 
+                                ? "We couldn't find any users matching your current criteria. Try adjusting your search or filters." 
+                                : "No users have registered on the platform yet. New arrivals will appear here."}
+                            </p>
+                            
+                            {(search || filters.role || filters.isActive || filters.isVerified) && (
+                              <Button 
+                                onClick={resetFilters}
+                                variant="outline"
+                                className="rounded-2xl px-8 font-black text-xs h-12 hover:bg-primary hover:text-primary-foreground transition-all active:scale-95 border-primary/20"
+                              >
+                                CLEAR ALL FILTERS
+                              </Button>
+                            )}
+                          </div>
+                        </FadeIn>
+                      </td>
+                    </tr>
                   ) : filteredUsers.map((user) => (
                     <tr key={user.id} className={cn(
-                      "hover:bg-primary/[0.02] transition-colors group",
-                      selectedUsers.has(user.id) && "bg-primary/[0.03]"
+                      "hover:bg-primary/[0.02] transition-all group border-l-2",
+                      selectedUsers.has(user.id) 
+                        ? "bg-primary/[0.04] border-primary sapphire-glow/10" 
+                        : "border-transparent"
                     )}>
                       <td className="px-4 py-5 md:py-6 text-center">
-                        <input 
-                          type="checkbox" 
-                          className="h-4 w-4 rounded border-border/40 focus:ring-primary accent-primary cursor-pointer"
-                          checked={selectedUsers.has(user.id)}
-                          onChange={() => toggleSelectUser(user.id)}
-                        />
+                        <div 
+                          className={cn(
+                            "w-5 h-5 mx-auto rounded-md border-2 transition-all cursor-pointer flex items-center justify-center",
+                            selectedUsers.has(user.id) 
+                              ? "bg-primary border-primary sapphire-glow" 
+                              : "bg-transparent border-border/40 group-hover:border-primary/40"
+                          )}
+                          onClick={() => toggleSelectUser(user.id)}
+                        >
+                          {selectedUsers.has(user.id) && <Check className="h-3 w-3 text-white" />}
+                        </div>
                       </td>
                       <td className="px-6 md:px-8 py-5 md:py-6">
                         <div className="flex items-center gap-4">
@@ -640,12 +708,18 @@ export default function UserManagementPage() {
                                </Tooltip>
                              )}
                           </div>
+                          {user.lastLogin && (
+                            <p className="text-[8px] text-primary/60 font-black uppercase tracking-tighter mt-1 flex items-center gap-1">
+                              <Clock className="h-2 w-2" />
+                              Session: {new Date(user.lastLogin).toLocaleDateString()}
+                            </p>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 md:px-8 py-5 md:py-6">
                         <div className="flex flex-col gap-0.5">
                           <p className="text-xs md:text-sm font-black text-foreground">{user._count?.ledgerEntries || 0} <span className="text-[10px] font-bold text-muted-foreground uppercase opacity-60">Entries</span></p>
-                          <p className="text-[10px] text-muted-foreground font-medium">Joined {new Date(user.createdAt).toLocaleDateString()}</p>
+                          <p className="text-[9px] text-muted-foreground/60 font-black uppercase tracking-tighter">Joined {new Date(user.createdAt).toLocaleDateString()}</p>
                         </div>
                       </td>
                       <td className="px-6 md:px-8 py-5 md:py-6">
@@ -735,16 +809,24 @@ export default function UserManagementPage() {
           <div className="premium-card bg-background/80 backdrop-blur-[32px] border border-primary/30 rounded-2xl md:rounded-[3rem] px-4 md:px-10 py-4 md:py-5 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.3)] sapphire-glow flex flex-col lg:flex-row items-center gap-4 lg:gap-8">
             <div className="flex items-center gap-4 lg:border-r border-border/40 lg:pr-8 w-full lg:w-auto justify-between lg:justify-start">
                <div className="flex items-center gap-4">
-                 <div className="h-10 w-10 md:h-12 md:w-12 bg-primary/10 rounded-2xl flex items-center justify-center text-primary font-black text-sm md:text-lg border border-primary/20 shadow-inner">
-                   {selectedUsers.size}
-                 </div>
-                 <div>
-                    <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-foreground leading-none">Bulk Operations</p>
-                    <p className="text-[8px] md:text-[10px] font-bold text-muted-foreground mt-1.5 flex items-center gap-1.5">
-                       <ShieldCheck className="h-3 w-3 text-emerald-500" />
-                       Strategic hardening session active
-                    </p>
-                 </div>
+                  <div className="flex -space-x-3 overflow-hidden p-1">
+                    {users.filter(u => selectedUsers.has(u.id)).slice(0, 3).map((u) => (
+                      <div key={u.id} className="w-10 h-10 rounded-xl border-2 border-background bg-primary/20 flex items-center justify-center text-[10px] font-black text-primary shadow-sm overflow-hidden">
+                        {u.name?.[0].toUpperCase()}
+                      </div>
+                    ))}
+                    {selectedUsers.size > 3 && (
+                      <div className="w-10 h-10 rounded-xl border-2 border-background bg-muted flex items-center justify-center text-[10px] font-black text-muted-foreground shadow-sm">
+                        +{selectedUsers.size - 3}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                     <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-foreground leading-none">{selectedUsers.size} Selected</p>
+                     <p className="text-[8px] md:text-[10px] font-bold text-muted-foreground mt-1.5 flex items-center gap-1.5 opacity-60 uppercase tracking-tighter">
+                        Hardening active
+                     </p>
+                  </div>
                </div>
                
                <Tooltip content="Dismiss Selection">
@@ -760,70 +842,53 @@ export default function UserManagementPage() {
             </div>
 
             <div className="flex items-center gap-2 md:gap-4 overflow-x-auto w-full lg:w-auto no-scrollbar pb-1 lg:pb-0 justify-center">
-               <Tooltip content="Apply platform verification status">
-                 <Button 
-                   variant="ghost" 
-                   size="sm" 
-                   className="h-10 md:h-12 px-4 md:px-6 rounded-xl md:rounded-2xl hover:bg-emerald-500/10 text-emerald-600 font-black gap-2 text-[10px] md:text-xs whitespace-nowrap border border-transparent hover:border-emerald-500/20 transition-all active:scale-95"
-                   onClick={() => handleBatchAction('Verify All', { isVerified: true })}
-                 >
-                   <CheckCircle2 className="h-4 w-4" />
-                   <span>VERIFY CLEARANCE</span>
-                 </Button>
-               </Tooltip>
-
-               <Tooltip content="Immediately revoke platform access">
-                 <Button 
-                   variant="ghost" 
-                   size="sm" 
-                   className="h-10 md:h-12 px-4 md:px-6 rounded-xl md:rounded-2xl hover:bg-rose-500/10 text-rose-600 font-black gap-2 text-[10px] md:text-xs whitespace-nowrap border border-transparent hover:border-rose-500/20 transition-all active:scale-95"
-                   onClick={() => handleBatchAction('Ban All', { isActive: false })}
-                 >
-                   <Ban className="h-4 w-4" />
-                   <span>RESTRIC ACCESS</span>
-                 </Button>
-               </Tooltip>
-
-               <div className="w-px h-6 bg-border/40 mx-1 md:mx-2 hidden lg:block" />
-
-               <div className="flex items-center gap-2">
-                 <Tooltip content="Assign Moderator responsibilities">
-                   <Button 
-                     variant="ghost" 
-                     size="sm" 
-                     className="h-10 md:h-12 px-4 md:px-6 rounded-xl md:rounded-2xl hover:bg-blue-500/10 text-blue-600 font-black gap-2 text-[10px] md:text-xs whitespace-nowrap border border-transparent hover:border-blue-500/20 transition-all active:scale-95"
-                     onClick={() => handleBatchAction('Assign: MODERATOR', { role: 'MODERATOR' })}
-                   >
-                     <ShieldCheck className="h-4 w-4" />
-                     <span>MODERATOR</span>
-                   </Button>
-                 </Tooltip>
-
-                 <Tooltip content="Restore to standard User status">
-                   <Button 
-                     variant="ghost" 
-                     size="sm" 
-                     className="h-10 md:h-12 px-4 md:px-6 rounded-xl md:rounded-2xl hover:bg-muted text-muted-foreground font-black gap-2 text-[10px] md:text-xs whitespace-nowrap border border-transparent hover:border-border/40 transition-all active:scale-95"
-                     onClick={() => handleBatchAction('Assign: USER', { role: 'USER' })}
-                   >
-                     <Activity className="h-4 w-4" />
-                     <span>CITIZEN</span>
-                   </Button>
-                 </Tooltip>
-               </div>
-            </div>
-            
-            <div className="hidden lg:block">
-               <Tooltip content="Emergency Deselect">
+               <Tooltip content="Verify Selected Clearance">
                  <Button 
                    variant="ghost" 
                    size="icon" 
-                   className="h-12 w-12 rounded-2xl hover:bg-muted text-muted-foreground"
-                   onClick={() => setSelectedUsers(new Set())}
+                   className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl hover:bg-emerald-500/10 text-emerald-600 border border-transparent hover:border-emerald-500/20 transition-all active:scale-95 shadow-sm"
+                   onClick={() => handleBatchAction('Verify All', { isVerified: true })}
                  >
-                   <UserX className="h-5 w-5" />
+                   <CheckCircle2 className="h-5 w-5" />
                  </Button>
                </Tooltip>
+
+               <Tooltip content="Revoke Access (Ban All)">
+                 <Button 
+                   variant="ghost" 
+                   size="icon" 
+                   className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl hover:bg-rose-500/10 text-rose-600 border border-transparent hover:border-rose-500/20 transition-all active:scale-95 shadow-sm"
+                   onClick={() => handleBatchAction('Ban All', { isActive: false })}
+                 >
+                   <Ban className="h-5 w-5" />
+                 </Button>
+               </Tooltip>
+
+               <div className="w-px h-6 bg-border/40 mx-1 md:mx-2" />
+
+               <div className="flex items-center gap-2">
+                 <Tooltip content="Assign Moderator Role">
+                   <Button 
+                     variant="ghost" 
+                     size="icon" 
+                     className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl hover:bg-blue-500/10 text-blue-600 border border-transparent hover:border-blue-500/20 transition-all active:scale-95 shadow-sm"
+                     onClick={() => handleBatchAction('Assign: MODERATOR', { role: 'MODERATOR' })}
+                   >
+                     <ShieldCheck className="h-5 w-5" />
+                   </Button>
+                 </Tooltip>
+
+                  <Tooltip content="Restore Selected to Citizen Status">
+                    <Button 
+                      variant="ghost" 
+                      size="icon" 
+                      className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl hover:bg-muted text-muted-foreground border border-transparent hover:border-border/40 transition-all active:scale-95 shadow-sm"
+                      onClick={() => handleBatchAction('Assign: USER', { role: 'USER' })}
+                    >
+                      <Activity className="h-5 w-5" />
+                    </Button>
+                  </Tooltip>
+               </div>
             </div>
           </div>
         </div>

@@ -6,7 +6,8 @@ import { useCurrency, currencies } from '@/context/CurrencyContext';
 import { 
   Users, ReceiptText, BarChart3, TrendingUp, ShieldAlert, 
   ArrowUpRight, Scale, Globe, TrendingDown, DollarSign,
-  Activity as LucideActivity, History as LucideHistory
+  Activity as LucideActivity, History as LucideHistory,
+  Package, LayoutGrid
 } from 'lucide-react';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
 import { cn } from '@/lib/utils';
@@ -110,11 +111,11 @@ export default function AdminDashboardPage() {
     },
     { 
       title: 'Active Engagement', 
-      value: financialStats?.activityTrends?.[financialStats?.activityTrends?.length - 1]?.count || 0, 
+      value: financialStats?.activeUsersLast24h || 0, 
       icon: BarChart3, 
       color: 'amber', 
       suffix: 'DAU Today',
-      subtext: 'Daily Active Users'
+      subtext: 'Real-time Presence'
     },
   ];
 
@@ -171,14 +172,14 @@ export default function AdminDashboardPage() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
         {/* Activity Trend Chart */}
-        <FadeIn className="lg:col-span-2" delay={0.4}>
+        <FadeIn className="lg:col-span-1" delay={0.4}>
           <div className="premium-card p-8 rounded-[3rem] border border-border/10 h-full flex flex-col">
             <div className="flex justify-between items-start mb-10">
               <div>
                 <h2 className="text-xl font-black text-foreground tracking-tight">Platform Activity</h2>
-                <p className="text-xs font-bold text-muted-foreground mt-1">Daily interaction measures and records logged.</p>
+                <p className="text-xs font-bold text-muted-foreground mt-1">Daily user registration and transactional engagement trends.</p>
               </div>
               <div className="flex h-10 items-center gap-1 bg-muted/30 p-1 rounded-xl">
                  <Button variant="ghost" size="sm" className="bg-background text-primary shadow-sm h-8 font-black text-[10px] px-4 rounded-lg">LIVE</Button>
@@ -227,7 +228,7 @@ export default function AdminDashboardPage() {
                     wrapperStyle={{ fontSize: '10px', fontWeight: 'bold', paddingBottom: '20px' }}
                   />
                   <Area 
-                    name="New Growth (Signups)"
+                    name="New Signups"
                     type="monotone" 
                     dataKey="signups" 
                     stroke="#3b82f6" 
@@ -236,7 +237,7 @@ export default function AdminDashboardPage() {
                     fill="url(#colorSignups)" 
                   />
                   <Area 
-                    name="Social Engagement (Active Users)"
+                    name="Transactional Engagement (UA)"
                     type="monotone" 
                     dataKey="activeUsers" 
                     stroke="#8b5cf6" 
@@ -280,22 +281,40 @@ export default function AdminDashboardPage() {
               </ResponsiveContainer>
             </div>
 
-            <div className="space-y-4 mt-6">
-                {(financialStats?.categoryDistribution || []).slice(0, 5).map((entry: any, index: number) => (
-                  <div key={`${entry.name}-${entry.type}-${index}`} className="flex items-center justify-between">
-                     <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full" style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }} />
-                        <span className="text-xs font-bold text-muted-foreground">{entry.name}</span>
-                        <span className={cn(
-                          "text-[8px] font-black uppercase px-1.5 py-0.5 rounded",
-                          entry.type === 'INCOME' ? "bg-emerald-500/10 text-emerald-600" : "bg-rose-500/10 text-rose-600"
-                        )}>
-                          {entry.type}
-                        </span>
-                     </div>
-                     <span className="text-xs font-black text-foreground">{formatCurrency(entry.value)}</span>
-                  </div>
-                ))}
+            <div className="space-y-2 mt-8 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                {(financialStats?.categoryDistribution || []).map((entry: any, index: number) => {
+                  const totalForType = (financialStats?.categoryDistribution || [])
+                    .filter((c: any) => c.type === entry.type)
+                    .reduce((acc: number, c: any) => acc + c.value, 0);
+                  const percentage = totalForType > 0 ? ((entry.value / totalForType) * 100).toFixed(1) : 0;
+
+                  return (
+                    <div 
+                      key={`${entry.name}-${entry.type}-${index}`} 
+                      className="group flex flex-col sm:flex-row sm:items-center justify-between p-3 rounded-2xl bg-muted/20 border border-transparent hover:border-primary/20 hover:bg-primary/[0.02] transition-all gap-2"
+                    >
+                      <div className="flex items-center gap-3 min-w-0 flex-1">
+                        <div className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }} />
+                        <div className="truncate">
+                          <div className="flex items-center gap-2 flex-wrap">
+                             <span className="text-xs font-black text-foreground truncate">{entry.name}</span>
+                             <span className={cn(
+                               "text-[7px] font-black uppercase px-1 rounded-sm border shrink-0",
+                               entry.type === 'INCOME' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-rose-500/10 text-rose-600 border-rose-500/20"
+                             )}>
+                               {entry.type}
+                             </span>
+                          </div>
+                          <p className="text-[9px] font-bold text-muted-foreground/60">{percentage}% of Platform Volume</p>
+                        </div>
+                      </div>
+                      <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center shrink-0 border-t sm:border-t-0 border-border/5 pt-2 sm:pt-0">
+                         <p className="text-xs font-black text-foreground">{formatCurrency(entry.value)}</p>
+                         <p className="text-[8px] font-bold text-muted-foreground uppercase tracking-tighter ml-2 sm:ml-0">{entry.count} Records</p>
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </FadeIn>

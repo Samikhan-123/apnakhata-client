@@ -55,7 +55,7 @@ export default function UserDetailPage() {
     if (!dateStr) return false;
     const lastActive = new Date(dateStr).getTime();
     const now = new Date().getTime();
-    return (now - lastActive) < 5 * 60 * 1000; // 5 minutes
+    return (now - lastActive) < 20 * 60 * 1000; // 20 minutes (Matches 15-min backend throttle + buffer)
   };
 
   useEffect(() => {
@@ -244,12 +244,12 @@ export default function UserDetailPage() {
                      </h1>
                    </Tooltip>
                    {isOnline(user.lastActive) && (
-                     <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">Live Session Active</Badge>
-                )}
+                     <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">LIVE</Badge>
+                   )}
 
-                {!isOnline(user.lastActive) && (
-                  <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">Session InActive</Badge>
-                )}
+                   {!isOnline(user.lastActive) && (
+                     <Badge className="bg-rose-500/10 text-rose-600 border-rose-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">INACTIVE</Badge>
+                   )}
                 
                 </div>
                 <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 focus:outline-none">
@@ -266,9 +266,9 @@ export default function UserDetailPage() {
                      {user.isActive ? 'Clearance: Active' : 'Status: Restricted'}
                   </span>
                   {user.lastActive && !isOnline(user.lastActive) && (
-                    <span className="text-[10px] font-bold text-muted-foreground/60 flex items-center gap-1">
+                    <span className="text-[10px] font-bold text-muted-foreground/60 flex items-center gap-1 bg-muted/20 px-2 py-0.5 rounded-md border border-border/5">
                       <Clock className="h-3 w-3" />
-                      Last seen {formatDistanceToNow(new Date(user.lastActive))} ago
+                      Active {formatDistanceToNow(new Date(user.lastActive))} ago
                     </span>
                   )}
                 </div>
@@ -389,7 +389,7 @@ export default function UserDetailPage() {
       )}
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {[
           { label: 'Total Records', value: user._count?.ledgerEntries || 0, icon: Activity, color: 'blue' },
           { label: 'Custom Categories', value: user._count?.categories || 0, icon: Tag, color: 'emerald' },
@@ -397,19 +397,19 @@ export default function UserDetailPage() {
           { label: 'Automated Records', value: user._count?.recurringEntries || 0, icon: Clock, color: 'purple' },
         ].map((stat, i) => (
           <FadeIn key={stat.label} delay={0.2 + i * 0.1}>
-            <div className="premium-card p-6 rounded-3xl flex flex-col justify-between h-32 border border-border/10 group hover:border-primary/20 transition-all">
+            <div className="premium-card p-4 sm:p-6 rounded-3xl flex flex-col justify-between h-28 sm:h-32 border border-border/10 group hover:border-primary/20 hover:bg-primary/[0.01] transition-all shadow-sm">
               <div className="flex justify-between items-start">
                 <div className={cn(
                   "p-2 rounded-xl",
-                  stat.color === 'blue' ? "bg-blue-500/5 text-blue-600" :
-                  stat.color === 'emerald' ? "bg-emerald-500/5 text-emerald-600" :
-                  stat.color === 'amber' ? "bg-amber-500/5 text-amber-600" : "bg-purple-500/5 text-purple-600"
+                  stat.color === 'blue' ? "bg-blue-500/10 text-blue-600" :
+                  stat.color === 'emerald' ? "bg-emerald-500/10 text-emerald-600" :
+                  stat.color === 'amber' ? "bg-amber-500/10 text-amber-600" : "bg-purple-500/10 text-purple-600"
                 )}>
-                  <stat.icon className="h-4 w-4" />
+                  <stat.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">{stat.label}</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">{stat.label}</span>
               </div>
-              <div className="text-3xl font-black tracking-tighter text-foreground">{stat.value}</div>
+              <div className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground">{stat.value}</div>
             </div>
           </FadeIn>
         ))}
@@ -488,13 +488,24 @@ export default function UserDetailPage() {
             </div>
 
             <div className="flex items-start gap-4">
+              <div className="bg-primary/5 p-2.5 rounded-xl">
+                <ShieldCheck className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary/70">Last Session Entry</p>
+                <p className="font-bold text-foreground">{user.lastLogin ? format(new Date(user.lastLogin), 'MMMM dd, yyyy') : 'N/A'}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{user.lastLogin ? format(new Date(user.lastLogin), 'hh:mm a') : 'Legacy Session'}</p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
               <div className="bg-muted/30 p-2.5 rounded-xl">
                 <Clock className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Last Synchronized</p>
-                <p className="font-bold text-foreground">{format(new Date(user.updatedAt), 'MMMM dd, yyyy')}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{format(new Date(user.updatedAt), 'hh:mm a')}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Last Pulse Activity</p>
+                <p className="font-bold text-foreground">{format(new Date(user.lastActive), 'MMMM dd, yyyy')}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{format(new Date(user.lastActive), 'hh:mm a')}</p>
               </div>
             </div>
 

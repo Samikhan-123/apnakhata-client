@@ -69,11 +69,13 @@ export default function AdminLayout({
           </div>
         </FadeIn>
 
-        {/* Unified Admin Status Banner */}
-        <AdminStatusBanner 
-          maintenanceMode={status?.maintenanceMode} 
-          registrationEnabled={status?.registrationEnabled} 
-        />
+        {/* Unified Admin Status Banner - Only rendered when status is confirmed */}
+        {status && (
+          <AdminStatusBanner 
+            maintenanceMode={status.maintenanceMode} 
+            registrationEnabled={status.registrationEnabled} 
+          />
+        )}
       </GlobalErrorBoundary>
     </MainLayout>
   );

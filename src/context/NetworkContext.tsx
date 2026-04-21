@@ -87,7 +87,7 @@ export const NetworkProvider = ({ children }: { children: React.ReactNode }) => 
               <span className="font-medium text-sm">
                 {isOnline 
                   ? "Connection Restored" 
-                  : "Working Offline"}
+                  : "No Internet Connection"}
               </span>
             </div>
           </motion.div>

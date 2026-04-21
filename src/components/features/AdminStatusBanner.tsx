@@ -12,7 +12,8 @@ interface UnifiedStatusProps {
 
 export const AdminStatusBanner = ({ maintenanceMode, registrationEnabled }: UnifiedStatusProps) => {
   // Only show if system is in a restricted state
-  const isRestricted = maintenanceMode || !registrationEnabled;
+  // Only show if system is explicitly in a restricted state (guards against undefined during fetch)
+  const isRestricted = (maintenanceMode === true || registrationEnabled === false);
   if (!isRestricted) return null;
 
   return (
