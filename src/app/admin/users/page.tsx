@@ -59,14 +59,7 @@ export default function UserManagementPage() {
 
   useEffect(() => {
     fetchUsers(currentPage);
-    
-    // Auto-polling for real-time status updates every 60 seconds
-    const interval = setInterval(() => {
-      fetchUsers(currentPage);
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, [currentPage, filters]); // Added filters to dependency array
+  }, [currentPage, filters]); // Re-fetch on page or filter change
 
   const fetchUsers = async (page: number = 1) => {
     setLoading(true);
@@ -242,6 +235,21 @@ export default function UserManagementPage() {
             <div>
               <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-4xl">User Registry</h1>
               <p className="text-muted-foreground font-medium mt-1 text-xs md:text-sm">Manage platform identities and security clearances.</p>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => fetchUsers(currentPage)}
+                disabled={loading}
+                className="rounded-xl h-10 px-4 border-border/40 hover:bg-muted font-bold text-[10px] uppercase tracking-widest gap-2 transition-all active:scale-95"
+              >
+                <div className={cn("h-3.5 w-3.5", loading && "animate-spin")}>
+                  <Activity className="h-full w-full" />
+                </div>
+                <span>Sync Registry</span>
+              </Button>
             </div>
           </div>
         </SlideIn>

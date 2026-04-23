@@ -25,7 +25,12 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
   const { formatCurrency } = useCurrency();
 
   // pre-computed monthly trends from service (Sliced to 6 months for focused pulse view)
-  const data = stats?.monthlyTrends?.slice(-6).map((m: any) => ({ ...m, netBalance: m.income - m.expense })) || [];
+  const data = React.useMemo(() => {
+    return stats?.monthlyTrends?.slice(-6).map((m: any) => ({ 
+      ...m, 
+      netBalance: m.income - m.expense 
+    })) || [];
+  }, [stats]);
 
   if (data.length === 0) {
     return (

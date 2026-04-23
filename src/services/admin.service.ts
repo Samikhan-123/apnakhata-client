@@ -83,5 +83,10 @@ export const adminService = {
   getSystemStatus: async () => {
     const { data } = await api.get('/system/status');
     return data;
+  },
+
+  runMaintenance: async () => {
+    const { data } = await api.post('/admin/maintenance');
+    return data;
   }
 };

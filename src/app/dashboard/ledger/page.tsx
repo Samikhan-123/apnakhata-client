@@ -124,9 +124,11 @@ export default function LedgerPage() {
     fetchData(filters, newPage, true); // Always silent for page changes for smoother feel
   };
 
-  const periodText = filters.startDate
-    ? (filters.endDate ? `${format(new Date(filters.startDate), 'MMM dd')} - ${format(new Date(filters.endDate), 'MMM dd')}` : format(new Date(filters.startDate), 'MMMM yyyy'))
-    : format(new Date(), 'MMMM yyyy');
+  const periodText = React.useMemo(() => {
+    return filters.startDate
+      ? (filters.endDate ? `${format(new Date(filters.startDate), 'MMM dd')} - ${format(new Date(filters.endDate), 'MMM dd')}` : format(new Date(filters.startDate), 'MMMM yyyy'))
+      : format(new Date(), 'MMMM yyyy');
+  }, [filters]);
 
   const isFiltered = !!(filters.startDate || filters.endDate || filters.categoryId !== 'all' || filters.type !== 'all');
 

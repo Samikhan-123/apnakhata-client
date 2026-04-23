@@ -4,11 +4,5 @@
       "source": "/api/:path*",
       "destination": "https://apnakhata-server.vercel.app/api/:path*"
     }
-  ],
-  "crons": [
-    {
-      "path": "/api/recurring/process-due",
-      "schedule": "0 0 * * *" 
-    }
   ]
 }

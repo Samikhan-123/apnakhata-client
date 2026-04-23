@@ -18,7 +18,7 @@ import { AlertCircle, PlusCircle, ArrowUpRight, ArrowDownLeft, Banknote, Tags, W
 import * as LucideIcons from 'lucide-react';
 import { cn, capitalize } from "@/lib/utils";
 import { toast } from "sonner";
-import { format } from 'date-fns';
+import { format, isToday, isYesterday } from 'date-fns';
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
@@ -250,6 +250,38 @@ export const LedgerEntryForm = ({
             <Label className="text-[10px] font-black uppercase tracking-[0.25em] text-muted-foreground/40 px-1 flex items-center gap-2">
               <CalendarIcon className="h-3.5 w-3.5 text-primary" /> Record Date
             </Label>
+            <div className="flex gap-2">
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setValue('date', new Date().toISOString())}
+                className={cn(
+                  "h-10 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                  isToday(new Date(watch('date') || '')) 
+                    ? "bg-primary/10 text-primary border border-primary/20" 
+                    : "bg-muted/30 text-muted-foreground/40 hover:bg-muted/50"
+                )}
+              >
+                Today
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => {
+                  const yesterday = new Date();
+                  yesterday.setDate(yesterday.getDate() - 1);
+                  setValue('date', yesterday.toISOString());
+                }}
+                className={cn(
+                  "h-10 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                  isYesterday(new Date(watch('date') || '')) 
+                    ? "bg-primary/10 text-primary border border-primary/20" 
+                    : "bg-muted/30 text-muted-foreground/40 hover:bg-muted/50"
+                )}
+              >
+                Yesterday
+              </Button>
+            </div>
             <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
               <PopoverTrigger asChild>
                 <Button
@@ -259,6 +291,7 @@ export const LedgerEntryForm = ({
                     !watch('date') && "text-muted-foreground/40"
                   )}
                 >
+                  <CalendarIcon className="h-4 w-4 mr-2 text-primary/40" />
                   {watch('date') ? format(new Date(watch('date')!), "PPP") : <span>Pick a date</span>}
                 </Button>
               </PopoverTrigger>

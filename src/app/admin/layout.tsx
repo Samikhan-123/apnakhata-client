@@ -38,9 +38,6 @@ export default function AdminLayout({
     };
     if (user?.role === 'ADMIN' || user?.role === 'MODERATOR') {
       fetchStatus();
-      // Optionally poll every 30 seconds for real-time awareness
-      const interval = setInterval(fetchStatus, 30000);
-      return () => clearInterval(interval);
     }
   }, [user]);
 

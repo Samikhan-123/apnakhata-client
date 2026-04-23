@@ -7,7 +7,7 @@ import { MaintenanceOverlay } from './MaintenanceOverlay';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
-import axios from 'axios';
+import { adminService } from '@/services/admin.service';
 
 export const MainLayout = ({ children, isFixed = false }: { children: React.ReactNode, isFixed?: boolean }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -18,19 +18,19 @@ export const MainLayout = ({ children, isFixed = false }: { children: React.Reac
   React.useEffect(() => {
     const checkStatus = async () => {
       try {
-        const { data } = await axios.get(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'}/system/status`);
-        if (data.success && data.data.maintenanceMode && !isStaff) {
+        const response = await adminService.getSystemStatus();
+        if (response.success && response.data.maintenanceMode && !isStaff) {
           setIsMaintenance(true);
         } else {
           setIsMaintenance(false);
         }
       } catch (error) {
-        // console.error('Status check failed', error);
+        // Fail silent
       }
     };
 
     checkStatus();
-    const interval = setInterval(checkStatus, 15000); // Poll every 15s (Ultra-fast detection, Zero DB cost)
+    const interval = setInterval(checkStatus, 60000); // 1-minute heartbeat (Infrastructure optimized)
     return () => clearInterval(interval);
   }, [isStaff]);
 

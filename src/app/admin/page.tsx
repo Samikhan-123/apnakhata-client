@@ -4,13 +4,23 @@ import React, { useEffect, useState } from 'react';
 import { adminService } from '@/services/admin.service';
 import { useCurrency, currencies } from '@/context/CurrencyContext';
 import { 
-  Users, ReceiptText, BarChart3, TrendingUp, ShieldAlert, 
-  ArrowUpRight, Scale, Globe, TrendingDown, DollarSign,
-  Activity as LucideActivity, History as LucideHistory,
-  Package, LayoutGrid
+  Package, LayoutGrid, RefreshCw, Zap, CheckCircle2,
+  Users,
+  TrendingUp,
+  TrendingDown,
+  BarChart3,
+  ShieldAlert,
+  Scale,
+  DollarSign,
+  LucideActivity,
+  Globe,
+  X
 } from 'lucide-react';
 import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/ui/confirm-dialog';
 import {
   LineChart,
   Line,
@@ -36,6 +46,9 @@ export default function AdminDashboardPage() {
   const [stats, setStats] = useState<any>(null);
   const [financialStats, setFinancialStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [maintenanceResults, setMaintenanceResults] = useState<any>(null);
   const [error, setError] = useState<any>(null);
   const { currency, formatCurrency } = useCurrency();
 
@@ -55,6 +68,32 @@ export default function AdminDashboardPage() {
       setError({ message, status });
     } finally {
       if (!isSilent) setLoading(false);
+    }
+  };
+  
+  const handleMaintenance = async () => {
+    setShowConfirm(false);
+    setIsSyncing(true);
+    const toastId = toast.loading('Initiating system-wide maintenance cycle...');
+    
+    try {
+      const response = await adminService.runMaintenance();
+      if (response.success) {
+        setMaintenanceResults(response.data);
+        const { cleanup, recurring } = response.data;
+        toast.success('Maintenance Completed Successfully', {
+          id: toastId,
+          description: `Purged ${cleanup.logsPurged} logs. Sync'd ${recurring.successCount} recurring tasks.`,
+          duration: 5000,
+        });
+        // Refresh stats to show updated counts
+        fetchData(true);
+      }
+    } catch (err: any) {
+      handleApiError(err);
+      toast.error('Maintenance cycle failed to complete.', { id: toastId });
+    } finally {
+      setIsSyncing(false);
     }
   };
 
@@ -135,6 +174,48 @@ export default function AdminDashboardPage() {
           <p className="text-muted-foreground font-medium mt-1">Real-time platform metrics and financial health monitoring.</p>
         </SlideIn>
       </header>
+      
+      <AnimatePresence>
+        {maintenanceResults && (
+          <motion.div 
+            initial={{ opacity: 0, height: 0, marginTop: 0 }}
+            animate={{ opacity: 1, height: 'auto', marginTop: 24 }}
+            exit={{ opacity: 0, height: 0, marginTop: 0 }}
+            className="overflow-hidden"
+          >
+            <div className="premium-card p-6 rounded-[2.5rem] bg-emerald-500/[0.03] border-emerald-500/20 relative group">
+              <button 
+                onClick={() => setMaintenanceResults(null)}
+                className="absolute top-6 right-6 p-2 rounded-xl bg-muted/40 hover:bg-muted text-muted-foreground transition-all"
+              >
+                <X className="h-4 w-4" />
+              </button>
+              <div className="flex flex-col md:flex-row md:items-center gap-6">
+                <div className="h-14 w-14 rounded-[1.5rem] bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-emerald-500 sapphire-glow">
+                  <CheckCircle2 className="h-7 w-7" />
+                </div>
+                <div className="flex-1 space-y-1">
+                  <h3 className="text-xl font-black text-foreground tracking-tight">System Maintenance Snapshot</h3>
+                  <div className="flex flex-wrap gap-x-8 gap-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600/60">Audit Purge:</span>
+                      <span className="text-xs font-bold text-foreground">{maintenanceResults.cleanup?.logsPurged || 0} Records</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600/60">Accounts Cleared:</span>
+                      <span className="text-xs font-bold text-foreground">{maintenanceResults.cleanup?.accountsPurged || 0} Profiles</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600/60">Recurring Sync:</span>
+                      <span className="text-xs font-bold text-foreground">{maintenanceResults.recurring?.successCount || 0} Patterns</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -419,37 +500,67 @@ export default function AdminDashboardPage() {
           </FadeIn>
 
          {/* System Infrastructure */}
-         <FadeIn delay={0.7}>
-           <div className="premium-card p-8 rounded-[3rem] border border-border/10">
-              <div className="flex justify-between items-center mb-8">
-                 <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
-                    <Globe className="h-5 w-5 text-amber-500" />
-                    Infrastructure Core
-                 </h3>
-                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                 {[
-                   { label: 'Admin Logs', value: stats?.totalLogs || 0, icon: History },
-                   { label: 'Active Budget Limiters', value: stats?.activeBudgets || 0, icon: Scale },
-                   { label: 'Recurring Automations', value: stats?.activeRecurring || 0, icon: BarChart3 },
-                   { label: 'System Categories', value: stats?.systemCategories || 0, icon: Globe },
-                 ].map((item) => (
-                   <div key={item.label} className="p-4 rounded-2xl bg-muted/10 border border-border/5 hover:border-border/20 transition-all">
-                      <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">{item.label}</p>
-                      <div className="flex items-baseline gap-2">
-                         <span className="text-xl font-black text-foreground">{item.value}</span>
-                         <span className="text-muted-foreground/40"><item.icon className="h-3 w-3" /></span>
-                      </div>
-                   </div>
-                 ))}
-              </div>
-              <div className="mt-6 p-4 rounded-2xl bg-muted/20 border border-dashed border-border/20 flex items-center justify-center gap-3">
-                 <p className="text-[10px] font-bold text-muted-foreground/60">Operational status optimized for serverless architecture.</p>
-              </div>
-           </div>
-         </FadeIn>
-      </div>
+          <FadeIn delay={0.7}>
+            <div className="premium-card p-8 rounded-[3rem] border border-border/10 flex flex-col h-full">
+               <div className="flex justify-between items-center mb-8">
+                  <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
+                     <Globe className="h-5 w-5 text-amber-500" />
+                     Infrastructure Core
+                  </h3>
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+               </div>
+               <div className="grid grid-cols-2 gap-4">
+                  {[
+                    { label: 'Admin Logs', value: stats?.totalLogs || 0, icon: History },
+                    { label: 'Active Budget Limiters', value: stats?.activeBudgets || 0, icon: Scale },
+                    { label: 'Recurring Automations', value: stats?.activeRecurring || 0, icon: BarChart3 },
+                    { label: 'System Categories', value: stats?.systemCategories || 0, icon: Globe },
+                  ].map((item) => (
+                    <div key={item.label} className="p-4 rounded-2xl bg-muted/10 border border-border/5 hover:border-border/20 transition-all">
+                       <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60 mb-2">{item.label}</p>
+                       <div className="flex items-baseline gap-2">
+                          <span className="text-xl font-black text-foreground">{item.value}</span>
+                          <span className="text-muted-foreground/40"><item.icon className="h-3 w-3" /></span>
+                       </div>
+                    </div>
+                  ))}
+               </div>
+               
+               <div className="mt-8 pt-8 border-t border-border/5 space-y-4">
+                  <div className="flex items-center justify-between p-1 pl-4 rounded-2xl bg-primary/[0.03] border border-primary/10">
+                     <div className="min-w-0">
+                        <p className="text-[10px] font-black uppercase tracking-widest text-primary mb-0.5">Platform Sync</p>
+                        <p className="text-[9px] font-medium text-muted-foreground/60 truncate">Trigger full maintenance cycle</p>
+                     </div>
+                     <Button 
+                        size="sm" 
+                        onClick={() => setShowConfirm(true)}
+                        disabled={isSyncing}
+                        className="h-10 px-6 rounded-xl font-black text-[10px] uppercase tracking-widest sapphire-glow bg-primary text-white hover:bg-primary/90"
+                     >
+                        {isSyncing ? <RefreshCw className="h-3 w-3 animate-spin mr-2" /> : <Zap className="h-3 w-3 mr-2" />}
+                        {isSyncing ? 'Syncing...' : 'Force System Sync'}
+                     </Button>
+                  </div>
+                  <p className="text-[10px] text-center font-bold text-muted-foreground/40 italic">
+                     Operational status optimized for serverless architecture.
+                  </p>
+               </div>
+            </div>
+          </FadeIn>
+       </div>
+
+       {/* Confirm Maintenance Dialog */}
+       <ConfirmDialog 
+          isOpen={showConfirm}
+          onClose={() => setShowConfirm(false)}
+          onConfirm={handleMaintenance}
+          title="Trigger Platform Maintenance?"
+          description="This will scan and process all due recurring tasks platform-wide and purge administrative audit logs. This operation is intensive and should only be triggered if auto-sync fails."
+          confirmText="Start Maintenance"
+          cancelText="Cancel"
+          loading={isSyncing}
+       />
     </div>
   );
 }
