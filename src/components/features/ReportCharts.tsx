@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Bar,
   CartesianGrid,
@@ -14,21 +14,26 @@ import {
   YAxis,
   Area,
   ComposedChart,
-  Line
-} from 'recharts';
-import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '@/components/ui/card';
-import { Activity, TrendingUp } from 'lucide-react';
-import { cn, capitalize } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+  Line,
+} from "recharts";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardDescription,
+} from "@/components/ui/card";
+import { Activity } from "lucide-react";
+import { cn, capitalize } from "@/lib/utils";
 
 const COLORS = [
-  '#6366f1', // Indigo
-  '#10b981', // Emerald
-  '#f59e0b', // Amber
-  '#ef4444', // Rose
-  '#8b5cf6', // Violet
-  '#ec4899', // Pink
-  '#06b6d4', // Cyan
+  "#6366f1", // Indigo
+  "#10b981", // Emerald
+  "#f59e0b", // Amber
+  "#ef4444", // Rose
+  "#8b5cf6", // Violet
+  "#ec4899", // Pink
+  "#06b6d4", // Cyan
 ];
 
 interface ReportChartsProps {
@@ -38,42 +43,68 @@ interface ReportChartsProps {
 }
 
 const monthsList = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  "January",
+  "February",
+  "March",
+  "April",
+  "May",
+  "June",
+  "July",
+  "August",
+  "September",
+  "October",
+  "November",
+  "December",
 ];
 
-export default function ReportCharts({ stats, formatCurrency, filters }: ReportChartsProps) {
-  const [timeframe, setTimeframe] = useState<'1M' | '6M' | '1Y'>('6M');
+export default function ReportCharts({
+  stats,
+  formatCurrency,
+  filters,
+}: ReportChartsProps) {
+  const [timeframe, setTimeframe] = useState<"1M" | "6M" | "1Y">("6M");
 
   const getSlicingLogic = () => {
     const rawData = stats?.monthlyTrends || [];
     if (rawData.length === 0) return [];
 
     switch (timeframe) {
-      case '1M': return rawData.slice(-2); // Show recent 2 months for context
-      case '6M': return rawData.slice(-6);
-      case '1Y': return rawData.slice(-12);
-      default: return rawData.slice(-6);
+      case "1M":
+        return rawData.slice(-2); // Show recent 2 months for context
+      case "6M":
+        return rawData.slice(-6);
+      case "1Y":
+        return rawData.slice(-12);
+      default:
+        return rawData.slice(-6);
     }
   };
 
   const visibleData = getSlicingLogic();
 
   const getPeriodLabel = () => {
-    if (!filters?.startDate) return 'Global Period';
+    if (!filters?.startDate) return "Global Period";
     const start = new Date(filters.startDate);
     const end = new Date(filters.endDate);
-    
+
     // Check if it's a whole year
-    if (start.getMonth() === 0 && end.getMonth() === 11 && end.getDate() >= 30) {
+    if (
+      start.getMonth() === 0 &&
+      end.getMonth() === 11 &&
+      end.getDate() >= 30
+    ) {
       return `Annual Report: ${start.getFullYear()}`;
     }
-    
+
     return `Viewing: ${monthsList[start.getMonth()]} ${start.getFullYear()}`;
   };
 
   const periodLabel = getPeriodLabel();
-  const totalExpense = stats?.categoryBreakdown?.reduce((acc: number, curr: any) => acc + curr.value, 0) || 0;
+  const totalExpense =
+    stats?.categoryBreakdown?.reduce(
+      (acc: number, curr: any) => acc + curr.value,
+      0,
+    ) || 0;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 mb-10">
@@ -82,22 +113,24 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
         <div>
           <CardHeader className="p-8 pb-0 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 font-bold">
             <div className="flex-1">
-              <CardTitle className="text-2xl font-bold tracking-tight text-foreground">Financial Flow</CardTitle>
+              <CardTitle className="text-2xl font-bold tracking-tight text-foreground">
+                Financial Flow
+              </CardTitle>
               <CardDescription className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] mt-1.5 leading-none">
                 {`${timeframe} Performance Analytics`}
               </CardDescription>
             </div>
-            
+
             <div className="flex items-center gap-1.5 p-1.5 bg-muted/30 rounded-2xl border border-border/10">
-              {(['1M', '6M', '1Y'] as const).map((t) => (
+              {(["1M", "6M", "1Y"] as const).map((t) => (
                 <button
                   key={t}
                   onClick={() => setTimeframe(t)}
                   className={cn(
                     "px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
-                    timeframe === t 
-                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105" 
-                      : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/50"
+                    timeframe === t
+                      ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
+                      : "text-muted-foreground/60 hover:text-foreground hover:bg-muted/50",
                   )}
                 >
                   {t}
@@ -107,7 +140,8 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
 
             <div className="hidden xl:flex gap-3">
               <div className="flex items-center gap-2 bg-emerald-500/5 px-3 py-1.5 rounded-lg text-emerald-600 text-[10px] font-bold uppercase tracking-wider border border-emerald-500/10">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> Inflow
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />{" "}
+                Inflow
               </div>
               <div className="flex items-center gap-2 bg-rose-500/5 px-3 py-1.5 rounded-lg text-rose-600 text-[10px] font-bold uppercase tracking-wider border border-rose-500/10">
                 <div className="w-1.5 h-1.5 rounded-full bg-rose-500" /> Outflow
@@ -116,68 +150,134 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
           </CardHeader>
           <CardContent className="p-0 overflow-hidden">
             <div className="p-4 sm:p-10 h-[450px] sm:h-[550px] w-full min-w-0 min-h-[400px]">
-              <ResponsiveContainer width="100%" height="100%" minWidth={0} debounce={100}>
-                <ComposedChart data={visibleData} barGap={8} margin={{ bottom: 20 }}>
+              <ResponsiveContainer
+                width="100%"
+                height="100%"
+                minWidth={0}
+                debounce={100}
+              >
+                <ComposedChart
+                  data={visibleData}
+                  barGap={8}
+                  margin={{ bottom: 20 }}
+                >
                   <defs>
-                    <linearGradient id="colorIncome" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="colorIncome"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="5%" stopColor="#10b981" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0.4} />
+                      <stop
+                        offset="95%"
+                        stopColor="#10b981"
+                        stopOpacity={0.4}
+                      />
                     </linearGradient>
-                    <linearGradient id="colorExpense" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="colorExpense"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="5%" stopColor="#f43f5e" stopOpacity={0.8} />
-                      <stop offset="95%" stopColor="#f43f5e" stopOpacity={0.4} />
+                      <stop
+                        offset="95%"
+                        stopColor="#f43f5e"
+                        stopOpacity={0.4}
+                      />
                     </linearGradient>
-                    <linearGradient id="colorBalanceArea" x1="0" y1="0" x2="0" y2="1">
+                    <linearGradient
+                      id="colorBalanceArea"
+                      x1="0"
+                      y1="0"
+                      x2="0"
+                      y2="1"
+                    >
                       <stop offset="5%" stopColor="#6366f1" stopOpacity={0.1} />
                       <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--primary) / 0.05)" />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    vertical={false}
+                    stroke="hsl(var(--primary) / 0.05)"
+                  />
                   <XAxis
                     dataKey="month"
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 900 }}
+                    tick={{
+                      fill: "hsl(var(--muted-foreground))",
+                      fontSize: 10,
+                      fontWeight: 900,
+                    }}
                     dy={10}
                     interval="preserveStartEnd"
                   />
                   <YAxis
                     axisLine={false}
                     tickLine={false}
-                    tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 10, fontWeight: 900 }}
-                    tickFormatter={(val) => val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val}
+                    tick={{
+                      fill: "hsl(var(--muted-foreground))",
+                      fontSize: 10,
+                      fontWeight: 900,
+                    }}
+                    tickFormatter={(val) =>
+                      val >= 1000 ? `${(val / 1000).toFixed(0)}k` : val
+                    }
                     width={35}
                   />
                   <Tooltip
-                    cursor={{ fill: 'hsl(var(--primary) / 0.05)', radius: 10 }}
+                    cursor={{ fill: "hsl(var(--primary) / 0.05)", radius: 10 }}
                     content={({ active, payload }) => {
                       if (active && payload && payload.length) {
                         const data = payload[0].payload;
                         return (
                           <div className="glass-card rounded-[1.5rem] sm:rounded-[2rem] p-4 sm:p-6 shadow-2xl border-white/10 backdrop-blur-xl min-w-[170px] sm:min-w-[200px]">
-                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-3 sm:mb-4 font-bold">{data.month}</p>
+                            <p className="text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 mb-3 sm:mb-4 font-bold">
+                              {data.month}
+                            </p>
                             <div className="space-y-3 sm:space-y-4">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                   <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                                  <span className="text-[10px] sm:text-xs font-bold text-foreground/80 lowercase">Inflow</span>
+                                  <span className="text-[10px] sm:text-xs font-bold text-foreground/80 lowercase">
+                                    Inflow
+                                  </span>
                                 </div>
-                                <span className="text-[10px] sm:text-xs font-black tabular-nums text-emerald-500">{formatCurrency(data.income)}</span>
+                                <span className="text-[10px] sm:text-xs font-black tabular-nums text-emerald-500">
+                                  {formatCurrency(data.income)}
+                                </span>
                               </div>
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
                                   <div className="w-2 h-2 rounded-full bg-rose-500" />
-                                  <span className="text-[10px] sm:text-xs font-bold text-foreground/80 lowercase">Outflow</span>
+                                  <span className="text-[10px] sm:text-xs font-bold text-foreground/80 lowercase">
+                                    Outflow
+                                  </span>
                                 </div>
-                                <span className="text-[10px] sm:text-xs font-black tabular-nums text-rose-500">{formatCurrency(data.expense)}</span>
+                                <span className="text-[10px] sm:text-xs font-black tabular-nums text-rose-500">
+                                  {formatCurrency(data.expense)}
+                                </span>
                               </div>
                               <div className="pt-2 sm:pt-3 border-t border-white/5 flex items-center justify-between">
-                                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary font-bold">Net</span>
-                                <span className={cn(
-                                  "text-[10px] sm:text-xs font-black tabular-nums font-bold",
-                                  data.balance >= 0 ? "text-primary" : "text-rose-500"
-                                )}>
-                                  {data.balance >= 0 ? '+' : ''}{formatCurrency(data.balance)}
+                                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary font-bold">
+                                  Net
+                                </span>
+                                <span
+                                  className={cn(
+                                    "text-[10px] sm:text-xs font-black tabular-nums font-bold",
+                                    data.balance >= 0
+                                      ? "text-primary"
+                                      : "text-rose-500",
+                                  )}
+                                >
+                                  {data.balance >= 0 ? "+" : ""}
+                                  {formatCurrency(data.balance)}
                                 </span>
                               </div>
                             </div>
@@ -194,19 +294,57 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
                     content={({ payload }) => (
                       <div className="flex gap-4 sm:gap-6 mb-4 sm:mb-8 justify-end">
                         {payload?.map((entry: any, index: number) => (
-                          <div key={index} className="flex items-center gap-1.5 group cursor-pointer font-bold">
-                            <div className="w-1.5 h-1.5 rounded-full transition-transform group-hover:scale-125" style={{ backgroundColor: entry.color }} />
-                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 group-hover:text-foreground transition-colors">{entry.value}</span>
+                          <div
+                            key={index}
+                            className="flex items-center gap-1.5 group cursor-pointer font-bold"
+                          >
+                            <div
+                              className="w-1.5 h-1.5 rounded-full transition-transform group-hover:scale-125"
+                              style={{ backgroundColor: entry.color }}
+                            />
+                            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 group-hover:text-foreground transition-colors">
+                              {entry.value}
+                            </span>
                           </div>
                         ))}
                       </div>
                     )}
                   />
-                  <Area type="monotone" dataKey="balance" stroke="none" fill="url(#colorBalanceArea)" name="Growth" />
-                  <Bar dataKey="income" fill="url(#colorIncome)" name="Income" radius={[4, 4, 0, 0]} barSize={window.innerWidth < 640 ? 12 : 24} />
-                  <Bar dataKey="expense" fill="url(#colorExpense)" name="Expense" radius={[4, 4, 0, 0]} barSize={window.innerWidth < 640 ? 12 : 24} />
-                  <Line type="monotone" dataKey="balance" stroke="#6366f1" strokeWidth={2} dot={{ r: 3, strokeWidth: 1.5, fill: '#fff', stroke: '#6366f1' }}
-                    activeDot={{ r: 5, strokeWidth: 0, fill: '#6366f1' }} name="Net Balance" />
+                  <Area
+                    type="monotone"
+                    dataKey="balance"
+                    stroke="none"
+                    fill="url(#colorBalanceArea)"
+                    name="Growth"
+                  />
+                  <Bar
+                    dataKey="income"
+                    fill="url(#colorIncome)"
+                    name="Income"
+                    radius={[4, 4, 0, 0]}
+                    barSize={window.innerWidth < 640 ? 12 : 24}
+                  />
+                  <Bar
+                    dataKey="expense"
+                    fill="url(#colorExpense)"
+                    name="Expense"
+                    radius={[4, 4, 0, 0]}
+                    barSize={window.innerWidth < 640 ? 12 : 24}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="balance"
+                    stroke="#6366f1"
+                    strokeWidth={2}
+                    dot={{
+                      r: 3,
+                      strokeWidth: 1.5,
+                      fill: "#fff",
+                      stroke: "#6366f1",
+                    }}
+                    activeDot={{ r: 5, strokeWidth: 0, fill: "#6366f1" }}
+                    name="Net Balance"
+                  />
                 </ComposedChart>
               </ResponsiveContainer>
             </div>
@@ -220,13 +358,19 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
           <CardHeader className="p-6 sm:p-8 pb-0 border-b border-border/5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6 pb-6 font-bold">
               <div>
-                <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">Category Breakdown</CardTitle>
-                <CardDescription className="text-[10px] sm:text-sm font-medium text-primary uppercase tracking-widest mt-1">{periodLabel}</CardDescription>
+                <CardTitle className="text-xl sm:text-2xl font-bold tracking-tight text-foreground">
+                  Category Breakdown
+                </CardTitle>
+                <CardDescription className="text-[10px] sm:text-sm font-medium text-primary uppercase tracking-widest mt-1">
+                  {periodLabel}
+                </CardDescription>
               </div>
               <div className="flex items-center gap-3 bg-muted/20 px-3 py-1.5 rounded-xl border border-border/10 w-fit">
                 <div className="flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                  <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">Distribution Matrix</span>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/60">
+                    Distribution Matrix
+                  </span>
                 </div>
               </div>
             </div>
@@ -234,21 +378,32 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
           <CardContent className="p-0">
             <div className="grid grid-cols-1 xl:grid-cols-12">
               <div className="xl:col-span-12 2xl:col-span-5 p-6 sm:p-10 border-b 2xl:border-b-0 2xl:border-r border-border/5 flex flex-col items-center justify-center relative min-h-[450px] sm:min-h-[550px] w-full min-w-0 min-h-[400px]">
-                <ResponsiveContainer width="100%" height={400} minHeight={400} minWidth={0} debounce={100}>
+                <ResponsiveContainer
+                  width="100%"
+                  height={400}
+                  minHeight={400}
+                  minWidth={0}
+                  debounce={100}
+                >
                   <PieChart>
-                    <Pie 
-                      data={stats?.categoryBreakdown} 
-                      cx="50%" 
-                      cy="50%" 
-                      innerRadius={window.innerWidth < 640 ? 70 : 90} 
-                      outerRadius={window.innerWidth < 640 ? 100 : 125} 
-                      paddingAngle={8} 
-                      dataKey="value" 
+                    <Pie
+                      data={stats?.categoryBreakdown}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={window.innerWidth < 640 ? 70 : 90}
+                      outerRadius={window.innerWidth < 640 ? 100 : 125}
+                      paddingAngle={8}
+                      dataKey="value"
                       stroke="none"
                     >
-                      {stats?.categoryBreakdown?.map((entry: any, index: number) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
+                      {stats?.categoryBreakdown?.map(
+                        (entry: any, index: number) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={COLORS[index % COLORS.length]}
+                          />
+                        ),
+                      )}
                     </Pie>
                     <Tooltip
                       content={({ active, payload }) => {
@@ -256,10 +411,21 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
                           return (
                             <div className="glass-card rounded-2xl p-4 shadow-2xl border-white/10 backdrop-blur-xl font-bold text-foreground">
                               <div className="flex items-center gap-2 mb-1 text-foreground font-bold">
-                                <div className="w-2 h-2 rounded-full" style={{ backgroundColor: payload[0].payload.fill || payload[0].color }} />
-                                <span className="text-xs font-bold">{capitalize(String(payload[0].name ?? ''))}</span>
+                                <div
+                                  className="w-2 h-2 rounded-full"
+                                  style={{
+                                    backgroundColor:
+                                      payload[0].payload.fill ||
+                                      payload[0].color,
+                                  }}
+                                />
+                                <span className="text-xs font-bold">
+                                  {capitalize(String(payload[0].name ?? ""))}
+                                </span>
                               </div>
-                              <p className="text-xs font-black text-primary">{formatCurrency(Number(payload[0].value ?? 0))}</p>
+                              <p className="text-xs font-black text-primary">
+                                {formatCurrency(Number(payload[0].value ?? 0))}
+                              </p>
                             </div>
                           );
                         }
@@ -269,8 +435,12 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
                   </PieChart>
                 </ResponsiveContainer>
                 <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                  <p className="text-[9px] sm:text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-1 font-bold">Global Spend</p>
-                  <p className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground font-bold">{formatCurrency(totalExpense)}</p>
+                  <p className="text-[9px] sm:text-[10px] font-black text-muted-foreground/40 uppercase tracking-[0.2em] mb-1 font-bold">
+                    Global Spend
+                  </p>
+                  <p className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground font-bold">
+                    {formatCurrency(totalExpense)}
+                  </p>
                 </div>
               </div>
 
@@ -280,21 +450,40 @@ export default function ReportCharts({ stats, formatCurrency, filters }: ReportC
                     <div key={idx} className="group cursor-pointer">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-4">
-                          <div className="h-10 w-10 rounded-xl flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110" style={{ backgroundColor: COLORS[idx % COLORS.length] }}>
+                          <div
+                            className="h-10 w-10 rounded-xl flex items-center justify-center text-white shadow-lg transition-transform group-hover:scale-110"
+                            style={{
+                              backgroundColor: COLORS[idx % COLORS.length],
+                            }}
+                          >
                             <Activity size={18} />
                           </div>
                           <div>
-                            <p className="text-sm font-bold text-foreground tracking-tight">{capitalize(cat.name)}</p>
-                            <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest font-bold">{cat.count} Entries</p>
+                            <p className="text-sm font-bold text-foreground tracking-tight">
+                              {capitalize(cat.name)}
+                            </p>
+                            <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest font-bold">
+                              {cat.count} Entries
+                            </p>
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-sm font-black text-foreground tabular-nums font-bold">{formatCurrency(cat.value)}</p>
-                          <p className="text-[10px] font-bold text-primary">{((cat.value / totalExpense) * 100).toFixed(1)}%</p>
+                          <p className="text-sm font-black text-foreground tabular-nums font-bold">
+                            {formatCurrency(cat.value)}
+                          </p>
+                          <p className="text-[10px] font-bold text-primary">
+                            {((cat.value / totalExpense) * 100).toFixed(1)}%
+                          </p>
                         </div>
                       </div>
                       <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                        <div className="h-full rounded-full transition-all duration-1000" style={{ width: `${(cat.value / totalExpense) * 100}%`, backgroundColor: COLORS[idx % COLORS.length] }} />
+                        <div
+                          className="h-full rounded-full transition-all duration-1000"
+                          style={{
+                            width: `${(cat.value / totalExpense) * 100}%`,
+                            backgroundColor: COLORS[idx % COLORS.length],
+                          }}
+                        />
                       </div>
                     </div>
                   ))}

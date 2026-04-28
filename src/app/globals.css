@@ -95,7 +95,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground font-sans antialiased selection:bg-primary/20 selection:text-primary;
+    @apply bg-background text-foreground font-sans antialiased selection:bg-indigo-500/20 selection:text-blue-500;
     min-height: 100vh;
     /* Clean background without distracting gradients */
     background-color: hsl(var(--background));

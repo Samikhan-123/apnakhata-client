@@ -1,10 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { ShieldAlert, LogOut, Info } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { FadeIn } from '@/components/ui/FramerMotion';
+import React from "react";
+import { useAuth } from "@/context/AuthContext";
+import { ShieldAlert, LogOut, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { FadeIn } from "@/components/ui/FramerMotion";
 
 export const ImpersonationBanner = () => {
   const { isImpersonating, stopImpersonating, user } = useAuth();
@@ -39,8 +39,8 @@ export const ImpersonationBanner = () => {
               <Info className="h-3 w-3" />
               <span className="text-[10px] font-bold">Safe Mode</span>
             </div>
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               size="sm"
               onClick={stopImpersonating}
               className="h-9 px-4 sm:px-6 rounded-xl font-black bg-white text-primary hover:bg-white/90 shadow-xl transition-all gap-2 text-xs sm:text-sm active:scale-95"

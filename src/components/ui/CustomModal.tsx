@@ -1,23 +1,22 @@
-"use client"
+"use client";
 
-import * as React from "react"
+import * as React from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
 
 interface CustomModalProps {
-  isOpen: boolean
-  onClose: (open: boolean) => void
-  title: string
-  description?: string
-  children: React.ReactNode
-  maxWidth?: string // e.g., "500px" or "lg"
-  className?: string
+  isOpen: boolean;
+  onClose: (open: boolean) => void;
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+  maxWidth?: string; // e.g., "500px" or "lg"
+  className?: string;
 }
 
 export function CustomModal({
@@ -31,10 +30,10 @@ export function CustomModal({
 }: CustomModalProps) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent 
+      <DialogContent
         className={cn(
           "p-0 border-none shadow-2xl rounded-[3rem] bg-background",
-          className
+          className,
         )}
         style={{ maxWidth }}
       >
@@ -52,11 +51,9 @@ export function CustomModal({
 
         {/* Scrollable Form/Content Area */}
         <div className="overflow-y-auto max-h-[calc(90vh-160px)] custom-scrollbar">
-          <div className="p-8">
-            {children}
-          </div>
+          <div className="p-8">{children}</div>
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

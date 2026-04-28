@@ -1,16 +1,30 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
-import { adminService } from '@/services/admin.service';
-import { History, Clock, Info, CheckCircle2, Ban, Shield, UserMinus, AlertCircle, Search, Filter, UserX, UserCheck, Settings, ChevronRight } from 'lucide-react';
-import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
-import { Button } from '@/components/ui/button';
-import { PaginationPlus } from '@/components/ui/PaginationPlus';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
-import { handleApiError } from '@/lib/error-handler';
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import { adminService } from "@/services/admin.service";
+import {
+  History,
+  Clock,
+  Info,
+  CheckCircle2,
+  Ban,
+  Shield,
+  UserMinus,
+  AlertCircle,
+  Search,
+  UserX,
+  UserCheck,
+  Settings,
+  ChevronRight,
+} from "lucide-react";
+import { SlideIn, FadeIn } from "@/components/ui/FramerMotion";
+import { Button } from "@/components/ui/button";
+import { PaginationPlus } from "@/components/ui/PaginationPlus";
+import { cn } from "@/lib/utils";
+import { format } from "date-fns";
+import { handleApiError } from "@/lib/error-handler";
 
 export default function AuditLogPage() {
   const { user, loading: authLoading } = useAuth();
@@ -19,23 +33,23 @@ export default function AuditLogPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pagination, setPagination] = useState<any>(null);
+  const [pagination, setPagination] = useState<Record<string, any> | null>(null);
 
   const [filters, setFilters] = useState({
-    action: '',
-    startDate: '',
-    endDate: '',
-    search: ''
+    action: "",
+    startDate: "",
+    endDate: "",
+    search: "",
   });
 
   useEffect(() => {
-    if (!authLoading && user && user.role !== 'ADMIN') {
-      router.push('/admin');
+    if (!authLoading && user && user.role !== "ADMIN") {
+      router.push("/admin");
     }
   }, [user, authLoading, router]);
 
   useEffect(() => {
-    if (user?.role === 'ADMIN') {
+    if (user?.role === "ADMIN") {
       fetchLogs(currentPage, filters);
     }
   }, [currentPage, filters, user]);
@@ -44,7 +58,11 @@ export default function AuditLogPage() {
     setLoading(true);
     setError(null);
     try {
-      const response = await adminService.getAuditLogs(page, 20, currentFilters);
+      const response = await adminService.getAuditLogs(
+        page,
+        20,
+        currentFilters,
+      );
       if (response.success) {
         setLogs(response.data);
         setPagination(response.pagination);
@@ -58,79 +76,91 @@ export default function AuditLogPage() {
   };
 
   const getActionMetadata = (action: string) => {
-    const defaultMeta = { icon: Info, color: 'slate', bgColor: 'bg-slate-500/5', textColor: 'text-slate-600 dark:text-slate-400', borderColor: 'border-slate-500/10' };
-    
+    const defaultMeta = {
+      icon: Info,
+      color: "slate",
+      bgColor: "bg-slate-500/5",
+      textColor: "text-slate-600 dark:text-slate-400",
+      borderColor: "border-slate-500/10",
+    };
+
     switch (action) {
-      case 'BAN_USER':
-      case 'BATCH_BAN_USERS':
-      case 'USER_REQUESTED_DELETION':
-      case 'SCHEDULE_DELETION':
-        return { 
-          icon: action === 'SCHEDULE_DELETION' ? Clock : (action === 'USER_REQUESTED_DELETION' ? UserX : Ban), 
-          color: 'rose',
-          bgColor: 'bg-rose-500/10',
-          textColor: 'text-rose-600 dark:text-rose-400',
-          borderColor: 'border-rose-500/20'
+      case "BAN_USER":
+      case "BATCH_BAN_USERS":
+      case "USER_REQUESTED_DELETION":
+      case "SCHEDULE_DELETION":
+        return {
+          icon:
+            action === "SCHEDULE_DELETION"
+              ? Clock
+              : action === "USER_REQUESTED_DELETION"
+                ? UserX
+                : Ban,
+          color: "rose",
+          bgColor: "bg-rose-500/10",
+          textColor: "text-rose-600 dark:text-rose-400",
+          borderColor: "border-rose-500/20",
         };
-      case 'REACTIVATE_USER':
-      case 'BATCH_REACTIVATE_USERS':
-      case 'CANCEL_DELETION':
-        return { 
-          icon: action === 'CANCEL_DELETION' ? UserCheck : CheckCircle2, 
-          color: 'emerald',
-          bgColor: 'bg-emerald-500/10',
-          textColor: 'text-emerald-600 dark:text-emerald-400',
-          borderColor: 'border-emerald-500/20'
+      case "REACTIVATE_USER":
+      case "BATCH_REACTIVATE_USERS":
+      case "CANCEL_DELETION":
+        return {
+          icon: action === "CANCEL_DELETION" ? UserCheck : CheckCircle2,
+          color: "emerald",
+          bgColor: "bg-emerald-500/10",
+          textColor: "text-emerald-600 dark:text-emerald-400",
+          borderColor: "border-emerald-500/20",
         };
-      case 'PROMOTE_ADMIN':
-      case 'STAFF_LOGIN':
-        return { 
-          icon: Shield, 
-          color: 'indigo',
-          bgColor: 'bg-indigo-500/10',
-          textColor: 'text-indigo-600 dark:text-indigo-400',
-          borderColor: 'border-indigo-500/20'
+      case "PROMOTE_ADMIN":
+      case "STAFF_LOGIN":
+        return {
+          icon: Shield,
+          color: "indigo",
+          bgColor: "bg-indigo-500/10",
+          textColor: "text-indigo-600 dark:text-indigo-400",
+          borderColor: "border-indigo-500/20",
         };
-      case 'DEMOTE_USER':
-      case 'UNVERIFY_USER':
-        return { 
-          icon: (action === 'DEMOTE_USER' ? UserMinus : AlertCircle), 
-          color: 'amber',
-          bgColor: 'bg-amber-500/10',
-          textColor: 'text-amber-600 dark:text-amber-400',
-          borderColor: 'border-amber-500/20'
+      case "DEMOTE_USER":
+      case "UNVERIFY_USER":
+        return {
+          icon: action === "DEMOTE_USER" ? UserMinus : AlertCircle,
+          color: "amber",
+          bgColor: "bg-amber-500/10",
+          textColor: "text-amber-600 dark:text-amber-400",
+          borderColor: "border-amber-500/20",
         };
-      case 'VERIFY_USER':
-        return { 
-          icon: CheckCircle2, 
-          color: 'blue',
-          bgColor: 'bg-blue-500/10',
-          textColor: 'text-blue-600 dark:text-blue-400',
-          borderColor: 'border-blue-500/20'
+      case "VERIFY_USER":
+        return {
+          icon: CheckCircle2,
+          color: "blue",
+          bgColor: "bg-blue-500/10",
+          textColor: "text-blue-600 dark:text-blue-400",
+          borderColor: "border-blue-500/20",
         };
-      case 'SYSTEM_MAINTENANCE':
-        return { 
-          icon: Settings, 
-          color: 'purple',
-          bgColor: 'bg-purple-500/10',
-          textColor: 'text-purple-600 dark:text-purple-400',
-          borderColor: 'border-purple-500/20'
+      case "SYSTEM_MAINTENANCE":
+        return {
+          icon: Settings,
+          color: "purple",
+          bgColor: "bg-purple-500/10",
+          textColor: "text-purple-600 dark:text-purple-400",
+          borderColor: "border-purple-500/20",
         };
-      default: return defaultMeta;
+      default:
+        return defaultMeta;
     }
   };
 
   const formatAction = (action: string) => {
-    return action.replace(/_/g, ' ');
+    return action.replace(/_/g, " ");
   };
 
   const handleFilterChange = (name: string, value: string) => {
-    setFilters(prev => ({ ...prev, [name]: value }));
+    setFilters((prev) => ({ ...prev, [name]: value }));
     setCurrentPage(1); // Reset to first page on filter change
   };
 
   const resetFilters = () => {
-    setFilters({ action: '', startDate: '', endDate: '', search: '' });
+    setFilters({ action: "", startDate: "", endDate: "", search: "" });
     setCurrentPage(1);
   };
 
@@ -142,10 +172,16 @@ export default function AuditLogPage() {
             <div className="bg-primary/10 p-1.5 md:p-2 rounded-lg">
               <History className="h-4 w-4 md:h-5 md:w-5 text-primary" />
             </div>
-            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-primary">System Oversight</span>
+            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.3em] text-primary">
+              System Oversight
+            </span>
           </div>
-          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-4xl">Audit Trail</h1>
-          <p className="text-muted-foreground font-medium mt-1 text-xs md:text-sm">Administrative events across the ecosystem.</p>
+          <h1 className="text-2xl font-black tracking-tight text-foreground sm:text-4xl">
+            Audit Trail
+          </h1>
+          <p className="text-muted-foreground font-medium mt-1 text-xs md:text-sm">
+            Administrative events across the ecosystem.
+          </p>
         </SlideIn>
       </header>
 
@@ -155,62 +191,108 @@ export default function AuditLogPage() {
           <div className="premium-card p-4 md:p-5 rounded-2xl md:rounded-[1.5rem] border border-border/10 space-y-3 md:space-y-4 shadow-xl">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 items-end">
               <div className="col-span-1 md:col-span-1 space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Search</label>
+                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                  Search
+                </label>
                 <div className="relative">
                   <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
                   <input
                     type="text"
                     placeholder="Email or Name..."
                     value={filters.search}
-                    onChange={(e) => handleFilterChange('search', e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("search", e.target.value)
+                    }
                     className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 pl-11 pr-4 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted-foreground/30"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5 group/select">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1 group-focus-within/select:text-primary transition-colors">Event Type</label>
+                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1 group-focus-within/select:text-primary transition-colors">
+                  Event Type
+                </label>
                 <div className="relative transition-transform active:scale-[0.98]">
-                   <select
+                  <select
                     value={filters.action}
-                    onChange={(e) => handleFilterChange('action', e.target.value)}
+                    onChange={(e) =>
+                      handleFilterChange("action", e.target.value)
+                    }
                     className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 px-4 pr-10 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer hover:bg-muted/30 hover:border-border/60 sapphire-scrollbar-select"
                   >
-                    <option value="" className="bg-background">All Action Anomalies</option>
-                    <option value="BAN_USER" className="bg-background">Ban User</option>
-                    <option value="REACTIVATE_USER" className="bg-background">Reactivate User</option>
-                    <option value="PROMOTE_ADMIN" className="bg-background">Promote Admin</option>
-                    <option value="DEMOTE_USER" className="bg-background">Demote User</option>
-                    <option value="VERIFY_USER" className="bg-background">Verify User</option>
-                    <option value="UNVERIFY_USER" className="bg-background">Unverify User</option>
-                    <option value="SCHEDULE_DELETION" className="bg-background">Schedule Deletion</option>
-                    <option value="CANCEL_DELETION" className="bg-background">Restore User</option>
-                    <option value="USER_REQUESTED_DELETION" className="bg-background">Self-Deletion Request</option>
-                    <option value="STAFF_LOGIN" className="bg-background">Staff Login</option>
-                    <option value="SYSTEM_MAINTENANCE" className="bg-background">System Maintenance</option>
+                    <option value="" className="bg-background">
+                      All Action Anomalies
+                    </option>
+                    <option value="BAN_USER" className="bg-background">
+                      Ban User
+                    </option>
+                    <option value="REACTIVATE_USER" className="bg-background">
+                      Reactivate User
+                    </option>
+                    <option value="PROMOTE_ADMIN" className="bg-background">
+                      Promote Admin
+                    </option>
+                    <option value="DEMOTE_USER" className="bg-background">
+                      Demote User
+                    </option>
+                    <option value="VERIFY_USER" className="bg-background">
+                      Verify User
+                    </option>
+                    <option value="UNVERIFY_USER" className="bg-background">
+                      Unverify User
+                    </option>
+                    <option value="SCHEDULE_DELETION" className="bg-background">
+                      Schedule Deletion
+                    </option>
+                    <option value="CANCEL_DELETION" className="bg-background">
+                      Restore User
+                    </option>
+                    <option
+                      value="USER_REQUESTED_DELETION"
+                      className="bg-background"
+                    >
+                      Self-Deletion Request
+                    </option>
+                    <option value="STAFF_LOGIN" className="bg-background">
+                      Staff Login
+                    </option>
+                    <option
+                      value="SYSTEM_MAINTENANCE"
+                      className="bg-background"
+                    >
+                      System Maintenance
+                    </option>
                   </select>
-                   <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 group-focus-within/select:opacity-100 group-focus-within/select:text-primary transition-all">
-                      <ChevronRight className="h-3 w-3 rotate-90" />
-                   </div>
+                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 group-focus-within/select:opacity-100 group-focus-within/select:text-primary transition-all">
+                    <ChevronRight className="h-3 w-3 rotate-90" />
+                  </div>
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">Start Date</label>
+                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                  Start Date
+                </label>
                 <input
                   type="date"
                   value={filters.startDate}
-                  onChange={(e) => handleFilterChange('startDate', e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange("startDate", e.target.value)
+                  }
                   className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 px-4 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">End Date</label>
+                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">
+                  End Date
+                </label>
                 <input
                   type="date"
                   value={filters.endDate}
-                  onChange={(e) => handleFilterChange('endDate', e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange("endDate", e.target.value)
+                  }
                   className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 px-4 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
                 />
               </div>
@@ -243,25 +325,42 @@ export default function AuditLogPage() {
               <table className="w-full text-left border-collapse min-w-[1000px]">
                 <thead className="sticky top-0 z-20">
                   <tr className="bg-muted/90 backdrop-blur-xl border-b border-border/10">
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Administrator</th>
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Action Execution</th>
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Subject Target</th>
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Timestamp (UTC)</th>
+                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                      Administrator
+                    </th>
+                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                      Action Execution
+                    </th>
+                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                      Subject Target
+                    </th>
+                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                      Timestamp (UTC)
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/10">
                   {loading ? (
                     Array.from({ length: 8 }).map((_, i) => (
                       <tr key={i} className="animate-pulse">
-                        <td colSpan={4} className="px-6 md:px-8 py-5 md:py-6 h-16 md:h-20 bg-muted/5"></td>
+                        <td
+                          colSpan={4}
+                          className="px-6 md:px-8 py-5 md:py-6 h-16 md:h-20 bg-muted/5"
+                        ></td>
                       </tr>
                     ))
                   ) : error ? (
                     <tr>
                       <td colSpan={4} className="px-8 py-20 text-center">
                         <AlertCircle className="h-10 w-10 text-rose-500/30 mx-auto mb-4" />
-                        <p className="text-rose-500/80 font-bold mb-4 text-xs md:text-sm">{error}</p>
-                        <Button onClick={() => fetchLogs(currentPage, filters)} variant="outline" className="rounded-xl font-bold h-10">
+                        <p className="text-rose-500/80 font-bold mb-4 text-xs md:text-sm">
+                          {error}
+                        </p>
+                        <Button
+                          onClick={() => fetchLogs(currentPage, filters)}
+                          variant="outline"
+                          className="rounded-xl font-bold h-10"
+                        >
                           Retry Synchronisation
                         </Button>
                       </td>
@@ -270,61 +369,90 @@ export default function AuditLogPage() {
                     <tr>
                       <td colSpan={4} className="px-8 py-20 text-center">
                         <History className="h-10 w-10 text-muted-foreground/20 mx-auto mb-4" />
-                        <p className="text-muted-foreground font-bold text-xs md:text-sm tracking-tight">No administrative anomalies detected in history.</p>
+                        <p className="text-muted-foreground font-bold text-xs md:text-sm tracking-tight">
+                          No administrative anomalies detected in history.
+                        </p>
                       </td>
                     </tr>
                   ) : (
                     logs.map((log) => (
-                      <tr key={log.id} className="hover:bg-primary/[0.02] transition-colors group">
+                      <tr
+                        key={log.id}
+                        className="hover:bg-primary/[0.02] transition-colors group"
+                      >
                         <td className="px-6 md:px-8 py-5 md:py-6">
                           <div className="flex items-center gap-3">
                             <div className="w-9 h-9 md:w-10 md:h-10 bg-primary/5 rounded-xl md:rounded-2xl flex items-center justify-center border border-primary/10 font-bold text-primary text-xs sapphire-glow/20">
-                              {log.admin ? (log.admin.name ? log.admin.name[0].toUpperCase() : 'A') : <Shield className="h-4 w-4" />}
+                              {log.admin ? (
+                                log.admin.name ? (
+                                  log.admin.name[0].toUpperCase()
+                                ) : (
+                                  "A"
+                                )
+                              ) : (
+                                <Shield className="h-4 w-4" />
+                              )}
                             </div>
                             <div>
-                              <p className="text-xs md:text-sm font-bold text-foreground leading-none mb-1">{log.admin?.name || 'SYSTEM'}</p>
-                              <p className="text-[9px] md:text-[10px] text-muted-foreground font-medium">{log.admin?.email || 'automated@system.com'}</p>
+                              <p className="text-xs md:text-sm font-bold text-foreground leading-none mb-1">
+                                {log.admin?.name || "SYSTEM"}
+                              </p>
+                              <p className="text-[9px] md:text-[10px] text-muted-foreground font-medium">
+                                {log.admin?.email || "automated@system.com"}
+                              </p>
                             </div>
                           </div>
                         </td>
                         <td className="px-6 md:px-8 py-5 md:py-6">
                           {(() => {
-                             const meta = getActionMetadata(log.action);
-                             const Icon = meta.icon;
-                             return (
-                               <div className="flex items-center gap-3">
-                                 <div className={cn(
-                                   "p-2 rounded-xl border transition-all duration-300",
-                                   meta.bgColor,
-                                   meta.borderColor,
-                                   meta.textColor
-                                 )}>
-                                   <Icon className="h-4 w-4" />
-                                 </div>
-                                 <span className={cn(
-                                   "text-[10px] md:text-xs font-black uppercase tracking-tighter text-nowrap",
-                                   meta.textColor
-                                 )}>
-                                   {formatAction(log.action)}
-                                 </span>
-                               </div>
-                             );
+                            const meta = getActionMetadata(log.action);
+                            const Icon = meta.icon;
+                            return (
+                              <div className="flex items-center gap-3">
+                                <div
+                                  className={cn(
+                                    "p-2 rounded-xl border transition-all duration-300",
+                                    meta.bgColor,
+                                    meta.borderColor,
+                                    meta.textColor,
+                                  )}
+                                >
+                                  <Icon className="h-4 w-4" />
+                                </div>
+                                <span
+                                  className={cn(
+                                    "text-[10px] md:text-xs font-black uppercase tracking-tighter text-nowrap",
+                                    meta.textColor,
+                                  )}
+                                >
+                                  {formatAction(log.action)}
+                                </span>
+                              </div>
+                            );
                           })()}
                         </td>
                         <td className="px-6 md:px-8 py-5 md:py-6">
                           {log.target ? (
                             <div className="flex items-center gap-3">
                               <div className="w-8 h-8 bg-muted/50 rounded-lg md:rounded-xl flex items-center justify-center font-bold text-muted-foreground/50 text-[10px] border border-border/50">
-                                {log.target.name ? log.target.name[0].toUpperCase() : 'U'}
+                                {log.target.name
+                                  ? log.target.name[0].toUpperCase()
+                                  : "U"}
                               </div>
                               <div>
-                                <p className="text-xs font-bold text-foreground leading-none mb-1">{log.target.name || 'User'}</p>
-                                <p className="text-[9px] md:text-[10px] text-muted-foreground">{log.target.email}</p>
+                                <p className="text-xs font-bold text-foreground leading-none mb-1">
+                                  {log.target.name || "User"}
+                                </p>
+                                <p className="text-[9px] md:text-[10px] text-muted-foreground">
+                                  {log.target.email}
+                                </p>
                               </div>
                             </div>
                           ) : (
                             <div className="inline-flex py-1 px-3 bg-muted/30 rounded-full border border-border/20">
-                               <span className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">- System -</span>
+                              <span className="text-[9px] text-muted-foreground font-black uppercase tracking-widest">
+                                - System -
+                              </span>
                             </div>
                           )}
                         </td>
@@ -332,7 +460,10 @@ export default function AuditLogPage() {
                           <div className="flex items-center gap-2 text-muted-foreground/60">
                             <Clock className="h-3 w-3 md:h-3.5 md:w-3.5" />
                             <p className="text-[10px] md:text-xs font-bold text-nowrap tracking-tight">
-                              {format(new Date(log.createdAt), 'MMM dd, yyyy • hh:mm:ss a')}
+                              {format(
+                                new Date(log.createdAt),
+                                "MMM dd, yyyy • hh:mm:ss a",
+                              )}
                             </p>
                           </div>
                         </td>

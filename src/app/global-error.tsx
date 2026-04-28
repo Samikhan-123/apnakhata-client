@@ -18,7 +18,7 @@ export default function GlobalError({
   return (
     <html lang="en">
       <body className="min-h-screen bg-background flex items-center justify-center p-6">
-        <ErrorState 
+        <ErrorState
           title="System Failure"
           message="A critical error occurred while loading the application shell. Please try again or contact support."
           onRetry={reset}

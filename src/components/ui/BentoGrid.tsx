@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { cn } from '@/lib/utils';
-import { motion } from 'framer-motion';
+import React from "react";
+import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 export const BentoGrid = ({
   className,
@@ -15,7 +15,7 @@ export const BentoGrid = ({
     <div
       className={cn(
         "grid md:auto-rows-[18rem] grid-cols-1 md:grid-cols-3 gap-4 max-w-7xl mx-auto",
-        className
+        className,
       )}
     >
       {children}
@@ -41,7 +41,7 @@ export const BentoGridItem = ({
       whileHover={{ y: -5 }}
       className={cn(
         "row-span-1 rounded-3xl group/bento hover:shadow-xl transition duration-300 shadow-input dark:shadow-none p-4 dark:bg-black dark:border-white/[0.2] bg-white border border-transparent justify-between flex flex-col space-y-4",
-        className
+        className,
       )}
     >
       {header}

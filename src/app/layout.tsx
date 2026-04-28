@@ -5,17 +5,17 @@ import { Providers } from "@/components/Providers";
 import { cn } from "@/lib/utils";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 
-const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
+const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://apnakhata.online'),
+  metadataBase: new URL("https://apnakhata.online"),
   title: {
     default: "Apna Khata - Smart Personal Finance & Expense Tracker",
-    template: "%s | Apna Khata"
+    template: "%s | Apna Khata",
   },
   alternates: {
-    canonical: '/',
+    canonical: "/",
   },
   description:
     "Apna Khata is a modern personal finance management system to track income, manage expenses, set budgets, and handle recurring transactions with a structured ledger-based approach.",
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
     "ledger management system",
     "financial dashboard",
     "recurring expenses tracker",
-    "Apna Khata"
+    "Apna Khata",
   ],
   robots: {
     index: true,
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
     },
   },
   manifest: "/manifest.json",
@@ -71,7 +71,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
     apple: "/apple-touch-icon.png",
-  }
+  },
 };
 
 export const viewport: Viewport = {
@@ -89,7 +89,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={cn("font-sans", geist.variable)}
+    >
       <head>
         <script
           type="application/ld+json"
@@ -98,9 +102,9 @@ export default function RootLayout({
               {
                 "@context": "https://schema.org",
                 "@type": "WebSite",
-                "name": "Apna Khata",
-                "alternateName": ["ApnaKhata", "Apna Khata Online"],
-                "url": "https://apnakhata.online",
+                name: "Apna Khata",
+                alternateName: ["ApnaKhata", "Apna Khata Online"],
+                url: "https://apnakhata.online",
               },
               {
                 "@context": "https://schema.org",
@@ -120,14 +124,14 @@ export default function RootLayout({
                   "Budget Management",
                   "Recurring Entries",
                   "Financial Reports",
-                  "Category Tracking"
+                  "Category Tracking",
                 ],
-                "author": {
+                author: {
                   "@type": "Organization",
-                  "name": "Apna Khata",
-                  "url": "https://apnakhata.online"
+                  name: "Apna Khata",
+                  url: "https://apnakhata.online",
                 },
-              }
+              },
             ]),
           }}
         />

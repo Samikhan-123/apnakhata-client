@@ -1,16 +1,19 @@
-import api from './auth.service';
+import api from "./auth.service";
 
 export const adminService = {
   getStats: async () => {
-    const { data: response } = await api.get('/admin/stats');
+    const { data: response } = await api.get("/admin/stats");
     return response;
   },
 
   getUsers: async (page: number = 1, limit: number = 10, filters: any = {}) => {
-    const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
-    
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
     Object.entries(filters).forEach(([key, value]) => {
-      if (value != null && value !== '') {
+      if (value != null && value !== "") {
         params.append(key, value.toString());
       }
     });
@@ -19,13 +22,22 @@ export const adminService = {
     return data;
   },
 
-  updateUser: async (id: string, data: { role?: string, isVerified?: boolean, isActive?: boolean }) => {
+  updateUser: async (
+    id: string,
+    data: { role?: string; isVerified?: boolean; isActive?: boolean },
+  ) => {
     const { data: response } = await api.patch(`/admin/users/${id}`, data);
     return response;
   },
 
-  batchUpdateUsers: async (ids: string[], data: { role?: string, isVerified?: boolean, isActive?: boolean }) => {
-    const { data: response } = await api.patch('/admin/users/batch', { ids, data });
+  batchUpdateUsers: async (
+    ids: string[],
+    data: { role?: string; isVerified?: boolean; isActive?: boolean },
+  ) => {
+    const { data: response } = await api.patch("/admin/users/batch", {
+      ids,
+      data,
+    });
     return response;
   },
 
@@ -34,9 +46,16 @@ export const adminService = {
     return response;
   },
 
-  getAuditLogs: async (page: number = 1, limit: number = 15, filters: any = {}) => {
-    const params = new URLSearchParams({ page: page.toString(), limit: limit.toString() });
-    
+  getAuditLogs: async (
+    page: number = 1,
+    limit: number = 15,
+    filters: any = {},
+  ) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    });
+
     Object.entries(filters).forEach(([key, value]) => {
       if (value) params.append(key, value as string);
     });
@@ -46,27 +65,31 @@ export const adminService = {
   },
 
   getFinancialStats: async () => {
-    const { data } = await api.get('/admin/financial-stats');
+    const { data } = await api.get("/admin/financial-stats");
     return data;
   },
 
   getSettings: async () => {
-    const { data } = await api.get('/admin/settings');
+    const { data } = await api.get("/admin/settings");
     return data;
   },
 
   updateSettings: async (data: any) => {
-    const { data: response } = await api.patch('/admin/settings', data);
+    const { data: response } = await api.patch("/admin/settings", data);
     return response;
   },
-  
+
   scheduleUserDeletion: async (id: string) => {
-    const { data: response } = await api.patch(`/admin/users/${id}/schedule-deletion`);
+    const { data: response } = await api.patch(
+      `/admin/users/${id}/schedule-deletion`,
+    );
     return response;
   },
 
   cancelUserDeletion: async (id: string) => {
-    const { data: response } = await api.patch(`/admin/users/${id}/cancel-deletion`);
+    const { data: response } = await api.patch(
+      `/admin/users/${id}/cancel-deletion`,
+    );
     return response;
   },
 
@@ -76,17 +99,17 @@ export const adminService = {
   },
 
   stopImpersonation: async () => {
-    const { data: response } = await api.post('/admin/impersonate/stop');
+    const { data: response } = await api.post("/admin/impersonate/stop");
     return response;
   },
 
   getSystemStatus: async () => {
-    const { data } = await api.get('/system/status');
+    const { data } = await api.get("/system/status");
     return data;
   },
 
   runMaintenance: async () => {
-    const { data } = await api.post('/admin/maintenance');
+    const { data } = await api.post("/admin/maintenance");
     return data;
-  }
+  },
 };

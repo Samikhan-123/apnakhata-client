@@ -1,15 +1,15 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { cn } from '@/lib/utils';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export const RetroGrid = ({ className }: { className?: string }) => {
   return (
     <div
       className={cn(
         "absolute inset-0 [perspective:200px] overflow-hidden pointer-events-none",
-        className
+        className,
       )}
     >
       <div className="absolute inset-0 [transform:rotateX(35deg)]">
@@ -20,15 +20,28 @@ export const RetroGrid = ({ className }: { className?: string }) => {
   );
 };
 
-export const Beam = ({ className, delay = 0, duration = 8 }: { className?: string, delay?: number, duration?: number }) => {
+export const Beam = ({
+  className,
+  delay = 0,
+  duration = 8,
+}: {
+  className?: string;
+  delay?: number;
+  duration?: number;
+}) => {
   return (
-    <div className={cn("absolute pointer-events-none overflow-hidden w-20", className)}>
+    <div
+      className={cn(
+        "absolute pointer-events-none overflow-hidden w-20",
+        className,
+      )}
+    >
       {/* Primary Beam */}
       <motion.div
         initial={{ top: "-300px", opacity: 0 }}
-        animate={{ 
+        animate={{
           top: ["-300px", "100%"],
-          opacity: [0, 1, 1, 0] 
+          opacity: [0, 1, 1, 0],
         }}
         transition={{
           duration,
@@ -38,13 +51,13 @@ export const Beam = ({ className, delay = 0, duration = 8 }: { className?: strin
         }}
         className="absolute left-1/2 -translate-x-1/2 h-64 w-[2px] bg-gradient-to-b from-transparent via-primary to-transparent blur-[1px] z-20"
       />
-      
+
       {/* Glow effect */}
       <motion.div
         initial={{ top: "-300px", opacity: 0 }}
-        animate={{ 
+        animate={{
           top: ["-300px", "100%"],
-          opacity: [0, 0.4, 0.4, 0] 
+          opacity: [0, 0.4, 0.4, 0],
         }}
         transition={{
           duration,
@@ -73,21 +86,21 @@ export const Sparkles = ({ count = 20 }: { count?: number }) => {
         <motion.div
           key={i}
           className="absolute h-1 w-1 bg-primary rounded-full"
-          initial={{ 
-            x: Math.random() * 100 + "%", 
-            y: Math.random() * 100 + "%", 
+          initial={{
+            x: Math.random() * 100 + "%",
+            y: Math.random() * 100 + "%",
             opacity: 0,
-            scale: 0 
+            scale: 0,
           }}
-          animate={{ 
+          animate={{
             opacity: [0, 1, 0],
             scale: [0, 1.5, 0],
-            y: [null, "-=100"] 
+            y: [null, "-=100"],
           }}
-          transition={{ 
-            duration: Math.random() * 3 + 2, 
-            repeat: Infinity, 
-            delay: Math.random() * 5 
+          transition={{
+            duration: Math.random() * 3 + 2,
+            repeat: Infinity,
+            delay: Math.random() * 5,
           }}
         />
       ))}

@@ -1,11 +1,10 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { Wrench, LogOut, ShieldCheck } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/AuthContext';
-import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
-import { cn } from '@/lib/utils';
+import React from "react";
+import { Wrench, LogOut, ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
+import { SlideIn } from "@/components/ui/FramerMotion";
 
 export const MaintenanceOverlay = () => {
   const { logout } = useAuth();
@@ -13,7 +12,7 @@ export const MaintenanceOverlay = () => {
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/60 backdrop-blur-xl animate-in fade-in duration-700">
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/5 pointer-events-none" />
-      
+
       <SlideIn direction="up" distance={40} duration={0.8}>
         <div className="relative max-w-lg w-full mx-4 p-8 md:p-12 rounded-[3.5rem] border border-primary/10 bg-card/40 shadow-2xl sapphire-glow/10 text-center overflow-hidden">
           {/* Subtle Background Pattern */}
@@ -37,23 +36,27 @@ export const MaintenanceOverlay = () => {
               Maintenance in Progress
             </h2>
             <p className="text-muted-foreground font-medium leading-relaxed max-w-sm mx-auto text-sm md:text-base">
-              The Apna Khata platform is currently undergoing scheduled maintenance to improve your financial experience.
+              The Apna Khata platform is currently undergoing scheduled
+              maintenance to improve your financial experience.
             </p>
           </div>
 
           {/* Progress Indicator */}
           <div className="relative h-1.5 w-full bg-primary/5 rounded-full mb-12 overflow-hidden px-0.5">
-             <div className="h-full bg-primary rounded-full animate-progress-indefinite shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
+            <div className="h-full bg-primary rounded-full animate-progress-indefinite shadow-[0_0_10px_rgba(var(--primary),0.5)]" />
           </div>
 
           {/* Actions */}
           <div className="relative flex flex-col gap-4">
-            <Button 
+            <Button
               onClick={logout}
               variant="outline"
               className="h-14 rounded-2xl font-black text-xs uppercase tracking-widest border-2 border-primary/10 hover:bg-primary/5 transition-all active:scale-95 group"
             >
-              <LogOut size={18} className="mr-3 group-hover:-translate-x-1 transition-transform" />
+              <LogOut
+                size={18}
+                className="mr-3 group-hover:-translate-x-1 transition-transform"
+              />
               Sign Out Securely
             </Button>
             <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/40">
@@ -65,9 +68,17 @@ export const MaintenanceOverlay = () => {
 
       <style jsx global>{`
         @keyframes progress-indefinite {
-          0% { transform: translateX(-100%); width: 30%; }
-          50% { width: 60%; }
-          100% { transform: translateX(400%); width: 30%; }
+          0% {
+            transform: translateX(-100%);
+            width: 30%;
+          }
+          50% {
+            width: 60%;
+          }
+          100% {
+            transform: translateX(400%);
+            width: 30%;
+          }
         }
         .animate-progress-indefinite {
           animation: progress-indefinite 2s infinite ease-in-out;

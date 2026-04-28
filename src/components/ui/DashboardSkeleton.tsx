@@ -15,7 +15,10 @@ export function DashboardSkeleton() {
       {/* Stats Grid Skeleton */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="premium-card rounded-3xl p-6 h-36 flex flex-col justify-between border-border/10">
+          <div
+            key={i}
+            className="premium-card rounded-3xl p-6 h-36 flex flex-col justify-between border-border/10"
+          >
             <div className="flex justify-between items-start">
               <Skeleton className="h-10 w-10 rounded-xl" />
               <Skeleton className="h-3.5 w-20 rounded-md" />
@@ -36,8 +39,8 @@ export function DashboardSkeleton() {
             <Skeleton className="h-3.5 w-48 rounded-md" />
           </div>
           <div className="flex gap-2">
-             <Skeleton className="h-8 w-16 rounded-xl" />
-             <Skeleton className="h-8 w-16 rounded-xl" />
+            <Skeleton className="h-8 w-16 rounded-xl" />
+            <Skeleton className="h-8 w-16 rounded-xl" />
           </div>
         </div>
         <Skeleton className="h-[320px] w-full rounded-2xl" />

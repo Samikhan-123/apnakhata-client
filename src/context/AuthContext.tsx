@@ -1,25 +1,27 @@
-'use client';
+"use client";
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authService } from '../services/auth.service';
-import { adminService } from '../services/admin.service';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import { authService } from "../services/auth.service";
+import { adminService } from "../services/admin.service";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
+import { User } from "../types";
 
 interface AuthContextType {
-  user: any;
+  user: User | null;
   loading: boolean;
   isImpersonating: boolean;
   readOnly: boolean;
-  login: (credentials: any) => Promise<void>;
+  login: (credentials: Record<string, string>) => Promise<void>;
   loginWithGoogle: (idToken: string) => Promise<void>;
-  register: (userData: any) => Promise<void>;
+  register: (userData: Record<string, string>) => Promise<void>;
   verifyEmail: (email: string, otp: string) => Promise<void>;
   resendOTP: (email: string) => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
-  resetPassword: (data: any) => Promise<void>;
+  resetPassword: (data: Record<string, string>) => Promise<void>;
   logout: () => void;
-  updateUser: (updatedUser: any) => void;
+  updateUser: (updatedUser: User | null) => void;
   impersonate: (userId: string) => Promise<void>;
   stopImpersonating: () => Promise<void>;
 }
@@ -27,7 +29,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isImpersonating, setIsImpersonating] = useState(false);
   const [readOnly, setReadOnly] = useState(false);
@@ -56,17 +58,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     initAuth();
   }, []);
 
-  const handleAuthRedirect = (user: any) => {
+  const handleAuthRedirect = (user: User | null) => {
     if (!user) return;
-    const isStaff = user.role === 'ADMIN' || user.role === 'MODERATOR';
+    const isStaff = user.role === "ADMIN" || user.role === "MODERATOR";
     if (isStaff) {
-      router.push('/admin');
+      router.push("/admin");
     } else {
-      router.push('/dashboard');
+      router.push("/dashboard");
     }
   };
 
-  const login = async (credentials: any) => {
+  const login = async (credentials: Record<string, string>) => {
     try {
       const response = await authService.login(credentials);
       if (response.success && response.user) {
@@ -80,7 +82,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (err.response?.data?.user) {
           setUser(err.response.data.user);
         }
-        router.push(`/verify-email?email=${encodeURIComponent(credentials.email)}`);
+        router.push(
+          `/verify-email?email=${encodeURIComponent(credentials.email)}`,
+        );
       }
       throw err;
     }
@@ -95,18 +99,20 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
     } catch (err: any) {
       if (err.response?.status === 403 && err.response?.data?.unverified) {
-        router.push(`/verify-email?email=${encodeURIComponent(err.response.data.user?.email || '')}`);
+        router.push(
+          `/verify-email?email=${encodeURIComponent(err.response.data.user?.email || "")}`,
+        );
       }
       throw err;
     }
   };
 
-  const register = async (userData: any) => {
+  const register = async (userData: Record<string, string>) => {
     const response = await authService.register(userData);
     if (response.success && response.user) {
-       setUser(response.user);
-       // Registration successful, go verify
-       router.push(`/verify-email?email=${encodeURIComponent(userData.email)}`);
+      setUser(response.user);
+      // Registration successful, go verify
+      router.push(`/verify-email?email=${encodeURIComponent(userData.email)}`);
     }
   };
 
@@ -126,7 +132,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     await authService.forgotPassword(email);
   };
 
-  const resetPassword = async (data: any) => {
+  const resetPassword = async (data: Record<string, string>) => {
     await authService.resetPassword(data);
   };
 
@@ -135,10 +141,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     setIsImpersonating(false);
     setReadOnly(false);
-    router.replace('/login');
+    router.replace("/login");
   };
 
-  const updateUser = (updatedUser: any) => {
+  const updateUser = (updatedUser: User | null) => {
     setUser(updatedUser);
   };
 
@@ -150,11 +156,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setUser(response.data.user);
         setIsImpersonating(true);
         setReadOnly(true);
-        toast.success(`Impersonation active: viewing as ${response.data.user.name}`);
-        router.push('/dashboard');
+        toast.success(
+          `Impersonation active: viewing as ${response.data.user.name}`,
+        );
+        router.push("/dashboard");
       }
     } catch (error) {
-       // Error handled by global interceptor
+      // Error handled by global interceptor
     }
   };
 
@@ -166,31 +174,33 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setIsImpersonating(false);
         setReadOnly(false);
         toast.success("Staff session restored.");
-        router.push('/admin/users');
+        router.push("/admin/users");
       }
     } catch (error) {
-       // Error handled by global interceptor
+      // Error handled by global interceptor
     }
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      isImpersonating,
-      readOnly,
-      login, 
-      loginWithGoogle,
-      register, 
-      verifyEmail, 
-      resendOTP, 
-      forgotPassword, 
-      resetPassword, 
-      logout,
-      updateUser,
-      impersonate,
-      stopImpersonating
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        isImpersonating,
+        readOnly,
+        login,
+        loginWithGoogle,
+        register,
+        verifyEmail,
+        resendOTP,
+        forgotPassword,
+        resetPassword,
+        logout,
+        updateUser,
+        impersonate,
+        stopImpersonating,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -199,7 +209,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

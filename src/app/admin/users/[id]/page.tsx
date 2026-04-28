@@ -1,43 +1,52 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { adminService } from '@/services/admin.service';
-import { ErrorState } from '@/components/ui/ErrorState';
-import { handleApiError } from '@/lib/error-handler';
-import { 
-  Users, Shield, ShieldCheck, UserCheck, UserX, ArrowLeft, 
-  Mail, Calendar, Wallet, Tag, Activity, 
-  Ban, CheckCircle2, AlertCircle, Clock, 
-  ArrowUpRight, ArrowDownLeft, ReceiptText, BarChart3, 
-  TrendingUp, ShieldAlert, Scale, Globe, TrendingDown, 
-  DollarSign, Eye
-} from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { SlideIn, FadeIn } from '@/components/ui/FramerMotion';
-import { Button } from '@/components/ui/button';
-import { Tooltip } from '@/components/ui/tooltip';
-import { cn, capitalize } from '@/lib/utils';
-import { toast } from 'sonner';
-import { useCurrency } from '@/context/CurrencyContext';
-import { format } from 'date-fns';
-import { ConfirmDialog } from '@/components/ui/confirm-dialog';
-import { useAuth } from '@/context/AuthContext';
-import { RiskProfileCard } from './RiskProfileCard';
-import { SecurityScoringTable } from './SecurityScoringTable';
-import { ChevronRight as LucideChevronRight } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
+import React, { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { adminService } from "@/services/admin.service";
+import { ErrorState } from "@/components/ui/ErrorState";
+import { handleApiError } from "@/lib/error-handler";
+import {
+  Shield,
+  ShieldCheck,
+  UserCheck,
+  UserX,
+  ArrowLeft,
+  Mail,
+  Calendar,
+  Wallet,
+  Tag,
+  Activity,
+  Ban,
+  AlertCircle,
+  Clock,
+  Globe,
+  Eye,
+} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { SlideIn, FadeIn } from "@/components/ui/FramerMotion";
+import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
+import { cn, capitalize } from "@/lib/utils";
+import { toast } from "sonner";
+import { useCurrency } from "@/context/CurrencyContext";
+import { format } from "date-fns";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
+import { useAuth } from "@/context/AuthContext";
+import { RiskProfileCard } from "./RiskProfileCard";
+import { SecurityScoringTable } from "./SecurityScoringTable";
+import { ChevronRight as LucideChevronRight } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 
 export default function UserDetailPage() {
   const { id } = useParams();
   const router = useRouter();
   const { formatCurrency } = useCurrency();
   const { user: currentUser, impersonate } = useAuth();
-  const isAdmin = currentUser?.role === 'ADMIN';
+  const isAdmin = currentUser?.role === "ADMIN";
   const isSelf = currentUser?.id === id;
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<any>(null);
+  const [error, setError] = useState<Record<string, any> | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState<{
     isOpen: boolean;
@@ -46,16 +55,16 @@ export default function UserDetailPage() {
     onConfirm: () => void;
   }>({
     isOpen: false,
-    title: '',
-    description: '',
-    onConfirm: () => {}
+    title: "",
+    description: "",
+    onConfirm: () => {},
   });
 
   const isOnline = (dateStr: string) => {
     if (!dateStr) return false;
     const lastActive = new Date(dateStr).getTime();
     const now = new Date().getTime();
-    return (now - lastActive) < 20 * 60 * 1000; // 20 minutes (Matches 15-min backend throttle + buffer)
+    return now - lastActive < 20 * 60 * 1000; // 20 minutes (Matches 15-min backend throttle + buffer)
   };
 
   useEffect(() => {
@@ -79,6 +88,7 @@ export default function UserDetailPage() {
   };
 
   const handleUpdateUser = (data: any) => {
+    if (!user) return;
     let title = "Confirm Action";
     let description = "Are you sure you want to proceed with this update?";
 
@@ -88,10 +98,10 @@ export default function UserDetailPage() {
     } else if (data.isActive === true) {
       title = "Reactivate User?";
       description = `Are you sure you want to reactivate ${user.email}?`;
-    } else if (data.role === 'MODERATOR') {
+    } else if (data.role === "MODERATOR") {
       title = "Grant Moderator Privileges?";
       description = `Are you sure you want to promote ${user.email} to MODERATOR? This user will have limited system access.`;
-    } else if (data.role === 'USER') {
+    } else if (data.role === "USER") {
       title = "Demote to User?";
       description = `Are you sure you want to demote ${user.email} to a standard USER?`;
     }
@@ -101,12 +111,12 @@ export default function UserDetailPage() {
       title,
       description,
       onConfirm: async () => {
-        setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         setActionLoading(true);
         try {
           const response = await adminService.updateUser(id as string, data);
           if (response.success) {
-            toast.success('User updated successfully');
+            toast.success("User updated successfully");
             fetchUserDetails();
           }
         } catch (err: any) {
@@ -114,22 +124,25 @@ export default function UserDetailPage() {
         } finally {
           setActionLoading(false);
         }
-      }
+      },
     });
   };
 
   const handleScheduleDeletion = () => {
+    if (!user) return;
     setConfirmConfig({
       isOpen: true,
       title: "Schedule Account Deletion?",
       description: `Target: ${user.email}. The account will be deactivated immediately and PERMANENTLY ERASED in 30 days. You can cancel this at any time before the deadline.`,
       onConfirm: async () => {
-        setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         setActionLoading(true);
         try {
-          const response = await adminService.scheduleUserDeletion(id as string);
+          const response = await adminService.scheduleUserDeletion(
+            id as string,
+          );
           if (response.success) {
-            toast.success('Account scheduled for deletion');
+            toast.success("Account scheduled for deletion");
             fetchUserDetails();
           }
         } catch (err: any) {
@@ -137,22 +150,23 @@ export default function UserDetailPage() {
         } finally {
           setActionLoading(false);
         }
-      }
+      },
     });
   };
 
   const handleCancelDeletion = () => {
+    if (!user) return;
     setConfirmConfig({
       isOpen: true,
       title: "Cancel Scheduled Deletion?",
       description: `Restore access for ${user.email}? This will stop the countdown and reactivate the account.`,
       onConfirm: async () => {
-        setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         setActionLoading(true);
         try {
           const response = await adminService.cancelUserDeletion(id as string);
           if (response.success) {
-            toast.success('Deletion cancelled. Account restored.');
+            toast.success("Deletion cancelled. Account restored.");
             fetchUserDetails();
           }
         } catch (err: any) {
@@ -160,17 +174,18 @@ export default function UserDetailPage() {
         } finally {
           setActionLoading(false);
         }
-      }
+      },
     });
   };
 
   const handleImpersonate = () => {
+    if (!user) return;
     setConfirmConfig({
       isOpen: true,
       title: "Start Diagnostic Session?",
       description: `You are about to enter the dashboard as ${user.name || user.email}. This session will be Read-Only and your actions will be logged for security.`,
       onConfirm: async () => {
-        setConfirmConfig(prev => ({ ...prev, isOpen: false }));
+        setConfirmConfig((prev) => ({ ...prev, isOpen: false }));
         setActionLoading(true);
         try {
           await impersonate(id as string);
@@ -179,7 +194,7 @@ export default function UserDetailPage() {
         } finally {
           setActionLoading(false);
         }
-      }
+      },
     });
   };
 
@@ -189,7 +204,9 @@ export default function UserDetailPage() {
         <div className="h-10 w-32 bg-muted/20 rounded-xl" />
         <div className="h-40 w-full bg-muted/20 rounded-[2rem]" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map(i => <div key={i} className="h-32 bg-muted/20 rounded-2xl" />)}
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-32 bg-muted/20 rounded-2xl" />
+          ))}
         </div>
       </div>
     );
@@ -200,14 +217,17 @@ export default function UserDetailPage() {
       <div className="py-20 flex flex-col items-center">
         <ErrorState
           title="Profile Extraction Failed"
-          message={error.message || "We could not retrieve the security profile for this identity."}
+          message={
+            error.message ||
+            "We could not retrieve the security profile for this identity."
+          }
           onRetry={fetchUserDetails}
-          type={error.status === 0 ? 'connection' : 'server'}
+          type={error.status === 0 ? "connection" : "server"}
         />
-        <Button 
-          variant="link" 
-          className="mt-4 text-muted-foreground" 
-          onClick={() => router.push('/admin/users')}
+        <Button
+          variant="link"
+          className="mt-4 text-muted-foreground"
+          onClick={() => router.push("/admin/users")}
         >
           Return to Registry
         </Button>
@@ -215,123 +235,156 @@ export default function UserDetailPage() {
     );
   }
 
+  if (!user) return null;
+
   return (
     <div className="space-y-10 pb-20">
       <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
         <SlideIn duration={0.5}>
-          <Button 
-            variant="ghost" 
+          <Button
+            variant="ghost"
             className="mb-4 -ml-2 gap-2 text-muted-foreground hover:text-primary transition-colors"
-            onClick={() => router.push('/admin/users')}
+            onClick={() => router.push("/admin/users")}
           >
             <ArrowLeft className="h-4 w-4" />
             <span className="font-bold">Back to Registry</span>
           </Button>
           <div className="flex items-center gap-4">
-             <div className="relative">
-                <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 font-black text-2xl text-primary shadow-sm sapphire-glow/20">
-                    {user.name ? user.name[0].toUpperCase() : 'U'}
-                </div>
-                {isOnline(user.lastActive) && (
-                   <span className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-4 border-background rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.6)]" />
-                )}
-             </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-3">
-                   <Tooltip content={user.name || 'Anonymous User'}>
-                     <h1 className="text-3xl font-black tracking-tight text-foreground truncate max-w-[250px] sm:max-w-md">
-                       {user.name ? capitalize(user.name) : 'Anonymous User'}
-                     </h1>
-                   </Tooltip>
-                   {isOnline(user.lastActive) && (
-                     <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">LIVE</Badge>
-                   )}
-
-                   {!isOnline(user.lastActive) && (
-                     <Badge className="bg-rose-500/10 text-rose-600 border-rose-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">INACTIVE</Badge>
-                   )}
-                
-                </div>
-                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 focus:outline-none">
-                  <Tooltip content={user.email}>
-                    <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5 p-1 px-3 rounded-full bg-muted/30 border border-border/5 truncate max-w-[180px] sm:max-w-xs">
-                      <Mail className="h-3.5 w-3.5 shrink-0" />
-                      <span className="truncate">{user.email}</span>
-                    </span>
-                  </Tooltip>
-                  <span className={cn(
-                     "text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border whitespace-nowrap",
-                     user.isActive ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-rose-500/10 text-rose-600 border-rose-500/20"
-                  )}>
-                     {user.isActive ? 'Clearance: Active' : 'Status: Restricted'}
-                  </span>
-                  {user.lastActive && !isOnline(user.lastActive) && (
-                    <span className="text-[10px] font-bold text-muted-foreground/60 flex items-center gap-1 bg-muted/20 px-2 py-0.5 rounded-md border border-border/5">
-                      <Clock className="h-3 w-3" />
-                      Active {formatDistanceToNow(new Date(user.lastActive))} ago
-                    </span>
-                  )}
-                </div>
+            <div className="relative">
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 font-black text-2xl text-primary shadow-sm sapphire-glow/20">
+                {user.name ? user.name[0].toUpperCase() : "U"}
               </div>
+              {isOnline(user.lastActive) && (
+                <span className="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 border-4 border-background rounded-full animate-pulse shadow-[0_0_15px_rgba(16,185,129,0.6)]" />
+              )}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3">
+                <Tooltip content={user.name || "Anonymous User"}>
+                  <h1 className="text-3xl font-black tracking-tight text-foreground truncate max-w-[250px] sm:max-w-md">
+                    {user.name ? capitalize(user.name) : "Anonymous User"}
+                  </h1>
+                </Tooltip>
+                {isOnline(user.lastActive) && (
+                  <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">
+                    LIVE
+                  </Badge>
+                )}
+
+                {!isOnline(user.lastActive) && (
+                  <Badge className="bg-rose-500/10 text-rose-600 border-rose-500/20 font-black text-[9px] uppercase tracking-widest h-5 animate-in fade-in zoom-in duration-500">
+                    INACTIVE
+                  </Badge>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-2 focus:outline-none">
+                <Tooltip content={user.email}>
+                  <span className="text-xs font-bold text-muted-foreground flex items-center gap-1.5 p-1 px-3 rounded-full bg-muted/30 border border-border/5 truncate max-w-[180px] sm:max-w-xs">
+                    <Mail className="h-3.5 w-3.5 shrink-0" />
+                    <span className="truncate">{user.email}</span>
+                  </span>
+                </Tooltip>
+                <span
+                  className={cn(
+                    "text-[9px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full border whitespace-nowrap",
+                    user.isActive
+                      ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                      : "bg-rose-500/10 text-rose-600 border-rose-500/20",
+                  )}
+                >
+                  {user.isActive ? "Clearance: Active" : "Status: Restricted"}
+                </span>
+                {user.lastActive && !isOnline(user.lastActive) && (
+                  <span className="text-[10px] font-bold text-muted-foreground/60 flex items-center gap-1 bg-muted/20 px-2 py-0.5 rounded-md border border-border/5">
+                    <Clock className="h-3 w-3" />
+                    Active {formatDistanceToNow(new Date(user.lastActive))} ago
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
         </SlideIn>
 
         <SlideIn duration={0.5} delay={0.1}>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
-             {isAdmin && user.role !== 'ADMIN' && (
+            {isAdmin && user.role !== "ADMIN" && (
               <Tooltip content="Enter Diagnostic Session">
-                <Button 
-                   variant="outline"
-                   className="h-12 px-6 rounded-xl font-bold gap-2 hover:bg-primary/10 transition-all shadow-sm border-primary/20 text-primary w-full sm:w-auto"
-                   disabled={actionLoading}
-                   onClick={handleImpersonate}
+                <Button
+                  variant="outline"
+                  className="h-12 px-6 rounded-xl font-bold gap-2 hover:bg-primary/10 transition-all shadow-sm border-primary/20 text-primary w-full sm:w-auto"
+                  disabled={actionLoading}
+                  onClick={handleImpersonate}
                 >
-                   <Eye className="h-4 w-4" />
-                   <span>Impersonate</span>
+                  <Eye className="h-4 w-4" />
+                  <span>Impersonate</span>
                 </Button>
               </Tooltip>
             )}
 
-             {user.deletionScheduledAt ? (
-               <Button 
-                 variant="outline" 
-                 className="h-12 px-6 rounded-xl font-bold gap-2 bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100 transition-all shadow-sm w-full sm:w-auto"
-                 disabled={actionLoading}
-                 onClick={handleCancelDeletion}
-               >
-                 <UserCheck className="h-4 w-4" />
-                 <span>Cancel Deletion</span>
-               </Button>
-             ) : (
-               <Tooltip content={user.isActive ? "Ban Account" : "Restore Access"}>
-                 <Button 
-                  variant="outline" 
+            {user.deletionScheduledAt ? (
+              <Button
+                variant="outline"
+                className="h-12 px-6 rounded-xl font-bold gap-2 bg-emerald-50 text-emerald-600 border-emerald-100 hover:bg-emerald-100 transition-all shadow-sm w-full sm:w-auto"
+                disabled={actionLoading}
+                onClick={handleCancelDeletion}
+              >
+                <UserCheck className="h-4 w-4" />
+                <span>Cancel Deletion</span>
+              </Button>
+            ) : (
+              <Tooltip
+                content={user.isActive ? "Ban Account" : "Restore Access"}
+              >
+                <Button
+                  variant="outline"
                   className={cn(
                     "h-12 px-6 rounded-xl font-bold gap-2 active:scale-95 transition-all shadow-sm w-full sm:w-auto",
-                    user.isActive ? "hover:bg-rose-50 hover:text-rose-600 border-rose-100" : "hover:bg-emerald-50 hover:text-emerald-600 border-emerald-100",
-                    isSelf && "opacity-20 grayscale cursor-not-allowed"
+                    user.isActive
+                      ? "hover:bg-rose-50 hover:text-rose-600 border-rose-100"
+                      : "hover:bg-emerald-50 hover:text-emerald-600 border-emerald-100",
+                    isSelf && "opacity-20 grayscale cursor-not-allowed",
                   )}
                   disabled={actionLoading || isSelf}
                   onClick={() => handleUpdateUser({ isActive: !user.isActive })}
                 >
-                  {user.isActive ? <Ban className="h-4 w-4" /> : <UserCheck className="h-4 w-4" />}
-                  <span>{user.isActive ? 'Ban Account' : 'Reactivate Account'}</span>
+                  {user.isActive ? (
+                    <Ban className="h-4 w-4" />
+                  ) : (
+                    <UserCheck className="h-4 w-4" />
+                  )}
+                  <span>
+                    {user.isActive ? "Ban Account" : "Reactivate Account"}
+                  </span>
                 </Button>
-               </Tooltip>
-             )}
-            
-            {isAdmin && user.role !== 'ADMIN' && (
-              <Tooltip content={user.role === 'MODERATOR' ? "Revoke Staff Privileges" : "Grant Security Clearance"}>
-                <Button 
+              </Tooltip>
+            )}
+
+            {isAdmin && user.role !== "ADMIN" && (
+              <Tooltip
+                content={
+                  user.role === "MODERATOR"
+                    ? "Revoke Staff Privileges"
+                    : "Grant Security Clearance"
+                }
+              >
+                <Button
                   className={cn(
                     "h-12 px-6 rounded-xl font-bold gap-2 shadow-lg hover:shadow-primary/20 active:scale-95 transition-all w-full sm:w-auto",
-                    isSelf && "opacity-50 cursor-not-allowed"
+                    isSelf && "opacity-50 cursor-not-allowed",
                   )}
                   disabled={actionLoading || isSelf}
-                  onClick={() => handleUpdateUser({ role: user.role === 'MODERATOR' ? 'USER' : 'MODERATOR' })}
+                  onClick={() =>
+                    handleUpdateUser({
+                      role: user.role === "MODERATOR" ? "USER" : "MODERATOR",
+                    })
+                  }
                 >
                   <ShieldCheck className="h-4 w-4" />
-                  <span>{user.role === 'MODERATOR' ? 'Demote to User' : 'Grant Moderator Rights'}</span>
+                  <span>
+                    {user.role === "MODERATOR"
+                      ? "Demote to User"
+                      : "Grant Moderator Rights"}
+                  </span>
                 </Button>
               </Tooltip>
             )}
@@ -346,70 +399,109 @@ export default function UserDetailPage() {
               <Shield className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-sm font-black text-foreground">Active Administrative Session</p>
-              <p className="text-xs text-muted-foreground font-medium">You are viewing your own profile. Self-destructive administrative actions are restricted for security.</p>
+              <p className="text-sm font-black text-foreground">
+                Active Administrative Session
+              </p>
+              <p className="text-xs text-muted-foreground font-medium">
+                You are viewing your own profile. Self-destructive
+                administrative actions are restricted for security.
+              </p>
             </div>
           </div>
         </FadeIn>
       )}
-      
+
       {user.deletionScheduledAt && (
         <FadeIn>
-           <div className="p-6 rounded-[2rem] bg-rose-500/10 border-2 border-rose-500/20 flex flex-col md:flex-row items-center gap-6 shadow-xl shadow-rose-500/5 relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
-                 <UserX className="w-32 h-32 rotate-12" />
-              </div>
-              <div className="w-16 h-16 bg-rose-500/20 rounded-2xl flex items-center justify-center animate-pulse">
-                <Clock className="w-8 h-8 text-rose-600" />
-              </div>
-              <div className="flex-1 text-center md:text-left z-10">
-                 <h2 className="text-xl font-black text-rose-600 tracking-tight flex items-center gap-2 justify-center md:justify-start">
-                    SCHEDULED FOR DELETION
-                    <span className="text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded-full font-black animate-bounce mt-1 ml-2">URGENT</span>
-                 </h2>
-                 <p className="text-sm text-foreground/70 font-bold mt-1 max-w-2xl leading-relaxed">
-                    This account is currently in a 30-day "Soft-Delete" observation period. 
-                    Unless cancelled by an Administrator, all data will be permanently erased on 
-                    <span className="text-rose-600 font-black px-1.5 underline decoration-2 decoration-rose-500/30 ml-1">
-                      {format(new Date(user.deletionScheduledAt), 'MMMM dd, yyyy')}
-                    </span>.
-                 </p>
-              </div>
-              {isAdmin && (
-                <Button 
-                  variant="outline" 
-                  className="h-12 px-8 rounded-xl font-black bg-white text-rose-600 border-rose-200 hover:brightness-105 transition-all shadow-sm z-10"
-                  onClick={handleCancelDeletion}
-                >
-                  Undo Deletion Plan
-                </Button>
-              )}
-           </div>
+          <div className="p-6 rounded-[2rem] bg-rose-500/10 border-2 border-rose-500/20 flex flex-col md:flex-row items-center gap-6 shadow-xl shadow-rose-500/5 relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+              <UserX className="w-32 h-32 rotate-12" />
+            </div>
+            <div className="w-16 h-16 bg-rose-500/20 rounded-2xl flex items-center justify-center animate-pulse">
+              <Clock className="w-8 h-8 text-rose-600" />
+            </div>
+            <div className="flex-1 text-center md:text-left z-10">
+              <h2 className="text-xl font-black text-rose-600 tracking-tight flex items-center gap-2 justify-center md:justify-start">
+                SCHEDULED FOR DELETION
+                <span className="text-[10px] bg-rose-600 text-white px-2 py-0.5 rounded-full font-black animate-bounce mt-1 ml-2">
+                  URGENT
+                </span>
+              </h2>
+              <p className="text-sm text-foreground/70 font-bold mt-1 max-w-2xl leading-relaxed">
+                This account is currently in a 30-day "Soft-Delete" observation
+                period. Unless cancelled by an Administrator, all data will be
+                permanently erased on
+                <span className="text-rose-600 font-black px-1.5 underline decoration-2 decoration-rose-500/30 ml-1">
+                  {format(new Date(user.deletionScheduledAt), "MMMM dd, yyyy")}
+                </span>
+                .
+              </p>
+            </div>
+            {isAdmin && (
+              <Button
+                variant="outline"
+                className="h-12 px-8 rounded-xl font-black bg-white text-rose-600 border-rose-200 hover:brightness-105 transition-all shadow-sm z-10"
+                onClick={handleCancelDeletion}
+              >
+                Undo Deletion Plan
+              </Button>
+            )}
+          </div>
         </FadeIn>
       )}
 
       {/* Stats Overview */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         {[
-          { label: 'Total Records', value: user._count?.ledgerEntries || 0, icon: Activity, color: 'blue' },
-          { label: 'Custom Categories', value: user._count?.categories || 0, icon: Tag, color: 'emerald' },
-          { label: 'Monthly Budgets', value: user._count?.budgets || 0, icon: Wallet, color: 'amber' },
-          { label: 'Automated Records', value: user._count?.recurringEntries || 0, icon: Clock, color: 'purple' },
+          {
+            label: "Total Records",
+            value: user._count?.ledgerEntries || 0,
+            icon: Activity,
+            color: "blue",
+          },
+          {
+            label: "Custom Categories",
+            value: user._count?.categories || 0,
+            icon: Tag,
+            color: "emerald",
+          },
+          {
+            label: "Monthly Budgets",
+            value: user._count?.budgets || 0,
+            icon: Wallet,
+            color: "amber",
+          },
+          {
+            label: "Automated Records",
+            value: user._count?.recurringEntries || 0,
+            icon: Clock,
+            color: "purple",
+          },
         ].map((stat, i) => (
           <FadeIn key={stat.label} delay={0.2 + i * 0.1}>
             <div className="premium-card p-4 sm:p-6 rounded-3xl flex flex-col justify-between h-28 sm:h-32 border border-border/10 group hover:border-primary/20 hover:bg-primary/[0.01] transition-all shadow-sm">
               <div className="flex justify-between items-start">
-                <div className={cn(
-                  "p-2 rounded-xl",
-                  stat.color === 'blue' ? "bg-blue-500/10 text-blue-600" :
-                  stat.color === 'emerald' ? "bg-emerald-500/10 text-emerald-600" :
-                  stat.color === 'amber' ? "bg-amber-500/10 text-amber-600" : "bg-purple-500/10 text-purple-600"
-                )}>
+                <div
+                  className={cn(
+                    "p-2 rounded-xl",
+                    stat.color === "blue"
+                      ? "bg-blue-500/10 text-blue-600"
+                      : stat.color === "emerald"
+                        ? "bg-emerald-500/10 text-emerald-600"
+                        : stat.color === "amber"
+                          ? "bg-amber-500/10 text-amber-600"
+                          : "bg-purple-500/10 text-purple-600",
+                  )}
+                >
                   <stat.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                 </div>
-                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">{stat.label}</span>
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-muted-foreground/40">
+                  {stat.label}
+                </span>
               </div>
-              <div className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground">{stat.value}</div>
+              <div className="text-2xl sm:text-3xl font-black tracking-tighter text-foreground">
+                {stat.value}
+              </div>
             </div>
           </FadeIn>
         ))}
@@ -419,39 +511,44 @@ export default function UserDetailPage() {
         {/* Left Wing: Security & Risk Diagnostics */}
         <div className="space-y-8">
           <div className="flex items-center gap-2 px-2">
-            <h2 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest text-[14px]">Security Diagnostics</h2>
+            <h2 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest text-[14px]">
+              Security Diagnostics
+            </h2>
             <div className="h-px flex-1 bg-border/40" />
           </div>
-          
+
           <RiskProfileCard riskProfile={user.riskProfile} />
-          
+
           <SecurityScoringTable />
 
           <div className="p-6 rounded-3xl bg-rose-500/5 border border-rose-500/10 space-y-4 shadow-sm group hover:border-rose-500/30 transition-all">
-             <div className="flex items-center gap-2">
-               <h3 className="text-sm font-black text-rose-600 uppercase tracking-widest">Platform Identity Deletion</h3>
-               <AlertCircle className="h-4 w-4 text-rose-500/50" />
-             </div>
-             <p className="text-xs text-muted-foreground font-semibold leading-relaxed">
-               Administrative account removal follows a 30-day grace period. During this time, the user is inactive but data remains stored.
-             </p>
-             {isAdmin && !user.deletionScheduledAt && user.role !== 'ADMIN' ? (
-               <Tooltip content="Initialize permanent erasure workflow">
-                 <Button 
-                    variant="destructive" 
-                    className={cn(
-                      "w-full h-12 rounded-xl font-black text-xs uppercase shadow-lg shadow-rose-500/20 active:scale-95 transition-all gap-2",
-                      isSelf && "opacity-20 grayscale cursor-not-allowed"
-                    )}
-                    onClick={handleScheduleDeletion}
-                    disabled={actionLoading || isSelf}
-                  >
-                    <UserX className="h-4 w-4" />
-                    Initialize 30-Day Deletion
-                 </Button>
-               </Tooltip>
-             ) : user.deletionScheduledAt ? (
-               <Button 
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-black text-rose-600 uppercase tracking-widest">
+                Platform Identity Deletion
+              </h3>
+              <AlertCircle className="h-4 w-4 text-rose-500/50" />
+            </div>
+            <p className="text-xs text-muted-foreground font-semibold leading-relaxed">
+              Administrative account removal follows a 30-day grace period.
+              During this time, the user is inactive but data remains stored.
+            </p>
+            {isAdmin && !user.deletionScheduledAt && user.role !== "ADMIN" ? (
+              <Tooltip content="Initialize permanent erasure workflow">
+                <Button
+                  variant="destructive"
+                  className={cn(
+                    "w-full h-12 rounded-xl font-black text-xs uppercase shadow-lg shadow-rose-500/20 active:scale-95 transition-all gap-2",
+                    isSelf && "opacity-20 grayscale cursor-not-allowed",
+                  )}
+                  onClick={handleScheduleDeletion}
+                  disabled={actionLoading || isSelf}
+                >
+                  <UserX className="h-4 w-4" />
+                  Initialize 30-Day Deletion
+                </Button>
+              </Tooltip>
+            ) : user.deletionScheduledAt ? (
+              <Button
                 variant="outline"
                 className="w-full h-12 rounded-xl font-black text-xs uppercase border-rose-200 text-rose-600 bg-rose-50 hover:bg-rose-100 transition-all gap-2"
                 onClick={handleCancelDeletion}
@@ -460,18 +557,22 @@ export default function UserDetailPage() {
                 <Clock className="h-4 w-4" />
                 Cancel Pending Deletion
               </Button>
-             ) : (
-               <div className="text-[10px] text-muted-foreground italic font-medium p-3 bg-muted/30 rounded-xl text-center">
-                 {user.role === 'ADMIN' ? 'Administrative identity is protected from standard erasure.' : 'Only platform Administrators can initiate account deletions.'}
-               </div>
-             )}
+            ) : (
+              <div className="text-[10px] text-muted-foreground italic font-medium p-3 bg-muted/30 rounded-xl text-center">
+                {user.role === "ADMIN"
+                  ? "Administrative identity is protected from standard erasure."
+                  : "Only platform Administrators can initiate account deletions."}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Right Wing: Identity & Connectivity Metadata */}
         <div className="space-y-8">
           <div className="flex items-center gap-2 px-2">
-            <h2 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest text-[14px]">Environmental Metadata</h2>
+            <h2 className="text-xl font-black tracking-tight text-foreground uppercase tracking-widest text-[14px]">
+              Environmental Metadata
+            </h2>
             <div className="h-px flex-1 bg-border/40" />
           </div>
 
@@ -481,9 +582,15 @@ export default function UserDetailPage() {
                 <Calendar className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Joined Platform</p>
-                <p className="font-bold text-foreground">{format(new Date(user.createdAt), 'MMMM dd, yyyy')}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{format(new Date(user.createdAt), 'hh:mm a')}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">
+                  Joined Platform
+                </p>
+                <p className="font-bold text-foreground">
+                  {format(new Date(user.createdAt), "MMMM dd, yyyy")}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {format(new Date(user.createdAt), "hh:mm a")}
+                </p>
               </div>
             </div>
 
@@ -492,9 +599,19 @@ export default function UserDetailPage() {
                 <ShieldCheck className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-primary/70">Last Session Entry</p>
-                <p className="font-bold text-foreground">{user.lastLogin ? format(new Date(user.lastLogin), 'MMMM dd, yyyy') : 'N/A'}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{user.lastLogin ? format(new Date(user.lastLogin), 'hh:mm a') : 'Legacy Session'}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-primary/70">
+                  Last Session Entry
+                </p>
+                <p className="font-bold text-foreground">
+                  {user.lastLogin
+                    ? format(new Date(user.lastLogin), "MMMM dd, yyyy")
+                    : "N/A"}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {user.lastLogin
+                    ? format(new Date(user.lastLogin), "hh:mm a")
+                    : "Legacy Session"}
+                </p>
               </div>
             </div>
 
@@ -503,92 +620,142 @@ export default function UserDetailPage() {
                 <Clock className="h-5 w-5 text-muted-foreground" />
               </div>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Last Pulse Activity</p>
-                <p className="font-bold text-foreground">{format(new Date(user.lastActive), 'MMMM dd, yyyy')}</p>
-                <p className="text-[10px] text-muted-foreground mt-0.5">{format(new Date(user.lastActive), 'hh:mm a')}</p>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">
+                  Last Pulse Activity
+                </p>
+                <p className="font-bold text-foreground">
+                  {format(new Date(user.lastActive), "MMMM dd, yyyy")}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  {format(new Date(user.lastActive), "hh:mm a")}
+                </p>
               </div>
             </div>
 
             <div className="pt-4 border-t border-border/10 space-y-3">
-               <div className="flex items-center justify-between">
-                 <span className="text-xs font-bold text-muted-foreground">Internal ID</span>
-                 <code className="text-[10px] bg-muted/50 px-2 py-0.5 rounded-md font-mono">{user.id}</code>
-               </div>
-               <div className="flex items-center justify-between">
-                 <span className="text-xs font-bold text-muted-foreground">Currency Preference</span>
-                 <span className="text-xs font-black text-foreground">{user.baseCurrency}</span>
-               </div>
-               <div className="flex items-center justify-between">
-                 <span className="text-xs font-bold text-muted-foreground">Account Status</span>
-                 <span className={cn(
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground">
+                  Internal ID
+                </span>
+                <code className="text-[10px] bg-muted/50 px-2 py-0.5 rounded-md font-mono">
+                  {user.id}
+                </code>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground">
+                  Currency Preference
+                </span>
+                <span className="text-xs font-black text-foreground">
+                  {user.baseCurrency}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-muted-foreground">
+                  Account Status
+                </span>
+                <span
+                  className={cn(
                     "text-[10px] font-black px-2 py-0.5 rounded-md",
-                    user.isVerified ? "bg-emerald-500/10 text-emerald-600" : "bg-amber-500/10 text-amber-600"
-                 )}>{user.isVerified ? 'VERIFIED' : 'UNVERIFIED'}</span>
-               </div>
+                    user.isVerified
+                      ? "bg-emerald-500/10 text-emerald-600"
+                      : "bg-amber-500/10 text-amber-600",
+                  )}
+                >
+                  {user.isVerified ? "VERIFIED" : "UNVERIFIED"}
+                </span>
+              </div>
             </div>
           </div>
 
           <div className="premium-card p-6 rounded-3xl space-y-5 border border-border/10">
-             <div className="flex items-start gap-4">
-               <div className="bg-primary/5 p-2.5 rounded-xl">
-                 <Globe className="h-5 w-5 text-primary" />
-               </div>
-               <div>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Last Known IP</p>
-                 <p className="font-bold text-foreground selection:bg-primary/30 uppercase tracking-tighter">{user.lastIp || 'Unknown'}</p>
-                 <p className="text-[10px] text-muted-foreground mt-0.5 font-bold">{user.lastLocation || 'N/A'}</p>
-               </div>
-             </div>
+            <div className="flex items-start gap-4">
+              <div className="bg-primary/5 p-2.5 rounded-xl">
+                <Globe className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">
+                  Last Known IP
+                </p>
+                <p className="font-bold text-foreground selection:bg-primary/30 uppercase tracking-tighter">
+                  {user.lastIp || "Unknown"}
+                </p>
+                <p className="text-[10px] text-muted-foreground mt-0.5 font-bold">
+                  {user.lastLocation || "N/A"}
+                </p>
+              </div>
+            </div>
 
-             <div className="flex items-start gap-4">
-               <div className="bg-primary/5 p-2.5 rounded-xl">
-                 <Activity className="h-5 w-5 text-primary" />
-               </div>
-               <div>
-                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">Device Signature</p>
-                 <p className="font-bold text-foreground text-sm leading-tight">{user.lastDevice || 'Unknown Identity'}</p>
-               </div>
-             </div>
+            <div className="flex items-start gap-4">
+              <div className="bg-primary/5 p-2.5 rounded-xl">
+                <Activity className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/70">
+                  Device Signature
+                </p>
+                <p className="font-bold text-foreground text-sm leading-tight">
+                  {user.lastDevice || "Unknown Identity"}
+                </p>
+              </div>
+            </div>
 
-             {user.metadata && (
-               <div className="pt-4 border-t border-border/10 space-y-4">
-                 <div className="bg-muted/30 p-4 rounded-2xl">
-                    <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/70 mb-3">Diagnostic Metadata</p>
-                    <div className="grid grid-cols-2 gap-y-3 gap-x-4">
-                       <div>
-                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Organization</p>
-                          <Tooltip content={user.metadata.org || 'N/A'}>
-                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.org || 'N/A'}</p>
-                           </Tooltip>
-                       </div>
-                       <div>
-                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Hostname</p>
-                          <Tooltip content={user.metadata.hostname || 'N/A'}>
-                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.hostname || 'N/A'}</p>
-                           </Tooltip>
-                       </div>
-                       <div>
-                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Coordinates</p>
-                          <Tooltip content={user.metadata.loc || 'N/A'}>
-                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.loc || 'N/A'}</p>
-                           </Tooltip>
-                       </div>
-                       <div>
-                          <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">Postal Code</p>
-                          <Tooltip content={user.metadata.postal || 'N/A'}>
-                              <p className="text-[10px] font-bold text-foreground truncate">{user.metadata.postal || 'N/A'}</p>
-                           </Tooltip>
-                       </div>
+            {user.metadata && (
+              <div className="pt-4 border-t border-border/10 space-y-4">
+                <div className="bg-muted/30 p-4 rounded-2xl">
+                  <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/70 mb-3">
+                    Diagnostic Metadata
+                  </p>
+                  <div className="grid grid-cols-2 gap-y-3 gap-x-4">
+                    <div>
+                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">
+                        Organization
+                      </p>
+                      <Tooltip content={user.metadata.org || "N/A"}>
+                        <p className="text-[10px] font-bold text-foreground truncate">
+                          {user.metadata.org || "N/A"}
+                        </p>
+                      </Tooltip>
                     </div>
-                 </div>
-               </div>
-             )}
+                    <div>
+                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">
+                        Hostname
+                      </p>
+                      <Tooltip content={user.metadata.hostname || "N/A"}>
+                        <p className="text-[10px] font-bold text-foreground truncate">
+                          {user.metadata.hostname || "N/A"}
+                        </p>
+                      </Tooltip>
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">
+                        Coordinates
+                      </p>
+                      <Tooltip content={user.metadata.loc || "N/A"}>
+                        <p className="text-[10px] font-bold text-foreground truncate">
+                          {user.metadata.loc || "N/A"}
+                        </p>
+                      </Tooltip>
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">
+                        Postal Code
+                      </p>
+                      <Tooltip content={user.metadata.postal || "N/A"}>
+                        <p className="text-[10px] font-bold text-foreground truncate">
+                          {user.metadata.postal || "N/A"}
+                        </p>
+                      </Tooltip>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
-      <ConfirmDialog 
+      <ConfirmDialog
         isOpen={confirmConfig.isOpen}
-        onClose={() => setConfirmConfig(prev => ({ ...prev, isOpen: false }))}
+        onClose={() => setConfirmConfig((prev) => ({ ...prev, isOpen: false }))}
         onConfirm={confirmConfig.onConfirm}
         title={confirmConfig.title}
         description={confirmConfig.description}

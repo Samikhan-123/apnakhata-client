@@ -1,17 +1,11 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { CategoryForm } from '@/components/features/CategoryForm';
-import { CategoryList } from '@/components/features/CategoryList';
-import { Button } from '@/components/ui/button';
-import {
-  Plus,
-  Search,
-  Tags,
-  Filter
-} from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { CustomModal } from '@/components/ui/CustomModal';
+import React, { useState } from "react";
+import { CategoryForm } from "@/components/features/CategoryForm";
+import { CategoryList } from "@/components/features/CategoryList";
+import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
+import { CustomModal } from "@/components/ui/CustomModal";
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 
 export default function CategoriesPage() {
@@ -19,7 +13,7 @@ export default function CategoriesPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleRefresh = () => {
-    setRefreshKey(prev => prev + 1);
+    setRefreshKey((prev) => prev + 1);
     setIsDialogOpen(false);
   };
 
@@ -28,9 +22,12 @@ export default function CategoriesPage() {
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-8">
         <SlideIn duration={0.5}>
-          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">Categories</h1>
+          <h1 className="text-3xl font-black tracking-tight text-foreground sm:text-5xl">
+            Categories
+          </h1>
           <p className="text-muted-foreground font-medium text-base sm:text-lg max-w-lg">
-            Organize your finances by grouping Records into meaningful collections.
+            Organize your finances by grouping Records into meaningful
+            collections.
           </p>
         </SlideIn>
 
@@ -61,7 +58,9 @@ export default function CategoriesPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-3">
-              <span className="text-xs font-bold text-muted-foreground/50 uppercase tracking-wider">Your Categories</span>
+              <span className="text-xs font-bold text-muted-foreground/50 uppercase tracking-wider">
+                Your Categories
+              </span>
             </div>
           </div>
 

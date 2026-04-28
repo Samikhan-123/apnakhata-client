@@ -1,26 +1,29 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { useAuth } from '@/context/AuthContext';
-import { ledgerEntryService } from '@/services/ledger-entry.service';
-import { LedgerEntryForm } from '@/components/features/LedgerEntryForm';
-import { LedgerEntryList } from '@/components/features/LedgerEntryList';
-import { DashboardCharts } from '@/components/features/DashboardCharts';
-import { useCurrency } from '@/context/CurrencyContext';
-import { Wallet, ArrowUpRight, ArrowDownLeft, Sparkles, TrendingUp, PlusCircle, ArrowRight } from 'lucide-react';
+import React, { useEffect, useState, useCallback } from "react";
+import { useAuth } from "@/context/AuthContext";
+import { ledgerEntryService } from "@/services/ledger-entry.service";
+import { DashboardCharts } from "@/components/features/DashboardCharts";
+import { useCurrency } from "@/context/CurrencyContext";
+import {
+  Wallet,
+  ArrowUpRight,
+  ArrowDownLeft,
+  PlusCircle,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 
-import { ErrorState } from '@/components/ui/ErrorState';
-import { DashboardSkeleton } from '@/components/ui/DashboardSkeleton';
+import { ErrorState } from "@/components/ui/ErrorState";
+import { DashboardSkeleton } from "@/components/ui/DashboardSkeleton";
 
 export default function DashboardPage() {
   const { user } = useAuth();
   const { formatCurrency } = useCurrency();
   const [ledgerEntries, setLedgerEntries] = useState<any[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,7 +37,11 @@ export default function DashboardPage() {
         setLedgerEntries(statsData.recentEntries || []);
       }
     } catch (err: any) {
-      setError(err?.response?.data?.message || err.message || 'Unable to connect to the server');
+      setError(
+        err?.response?.data?.message ||
+        err.message ||
+        "Unable to connect to the server",
+      );
     } finally {
       setLoading(false);
     }
@@ -57,9 +64,15 @@ export default function DashboardPage() {
       <SlideIn duration={0.5}>
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-black text-foreground tracking-tight sm:text-5xl">Dashboard</h1>
+            <h1 className="text-4xl font-black text-foreground tracking-tight sm:text-5xl">
+              Dashboard
+            </h1>
             <p className="text-muted-foreground font-medium mt-2 text-lg">
-              Hello, <span className="text-foreground font-bold">{user?.name?.split(' ')[0]}</span>. Here is your financial summary.
+              Hello,{" "}
+              <span className="text-foreground font-bold">
+                {user?.name?.split(" ")[0]}
+              </span>
+              . Here is your financial summary.
             </p>
           </div>
 
@@ -86,29 +99,55 @@ export default function DashboardPage() {
           {/* Stats Grid -  Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
             {[
-              { label: 'Total Balance', value: allTimeBalance, icon: Wallet, color: 'primary', description: 'Available funds' },
-              { label: 'Monthly Inflow', value: monthlyIncome, icon: ArrowUpRight, color: 'emerald', description: 'Total received' },
-              { label: 'Monthly Outflow', value: monthlyExpense, icon: ArrowDownLeft, color: 'rose', description: 'Total spent' },
+              {
+                label: "Total Balance",
+                value: allTimeBalance,
+                icon: Wallet,
+                color: "primary",
+                description: "Available funds",
+              },
+              {
+                label: "Monthly Inflow",
+                value: monthlyIncome,
+                icon: ArrowUpRight,
+                color: "emerald",
+                description: "Total received",
+              },
+              {
+                label: "Monthly Outflow",
+                value: monthlyExpense,
+                icon: ArrowDownLeft,
+                color: "rose",
+                description: "Total spent",
+              },
             ].map((stat, i) => (
               <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>
                 <div className="premium-card rounded-3xl p-7 group relative overflow-hidden h-full">
                   <div className="flex flex-col h-full justify-between">
                     <div className="flex justify-between items-start mb-6">
-                      <div className={cn(
-                        "p-3 rounded-xl shadow-sm border",
-                        stat.color === 'primary' ? 'bg-primary/5 text-primary border-primary/10' :
-                          stat.color === 'emerald' ? 'bg-emerald-500/5 text-emerald-600 border-emerald-500/10' :
-                            'bg-rose-500/5 text-rose-600 border-rose-500/10'
-                      )}>
+                      <div
+                        className={cn(
+                          "p-3 rounded-xl shadow-sm border",
+                          stat.color === "primary"
+                            ? "bg-primary/5 text-primary border-primary/10"
+                            : stat.color === "emerald"
+                              ? "bg-emerald-500/5 text-emerald-600 border-emerald-500/10"
+                              : "bg-rose-500/5 text-rose-600 border-rose-500/10",
+                        )}
+                      >
                         <stat.icon className="h-5 w-5" />
                       </div>
-                      <span className="text-[11px] font-bold text-muted-foreground/50 uppercase tracking-wider">{stat.label}</span>
+                      <span className="text-[11px] font-bold text-muted-foreground/50 uppercase tracking-wider">
+                        {stat.label}
+                      </span>
                     </div>
                     <div>
                       <div className="text-3xl font-bold tracking-tight tabular-nums text-foreground mb-1">
                         {formatCurrency(stat.value)}
                       </div>
-                      <p className="text-[11px] font-medium text-muted-foreground/60">{stat.description}</p>
+                      <p className="text-[11px] font-medium text-muted-foreground/60">
+                        {stat.description}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -121,21 +160,31 @@ export default function DashboardPage() {
             <div className="premium-card rounded-[2.5rem] p-6 md:p-8 relative overflow-hidden">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div>
-                  <h3 className="text-2xl font-bold text-foreground tracking-tight">Finance Flow</h3>
-                  <p className="text-sm font-medium text-muted-foreground/60 mt-1">Rolling 6-month pulse of your wealth movement</p>
+                  <h3 className="text-2xl font-bold text-foreground tracking-tight">
+                    Finance Flow
+                  </h3>
+                  <p className="text-sm font-medium text-muted-foreground/60 mt-1">
+                    Rolling 6-month pulse of your wealth movement
+                  </p>
                 </div>
                 <div className="flex flex-wrap gap-6 bg-muted/20 p-3.5 rounded-xl border border-border/20">
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-primary" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Balance</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+                      Balance
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Inflow</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+                      Inflow
+                    </span>
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">Outflow</span>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground/80">
+                      Outflow
+                    </span>
                   </div>
                 </div>
               </div>
@@ -146,7 +195,6 @@ export default function DashboardPage() {
           </FadeIn>
         </>
       )}
-
     </div>
   );
 }

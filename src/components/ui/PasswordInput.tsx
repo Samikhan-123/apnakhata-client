@@ -1,19 +1,17 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Eye, EyeOff, Lock } from "lucide-react"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { HeightChange } from "@/components/ui/FramerMotion"
+import * as React from "react";
+import { Eye, EyeOff, Lock } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
-export interface PasswordInputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+export interface PasswordInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
 const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
   ({ className, error, ...props }, ref) => {
-    const [showPassword, setShowPassword] = React.useState(false)
+    const [showPassword, setShowPassword] = React.useState(false);
 
     return (
       <div className="w-full">
@@ -24,7 +22,7 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
             className={cn(
               "flex h-14 w-full rounded-2xl bg-muted/30 border-none pl-12 pr-12 py-1 text-sm shadow-inner transition-all focus:bg-background focus:ring-2 focus:ring-primary/10 font-bold placeholder:text-muted-foreground/40 disabled:cursor-not-allowed disabled:opacity-50",
               error && "ring-2 ring-rose-500/20",
-              className
+              className,
             )}
             ref={ref}
             {...props}
@@ -46,16 +44,14 @@ const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
         </div>
         {error && (
           <div className="flex items-center gap-1.5 ml-2 mt-2">
-             <div className="w-1 h-1 rounded-full bg-rose-500" />
-             <p className="text-[10px] font-bold text-rose-500">
-               {error}
-             </p>
+            <div className="w-1 h-1 rounded-full bg-rose-500" />
+            <p className="text-[10px] font-bold text-rose-500">{error}</p>
           </div>
         )}
       </div>
-    )
-  }
-)
-PasswordInput.displayName = "PasswordInput"
+    );
+  },
+);
+PasswordInput.displayName = "PasswordInput";
 
-export { PasswordInput }
+export { PasswordInput };

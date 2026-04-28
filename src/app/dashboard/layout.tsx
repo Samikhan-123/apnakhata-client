@@ -1,12 +1,12 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { MainLayout } from '@/components/features/MainLayout';
-import { FadeIn } from '@/components/ui/FramerMotion';
-import { GlobalErrorBoundary } from '@/components/ui/GlobalErrorBoundary';
-import { MaintenanceOverlay } from '@/components/features/MaintenanceOverlay';
-import { useAuth } from '@/context/AuthContext';
-import { adminService } from '@/services/admin.service';
+import React, { useEffect, useState } from "react";
+import { MainLayout } from "@/components/features/MainLayout";
+import { FadeIn } from "@/components/ui/FramerMotion";
+import { GlobalErrorBoundary } from "@/components/ui/GlobalErrorBoundary";
+import { MaintenanceOverlay } from "@/components/features/MaintenanceOverlay";
+import { useAuth } from "@/context/AuthContext";
+import { adminService } from "@/services/admin.service";
 
 export default function DashboardLayout({
   children,
@@ -23,7 +23,7 @@ export default function DashboardLayout({
         const response = await adminService.getSystemStatus();
         if (response.success && response.data.maintenanceMode) {
           // Bypass for staff
-          const isStaff = user?.role === 'ADMIN' || user?.role === 'MODERATOR';
+          const isStaff = user?.role === "ADMIN" || user?.role === "MODERATOR";
           if (!isStaff) {
             setIsMaintenance(true);
           }

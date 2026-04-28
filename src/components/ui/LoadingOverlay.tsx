@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Loader2 } from 'lucide-react';
+import React from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 interface LoadingOverlayProps {
   isVisible: boolean;
@@ -10,7 +10,11 @@ interface LoadingOverlayProps {
   className?: string;
 }
 
-export const LoadingOverlay = ({ isVisible, message = 'Getting latest data...', className }: LoadingOverlayProps) => {
+export const LoadingOverlay = ({
+  isVisible,
+  message = "Loading ...",
+  className,
+}: LoadingOverlayProps) => {
   return (
     <AnimatePresence>
       {isVisible && (
@@ -18,7 +22,7 @@ export const LoadingOverlay = ({ isVisible, message = 'Getting latest data...', 
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="absolute inset-0 z-[40] flex items-top justify-center bg-background/40 backdrop-blur-[2px] rounded-3xl transition-all"
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-background/60 backdrop-blur-md transition-all"
         >
           <div className="flex flex-col items-center gap-4">
             <div className="relative">

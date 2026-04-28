@@ -1,15 +1,15 @@
-import { pdf } from '@react-pdf/renderer';
-import React from 'react';
-import { format } from 'date-fns';
-import { LedgerPDF } from '../components/pdf/LedgerPDF';
-import { ReportPDF } from '../components/pdf/ReportPDF';
+import { pdf } from "@react-pdf/renderer";
+import React from "react";
+import { format } from "date-fns";
+import { LedgerPDF } from "../components/pdf/LedgerPDF";
+import { ReportPDF } from "../components/pdf/ReportPDF";
 
 /**
  * Trigger browser download for a blob
  */
 const downloadBlob = (blob: Blob, filename: string) => {
   const url = URL.createObjectURL(blob);
-  const link = document.createElement('a');
+  const link = document.createElement("a");
   link.href = url;
   link.download = filename;
   document.body.appendChild(link);
@@ -21,37 +21,58 @@ const downloadBlob = (blob: Blob, filename: string) => {
 export const exportToCSV = (data: any[], filename: string) => {
   if (!data || data.length === 0) return;
 
-  const headers = ['Date', 'Description', 'Category', 'Type', 'Amount'];
-  const BOM = '\uFEFF';
+  const headers = ["Date", "Description", "Category", "Type", "Amount"];
+  const BOM = "\uFEFF";
 
   const csvRows = [
-    headers.join(','),
-    ...data.map(row => {
-      const dateStr = row.date ? format(new Date(row.date), 'dd MMM yyyy') : '-';
+    headers.join(","),
+    ...data.map((row) => {
+      const dateStr = row.date
+        ? format(new Date(row.date), "dd MMM yyyy")
+        : "-";
       return [
         `"${dateStr}"`,
-        `"${(row.description || '').replace(/"/g, '""')}"`,
-        `"${row.category?.name || row.category || 'Uncategorized'}"`,
+        `"${(row.description || "").replace(/"/g, '""')}"`,
+        `"${row.category?.name || row.category || "Uncategorized"}"`,
         `"${row.type}"`,
-        row.amount
-      ].join(',');
-    })
+        row.amount,
+      ].join(",");
+    }),
   ];
 
-  const blob = new Blob([BOM + csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const blob = new Blob([BOM + csvRows.join("\n")], {
+    type: "text/csv;charset=utf-8;",
+  });
   downloadBlob(blob, `${filename}.csv`);
 };
 
-export const exportLedgerToPDF = async (transactions: any[], userName: string, filters: any) => {
-  const doc = React.createElement(LedgerPDF, { transactions, userName, filters }) as React.ReactElement<any>;
+export const exportLedgerToPDF = async (
+  transactions: any[],
+  userName: string,
+  filters: any,
+) => {
+  const doc = React.createElement(LedgerPDF, {
+    transactions,
+    userName,
+    filters,
+  }) as React.ReactElement<any>;
   const blob = await pdf(doc).toBlob();
-  downloadBlob(blob, `ApnaKhata_Records_${format(new Date(), 'dd_MMM_yyyy')}.pdf`);
+  downloadBlob(
+    blob,
+    `ApnaKhata_Records_${format(new Date(), "dd_MMM_yyyy")}.pdf`,
+  );
 };
 
 export const exportReportToPDF = async (data: any, userName: string) => {
-  const doc = React.createElement(ReportPDF, { data, userName }) as React.ReactElement<any>;
+  const doc = React.createElement(ReportPDF, {
+    data,
+    userName,
+  }) as React.ReactElement<any>;
   const blob = await pdf(doc).toBlob();
-  downloadBlob(blob, `ApnaKhata_Report_${format(new Date(), 'dd_MMM_yyyy')}.pdf`);
+  downloadBlob(
+    blob,
+    `ApnaKhata_Report_${format(new Date(), "dd_MMM_yyyy")}.pdf`,
+  );
 };
 
 /**
@@ -80,14 +101,14 @@ export const exportToExcel = (data: any[], filename: string) => {
         <Cell><Data ss:Type="String">Amount</Data></Cell>
       </Row>`;
 
-  data.forEach(row => {
-    const style = row.type === 'INCOME' ? 'income' : 'expense';
-    const dateStr = row.date ? format(new Date(row.date), 'dd MMM yyyy') : '-';
+  data.forEach((row) => {
+    const style = row.type === "INCOME" ? "income" : "expense";
+    const dateStr = row.date ? format(new Date(row.date), "dd MMM yyyy") : "-";
     xml += `
       <Row>
         <Cell><Data ss:Type="String">${dateStr}</Data></Cell>
-        <Cell><Data ss:Type="String">${(row.description || '-').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')}</Data></Cell>
-        <Cell><Data ss:Type="String">${row.category?.name || row.category || 'Uncategorized'}</Data></Cell>
+        <Cell><Data ss:Type="String">${(row.description || "-").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")}</Data></Cell>
+        <Cell><Data ss:Type="String">${row.category?.name || row.category || "Uncategorized"}</Data></Cell>
         <Cell ss:StyleID="${style}"><Data ss:Type="String">${row.type}</Data></Cell>
         <Cell><Data ss:Type="Number">${row.amount}</Data></Cell>
       </Row>`;
@@ -98,6 +119,6 @@ export const exportToExcel = (data: any[], filename: string) => {
   </Worksheet>
 </Workbook>`;
 
-  const blob = new Blob([xml], { type: 'application/vnd.ms-excel' });
+  const blob = new Blob([xml], { type: "application/vnd.ms-excel" });
   downloadBlob(blob, `${filename}.xls`);
 };

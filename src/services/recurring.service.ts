@@ -1,8 +1,8 @@
-import api from './auth.service';
+import api from "./auth.service";
 
 export const recurringService = {
   async getAll() {
-    const { data: response } = await api.get('/recurring');
+    const { data: response } = await api.get("/recurring");
     return response.success ? response.data : [];
   },
 
@@ -10,11 +10,11 @@ export const recurringService = {
     categoryId?: string;
     amount: number;
     description: string;
-    type: 'INCOME' | 'EXPENSE';
-    frequency: 'TEN_SECONDS' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+    type: "INCOME" | "EXPENSE";
+    frequency: "TEN_SECONDS" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
     nextExecution?: string;
   }) {
-    const { data: response } = await api.post('/recurring', data);
+    const { data: response } = await api.post("/recurring", data);
     return response.data;
   },
 
@@ -24,7 +24,7 @@ export const recurringService = {
   },
 
   async processManual() {
-    const { data: response } = await api.post('/recurring/process-due');
+    const { data: response } = await api.post("/recurring/process-due");
     return response.data;
-  }
+  },
 };

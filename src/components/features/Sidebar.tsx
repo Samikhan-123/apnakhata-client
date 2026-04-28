@@ -1,54 +1,50 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   ReceiptText,
   Tags,
   PiggyBank,
   BarChart3,
-  PlusCircle,
   History,
   RefreshCcw,
   Settings,
   ShieldCheck,
   Users,
-  Activity,
-  Zap,
   X,
   Download,
-  MessageSquare
-} from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { useAuth } from '@/context/AuthContext';
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
 
 const menuGroups = [
   {
-    title: 'Overview',
+    title: "Overview",
     items: [
-      { name: 'Dashboard', icon: LayoutDashboard, href: '/dashboard' },
-      { name: 'Reports', icon: BarChart3, href: '/dashboard/reports' },
-    ]
+      { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+      { name: "Reports", icon: BarChart3, href: "/dashboard/reports" },
+    ],
   },
   {
-    title: 'Financials',
+    title: "Financials",
     items: [
-      { name: 'Digital Ledger', icon: ReceiptText, href: '/dashboard/ledger' },
-      { name: 'Categories', icon: Tags, href: '/dashboard/categories' },
-      { name: 'Budgets', icon: PiggyBank, href: '/dashboard/budgets' },
-      { name: 'Schedules', icon: RefreshCcw, href: '/dashboard/recurring' },
-    ]
+      { name: "Digital Ledger", icon: ReceiptText, href: "/dashboard/ledger" },
+      { name: "Categories", icon: Tags, href: "/dashboard/categories" },
+      { name: "Budgets", icon: PiggyBank, href: "/dashboard/budgets" },
+      { name: "Schedules", icon: RefreshCcw, href: "/dashboard/recurring" },
+    ],
   },
   {
-    title: 'Account',
+    title: "Account",
     items: [
-      { name: 'Settings', icon: Settings, href: '/dashboard/settings' },
+      { name: "Settings", icon: Settings, href: "/dashboard/settings" },
       // { name: 'Support', icon: MessageSquare, href: '/contact' },
-    ]
-  }
+    ],
+  },
 ];
 
 interface SidebarProps {
@@ -60,44 +56,44 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const pathname = usePathname();
   const { user } = useAuth();
 
-  const isAdmin = user?.role === 'ADMIN';
-  const isModerator = user?.role === 'MODERATOR';
+  const isAdmin = user?.role === "ADMIN";
+  const isModerator = user?.role === "MODERATOR";
   const hasAdminAccess = isAdmin || isModerator;
-  const isAdminSection = pathname.startsWith('/admin');
+  const isAdminSection = pathname.startsWith("/admin");
 
   let groups = [];
-  
+
   if (isAdminSection) {
     const adminItems = [
-      { name: 'Admin Dashboard', icon: ShieldCheck, href: '/admin' },
-      { name: 'User Management', icon: Users, href: '/admin/users' },
+      { name: "Admin Dashboard", icon: ShieldCheck, href: "/admin" },
+      { name: "User Management", icon: Users, href: "/admin/users" },
     ];
-    
+
     // Only full Admins can manage system settings and audits
     if (isAdmin) {
       adminItems.push(
-        { name: 'System Settings', icon: Settings, href: '/admin/settings' },
-        { name: 'Audit Trail', icon: History, href: '/admin/audit-logs' }
+        { name: "System Settings", icon: Settings, href: "/admin/settings" },
+        { name: "Audit Trail", icon: History, href: "/admin/audit-logs" },
       );
     }
 
     groups = [
       {
-        title: 'Administration',
-        items: adminItems
+        title: "Administration",
+        items: adminItems,
       },
       {
-        title: 'Return',
+        title: "Return",
         items: [
-          { name: 'Back to App', icon: LayoutDashboard, href: '/dashboard' },
-        ]
-      }
+          { name: "Back to App", icon: LayoutDashboard, href: "/dashboard" },
+        ],
+      },
     ];
   } else {
     groups = [...menuGroups];
     if (hasAdminAccess) {
       const adminItems = [
-        { name: 'Admin Dashboard', icon: ShieldCheck, href: '/admin' },
+        { name: "Admin Dashboard", icon: ShieldCheck, href: "/admin" },
       ];
 
       // if (isAdmin) {
@@ -108,8 +104,8 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       // }
 
       groups.push({
-        title: 'Administration',
-        items: adminItems
+        title: "Administration",
+        items: adminItems,
       });
     }
   }
@@ -117,24 +113,35 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const [isStandalone, setIsStandalone] = React.useState(false);
 
   React.useEffect(() => {
-    const checkStandalone = window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone;
+    const checkStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (window.navigator as any).standalone;
     setIsStandalone(!!checkStandalone);
   }, []);
 
   return (
-    <aside className={cn(
-      "fixed left-0 top-0 inset-y-0 w-[280px] bg-card border-r border-border/40 z-50 flex flex-col transition-all duration-300 ease-in-out",
-      "lg:translate-x-0 h-full", // Always visible on desktop
-      isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full lg:translate-x-0" // Slide on mobile
-    )}>
+    <aside
+      className={cn(
+        "fixed left-0 top-0 inset-y-0 w-[280px] bg-card border-r border-border/40 z-50 flex flex-col transition-all duration-300 ease-in-out",
+        "lg:translate-x-0 h-full", // Always visible on desktop
+        isOpen
+          ? "translate-x-0 shadow-2xl"
+          : "-translate-x-full lg:translate-x-0", // Slide on mobile
+      )}
+    >
       {/* Brand Section */}
       <div className="h-20 flex items-center justify-between px-8 border-b border-border/40">
         <div className="flex items-center gap-3 group cursor-pointer">
           {/* <div className="w-10 h-10 bg-primary/5 flex items-center justify-center border border-primary/10 transition-all duration-300 "> */}
-            <img src="/icon1.png" alt="Apna Khata" className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform" />
+          <img
+            src="/icon1.png"
+            alt="Apna Khata"
+            className="w-10 h-10 object-contain group-hover:rotate-12 transition-transform"
+          />
           {/* </div> */}
           <span className="text-xl font-black tracking-tight text-foreground">
-            Apna<span className="text-primary tracking-tighter ml-0.5">Khata</span>
+            Apna
+            <span className="text-primary tracking-tighter ml-0.5">Khata</span>
           </span>
         </div>
 
@@ -154,7 +161,9 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
         <div className="space-y-8">
           {groups.map((group) => (
             <div key={group.title}>
-              <p className="px-4 mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">{group.title}</p>
+              <p className="px-4 mb-3 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40">
+                {group.title}
+              </p>
               <div className="space-y-1">
                 {group.items.map((item) => {
                   const isActive = pathname === item.href;
@@ -162,15 +171,24 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                     <Link
                       key={item.name}
                       href={item.href}
-                      onClick={() => { if (window.innerWidth < 1024) onClose(); }}
+                      onClick={() => {
+                        if (window.innerWidth < 1024) onClose();
+                      }}
                       className={cn(
                         "flex items-center gap-3.5 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold text-sm relative group",
                         isActive
                           ? "bg-primary/10 text-primary shadow-sm scale-[1.02] border border-primary/10"
-                          : "text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                          : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
                       )}
                     >
-                      <item.icon className={cn("h-4 w-4 shrink-0 transition-transform group-hover:scale-110", isActive ? "text-primary" : "text-muted-foreground/60 group-hover:text-primary")} />
+                      <item.icon
+                        className={cn(
+                          "h-4 w-4 shrink-0 transition-transform group-hover:scale-110",
+                          isActive
+                            ? "text-primary"
+                            : "text-muted-foreground/60 group-hover:text-primary",
+                        )}
+                      />
                       <span>{item.name}</span>
                     </Link>
                   );
@@ -180,13 +198,13 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           ))}
         </div>
       </div>
-      
+
       {/* Install Prompt Trigger (Sidebar) */}
       {!isStandalone && (
         <div className="p-6 border-t border-border/40">
-          <div 
+          <div
             onClick={() => {
-              window.dispatchEvent(new CustomEvent('trigger-pwa-install'));
+              window.dispatchEvent(new CustomEvent("trigger-pwa-install"));
               if (window.innerWidth < 1024) onClose();
             }}
             className="flex items-center gap-3.5 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold text-sm cursor-pointer group hover:bg-primary/10 text-muted-foreground hover:text-primary border border-transparent hover:border-primary/10"
@@ -196,12 +214,13 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             </div>
             <div className="flex flex-col">
               <span className="leading-tight">Install App</span>
-              <span className="text-[10px] text-muted-foreground/40 font-black uppercase tracking-widest mt-0.5">Mobile Native</span>
+              <span className="text-[10px] text-muted-foreground/40 font-black uppercase tracking-widest mt-0.5">
+                Mobile Native
+              </span>
             </div>
           </div>
         </div>
       )}
-
     </aside>
   );
 };
