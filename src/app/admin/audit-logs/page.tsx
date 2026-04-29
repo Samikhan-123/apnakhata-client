@@ -398,7 +398,7 @@ export default function AuditLogPage() {
                                 {log.admin?.name || "SYSTEM"}
                               </p>
                               <p className="text-[9px] md:text-[10px] text-muted-foreground font-medium">
-                                {log.admin?.email || "automated@system.com"}
+                                {log.admin?.email || "automated@system"}
                               </p>
                             </div>
                           </div>

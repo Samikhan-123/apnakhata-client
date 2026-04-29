@@ -152,7 +152,7 @@ export default function SettingsPage() {
               </TabsTrigger>
             </TabsList>
 
-            <div className="mt-12 p-8 rounded-[2.5rem] bg-rose-500/5 border border-rose-500/10 group">
+            <div className="mt-8 xl:mt-12 p-6 xl:p-8 rounded-[2.5rem] bg-rose-500/5 border border-rose-500/10 group">
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-rose-500/50 mb-6">
                 Account Actions
               </p>
@@ -406,28 +406,56 @@ export default function SettingsPage() {
                       </Button>
                     </div>
 
-                    <div className="p-5 rounded-xl bg-rose-500/5 border border-rose-500/10 flex items-center justify-between gap-6 group hover:bg-rose-500/[0.08] transition-all">
+                    <div
+                      className={cn(
+                        "p-5 rounded-xl border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 group transition-all",
+                        user?.role === "ADMIN"
+                          ? "bg-muted/10 border-border/10 grayscale opacity-60"
+                          : "bg-rose-500/5 border-rose-500/10 hover:bg-rose-500/[0.08]",
+                      )}
+                    >
                       <div>
-                        <h5 className="font-bold text-base tracking-tight text-rose-600">
+                        <h5
+                          className={cn(
+                            "font-bold text-base tracking-tight",
+                            user?.role === "ADMIN"
+                              ? "text-muted-foreground"
+                              : "text-rose-600",
+                          )}
+                        >
                           Delete My Account
                         </h5>
-                        <p className="text-[11px] font-black text-rose-500/40 uppercase tracking-widest">
-                          30-Day Grace Period
+                        <p
+                          className={cn(
+                            "text-[11px] font-black uppercase tracking-widest",
+                            user?.role === "ADMIN"
+                              ? "text-muted-foreground/30"
+                              : "text-rose-500/40",
+                          )}
+                        >
+                          {user?.role === "ADMIN"
+                            ? "Admin Accounts Protected"
+                            : "30-Day Grace Period"}
                         </p>
                       </div>
                       <Button
                         variant="ghost"
-                        disabled={readOnly}
+                        disabled={readOnly || user?.role === "ADMIN"}
                         className={cn(
-                          "h-10 px-4 rounded-xl text-rose-600 font-bold gap-2 text-xs transition-all",
-                          readOnly
-                            ? "opacity-20 cursor-not-allowed"
-                            : "hover:bg-rose-500 hover:text-white",
+                          "w-full sm:w-auto h-10 px-4 rounded-xl font-bold gap-2 text-xs transition-all",
+                          user?.role === "ADMIN"
+                            ? "text-muted-foreground border border-border/20"
+                            : "text-rose-600 hover:bg-rose-500 hover:text-white",
+                          readOnly && "opacity-20 cursor-not-allowed",
                         )}
                         onClick={() => !readOnly && setIsDeletionOpen(true)}
                       >
                         <Trash2 size={16} />
-                        {readOnly ? "LOCKED" : "REQUEST REMOVAL"}
+                        {readOnly
+                          ? "LOCKED"
+                          : user?.role === "ADMIN"
+                            ? "PROTECTED"
+                            : "REQUEST REMOVAL"}
                       </Button>
                     </div>
                   </div>

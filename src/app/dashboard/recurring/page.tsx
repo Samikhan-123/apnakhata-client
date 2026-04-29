@@ -83,23 +83,27 @@ export default function RecurringPage() {
       (async () => {
         try {
           const response = await recurringService.processManual();
-          if (
-            response.successCount === 0 &&
-            response.count > 0 &&
-            !response.message?.includes("Successfully synced")
-          ) {
-            throw new Error(response.message || "Sync failed");
+          
+          if (response.skipped) {
+            return response.message || "Sync already up-to-date.";
           }
+
+          if (response.successCount === 0 && response.count > 0) {
+             // If tasks were due but failed (e.g. balance)
+             await fetchData(true);
+             return `Checked ${response.count} tasks. No new entries created.`;
+          }
+
           await fetchData(true);
-          return response.message || `Synced ${response.successCount} tasks.`;
+          return response.message || `Processed ${response.successCount} tasks successfully.`;
         } catch (err: any) {
           throw err;
         }
       })(),
       {
-        loading: "Syncing recurring tasks...",
+        loading: "Initiating automation sync...",
         success: (msg: string) => msg,
-        error: null,
+        error: "Sync failed. Please check your connection.",
       },
     );
   };
@@ -611,7 +615,7 @@ export default function RecurringPage() {
                 </p>
                 <p className="text-xs font-medium text-muted-foreground/80 leading-relaxed">
                   Tasks set for "Today" process immediately. Others will
-                  automatically sync at day time on their scheduled date.
+                  automatically sync on scheduled date when you open the dashboard.
                 </p>
               </div>
             </div>
@@ -721,22 +725,25 @@ export default function RecurringPage() {
                         />
                       </div>
                       <div className="min-w-0 flex-1">
-                        <div className="flex flex-wrap items-center gap-2 sm:gap-3 mb-1 sm:mb-1.5">
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-3 mb-1 sm:mb-1.5">
                           <h4 className="font-bold text-lg sm:text-xl tracking-tight text-foreground truncate">
                             {capitalize(pattern.description)}
                           </h4>
-                          <span className="px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-primary/10 text-[8px] sm:text-[9px] font-black text-primary uppercase tracking-[0.1em] border border-primary/20">
+                          <span className="w-fit px-2 py-0.5 sm:px-2.5 sm:py-1 rounded-lg bg-primary/10 text-[8px] sm:text-[9px] font-black text-primary uppercase tracking-[0.1em] border border-primary/20">
                             {pattern.frequency}
                           </span>
                         </div>
                         <div className="flex items-center gap-3 sm:gap-4 text-[9px] sm:text-[10px] font-bold text-muted-foreground/40 uppercase tracking-widest leading-none">
-                          <span className="truncate">
+                          <span className="truncate max-w-[100px] sm:max-w-none">
                             {pattern.category?.name
                               ? capitalize(pattern.category.name)
                               : "Income Source"}
                           </span>
                           <span className="w-1 h-1 rounded-full bg-border shrink-0" />
-                          <span className="text-emerald-500/60 shrink-0">
+                          <span className={cn(
+                            "shrink-0",
+                            pattern.hits > 0 ? "text-emerald-500/60" : "text-muted-foreground/30"
+                          )}>
                             {pattern.hits || 0} Syncs
                           </span>
                         </div>
@@ -786,12 +793,16 @@ export default function RecurringPage() {
                             {isIncome ? "+" : "−"}
                             {formatCurrency(pattern.amount)}
                           </p>
-                          {pattern.lastStatus === "INSUFFICIENT_BALANCE" && (
+                          {pattern.lastStatus === "INSUFFICIENT_BALANCE" ? (
                             <div className="flex items-center sm:justify-end gap-1.5 text-rose-600">
                               <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest italic animate-pulse">
                                 Low Balance
                               </span>
                             </div>
+                          ) : (
+                            <p className="text-[9px] font-bold text-muted-foreground/30 uppercase tracking-widest sm:text-right hidden sm:block">
+                               {/* Net Value */}
+                            </p>
                           )}
                         </div>
 

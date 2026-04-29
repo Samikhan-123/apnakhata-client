@@ -5,6 +5,7 @@ import { useAuth } from "@/context/AuthContext";
 import { ledgerEntryService } from "@/services/ledger-entry.service";
 import { DashboardCharts } from "@/components/features/DashboardCharts";
 import { useCurrency } from "@/context/CurrencyContext";
+import { recurringService } from "@/services/recurring.service";
 import {
   Wallet,
   ArrowUpRight,
@@ -50,6 +51,24 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Background Auto-Sync for Recurring Tasks
+  useEffect(() => {
+    const triggerSync = async () => {
+      try {
+        const result = await recurringService.processManual();
+        // If system actually updated data, refresh the dashboard stats silently
+        if (result.count > 0 && result.successCount > 0) {
+          fetchData(true);
+        }
+      } catch (err) {
+        // Silently fail, don't disturb user experience
+        // console.error("Auto-sync failed:", err);
+      }
+    };
+
+    triggerSync();
+  }, []); // Only once per dashboard visit
 
   // Logical Separation: Balance is Global, Flow is Monthly
   const allTimeBalance = stats?.overview?.balance || 0;

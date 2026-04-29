@@ -57,7 +57,7 @@ export default function UserDetailPage() {
     isOpen: false,
     title: "",
     description: "",
-    onConfirm: () => {},
+    onConfirm: () => { },
   });
 
   const isOnline = (dateStr: string) => {
@@ -344,7 +344,7 @@ export default function UserDetailPage() {
                       : "hover:bg-emerald-50 hover:text-emerald-600 border-emerald-100",
                     isSelf && "opacity-20 grayscale cursor-not-allowed",
                   )}
-                  disabled={actionLoading || isSelf}
+                  disabled={actionLoading || isSelf || user.role === "ADMIN"}
                   onClick={() => handleUpdateUser({ isActive: !user.isActive })}
                 >
                   {user.isActive ? (

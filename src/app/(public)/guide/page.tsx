@@ -46,7 +46,7 @@ export default function UserGuidePage() {
       color: "purple",
       description: "Put your recurring finances on auto-pilot.",
       points: [
-        "Auto Transactions: Set up monthly bills or salary logs once and forget them.",
+        "Smart Automation: Recurring bills and salary logs are synced automatically when you open your dashboard.",
         "Budget Mastery: Set monthly limits for categories and track status in real-time.",
         "Automatic Alerts: Visual indicators turn red when budgets are nearing exhaustion.",
       ],
@@ -196,7 +196,7 @@ export default function UserGuidePage() {
               },
               {
                 q: "How often do recurring records sync?",
-                a: "Our maintenance engine processes recurring patterns every 24 hours at daytime UTC (Universal Time Coordinated).",
+                a: "Your recurring patterns are processed automatically whenever you visit your Dashboard. This ensures your financial records stay perfectly in sync with your local time.",
               },
             ].map((faq, i) => (
               <FadeIn key={i} delay={0.1 * i}>

@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-/* --- 2026 Premium Design Tokens --- */
+/* ---  Design Tokens --- */
 @theme {
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));

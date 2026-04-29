@@ -80,10 +80,10 @@ export default function AdminDashboardPage() {
       const response = await adminService.runMaintenance();
       if (response.success) {
         setMaintenanceResults(response.data);
-        const { cleanup, recurring } = response.data;
+        const { cleanup } = response.data;
         toast.success("Maintenance Completed Successfully", {
           id: toastId,
-          description: `Purged ${cleanup.logsPurged} logs. Sync'd ${recurring.successCount} recurring tasks.`,
+          description: `Purged ${cleanup.logsPurged} audit records and ${cleanup.accountsPurged} expired accounts.`,
           duration: 5000,
         });
         // Refresh stats to show updated counts
@@ -238,11 +238,10 @@ export default function AdminDashboardPage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600/60">
-                        Recurring Sync:
+                        System Health:
                       </span>
                       <span className="text-xs font-bold text-foreground">
-                        {maintenanceResults.recurring?.successCount || 0}{" "}
-                        Patterns
+                        Optimized & Cleaned
                       </span>
                     </div>
                   </div>
@@ -752,7 +751,7 @@ export default function AdminDashboardPage() {
         onClose={() => setShowConfirm(false)}
         onConfirm={handleMaintenance}
         title="Trigger Platform Maintenance?"
-        description="This will scan and process all due recurring tasks platform-wide and purge administrative audit logs. This operation is intensive and should only be triggered if auto-sync fails."
+        description="This will scan and purge expired administrative audit logs (90d retention) and permanently erase soft-deleted accounts. This is a system-wide cleanup operation."
         confirmText="Start Maintenance"
         cancelText="Cancel"
         loading={isSyncing}
