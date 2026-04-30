@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     template: "%s | Apna Khata",
   },
   alternates: {
-    canonical: "/",
+    canonical: "./",
   },
   description:
     "Apna Khata is a modern personal finance management system to track income, manage expenses, set budgets, and handle recurring transactions with a structured ledger-based approach.",
