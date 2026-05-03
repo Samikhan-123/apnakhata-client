@@ -16,6 +16,7 @@ import {
   Users,
   X,
   Download,
+  Smartphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -209,13 +210,13 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
             }}
             className="flex items-center gap-3.5 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold text-sm cursor-pointer group hover:bg-primary/10 text-muted-foreground hover:text-primary border border-transparent hover:border-primary/10"
           >
-            <div className="w-8 h-8 rounded-lg bg-primary/5 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-              <Download size={16} className="text-primary" />
+            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-all duration-500 shadow-sm border border-primary/10 group-hover:rotate-6">
+              <Smartphone size={18} className="text-primary" />
             </div>
             <div className="flex flex-col">
-              <span className="leading-tight">Install App</span>
-              <span className="text-[10px] text-muted-foreground/40 font-black uppercase tracking-widest mt-0.5">
-                Mobile Native
+              <span className="leading-tight text-foreground group-hover:text-primary transition-colors">Native Experience</span>
+              <span className="text-[9px] text-muted-foreground/50 font-black uppercase tracking-[0.2em] mt-1">
+                Install Official App
               </span>
             </div>
           </div>

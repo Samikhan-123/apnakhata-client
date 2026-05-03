@@ -64,29 +64,29 @@
   }
 
   .dark {
-    /* Deep Sapphire Stealth Palette */
-    --background: 222 47% 4%; /* #030711 */
+    /* Refined Deep Sapphire Palette (2026 Edition) */
+    --background: 222 47% 5%;    /* #040914 - Deepest Sapphire (Slightly lighter than pure black) */
     --foreground: 210 40% 98%;
-    --card: 222 47% 6%;
+    --card: 222 47% 8%;          /* #060c1c - Lighter for depth */
     --card-foreground: 210 40% 98%;
-    --popover: 222 47% 4%;
+    --popover: 222 47% 6%;
     --popover-foreground: 210 40% 98%;
     --primary: 243 75% 65%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 215 27.9% 10%;
+    --secondary: 217 33% 14%;    /* #172033 - Sapphire-Grey */
     --secondary-foreground: 210 40% 98%;
-    --muted: 215 27.9% 10%;
-    --muted-foreground: 217.9 10.6% 60%;
-    --accent: 243 75% 65% / 0.1;
+    --muted: 217 33% 14%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 243 75% 65% / 0.15;
     --accent-foreground: 243 75% 65%;
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 215 27.9% 15%;
-    --input: 215 27.9% 15%;
+    --border: 217 33% 18%;       /* #1e293b - Clean Sapphire Border */
+    --input: 217 33% 18%;
     --ring: 243 75% 65%;
 
-    --glass-bg: 0 0% 0% / 0.7;
-    --glass-border: 255 255 255 / 0.08;
+    --glass-bg: 222 47% 5% / 0.75;
+    --glass-border: 255 255 255 / 0.12;
   }
 }
 
@@ -105,7 +105,10 @@
 /* --- Utilities --- */
 @layer components {
   .glass-card {
-    @apply backdrop-blur-md bg-[rgba(var(--glass-bg))] border border-[rgba(var(--glass-border))] shadow-sm;
+    background-color: hsl(var(--glass-bg));
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(var(--glass-border));
+    @apply shadow-sm transition-all;
   }
 
   .premium-card {

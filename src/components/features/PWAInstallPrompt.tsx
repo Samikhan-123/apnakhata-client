@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Download, X, Smartphone } from "lucide-react";
+import { Download, X, SmartphoneIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 
@@ -105,7 +105,7 @@ export function PWAInstallPrompt() {
 
             <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl md:rounded-3xl bg-primary/10 flex items-center justify-center text-primary relative z-10 shrink-0 border border-primary/20">
               <Download size={32} className="hidden md:block" />
-              <Smartphone size={24} className="md:hidden" />
+              <SmartphoneIcon size={24} className="md:hidden" />
             </div>
 
             <div className="flex-1 space-y-1 relative z-10">
