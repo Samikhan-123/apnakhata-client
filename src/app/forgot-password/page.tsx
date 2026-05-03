@@ -34,12 +34,12 @@ export default function ForgotPasswordPage() {
     try {
       await forgotPassword(email);
       setSuccess(
-        "If that email is in our system, we've sent a 6-digit recovery code. Redirecting you...",
+        "If that email is in our system, we've sent a 6-digit OTP code. Redirecting you...",
       );
       // Redirect to reset password after 2 seconds
       setTimeout(() => {
         router.push(`/reset-password?email=${encodeURIComponent(email)}`);
-      }, 2000);
+      }, 3000);
     } catch (err: any) {
       const message =
         err.response?.data?.message ||
@@ -54,16 +54,18 @@ export default function ForgotPasswordPage() {
     <div className="min-h-screen bg-background font-sans">
       <PublicHeader />
 
-      <div className="flex items-center justify-center min-h-screen pt-20 px-4 md:px-6">
-        <FadeIn className="w-full max-w-md flex flex-col gap-6 md:gap-8 bg-card p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] border border-border/40 shadow-2xl shadow-primary/5">
-          <div className="space-y-4 text-center">
-            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <LifeBuoy className="h-10 w-10 text-primary" />
+      <div className="flex items-center justify-center min-h-screen pt-24 pb-12 px-4 md:px-6">
+        <FadeIn className="w-full max-w-md flex flex-col gap-6 md:gap-10 bg-card p-6 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] border border-border/40 shadow-2xl shadow-primary/5 relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-primary/5 rounded-full blur-[80px]" />
+          
+          <div className="space-y-4 text-center relative z-10">
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-primary/5 rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-8 border border-primary/10">
+              <LifeBuoy className="h-8 w-8 md:h-12 md:w-12 text-primary" />
             </div>
-            <h2 className="text-4xl font-black tracking-tighter text-foreground">
-              Lost your password?
+            <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-foreground leading-none">
+              Lost your <br /> <span className="text-primary">password?</span>
             </h2>
-            <p className="text-muted-foreground font-bold text-lg leading-relaxed">
+            <p className="text-muted-foreground font-bold text-sm md:text-lg leading-relaxed max-w-[280px] md:max-w-none mx-auto">
               Enter your email and we'll send a code to help you get back in.
             </p>
           </div>
@@ -118,7 +120,7 @@ export default function ForgotPasswordPage() {
                     </div>
                   ) : (
                     <div className="flex items-center justify-center gap-2">
-                      <span>Send Recovery Code</span>
+                      <span>Send Code</span>
                       <ArrowRight
                         size={18}
                         className="group-hover:translate-x-1 transition-transform"

@@ -45,20 +45,20 @@ export const MainLayout = ({
   }
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground font-sans antialiased overflow-x-hidden">
+    <div className="flex min-h-screen bg-background text-foreground font-sans antialiased">
       {/* Sidebar - Responsive */}
       <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
       {/* Content Area */}
       <div
         className={cn(
-          "flex flex-col flex-1 transition-all duration-500 ease-in-out min-h-screen overflow-x-hidden",
+          "flex flex-col flex-1 transition-all duration-500 ease-in-out min-h-screen",
           "lg:pl-[280px]", // Desktop Offset
         )}
       >
         <Header onMenuClick={() => setIsSidebarOpen(true)} />
 
-        <main className="flex-1 flex flex-col scroll-smooth overflow-x-hidden">
+        <main className="flex-1 flex flex-col scroll-smooth">
           <div
             className={cn(
               "flex-1 w-full max-w-[1440px] mx-auto sm:px-6 lg:px-8",
@@ -68,28 +68,32 @@ export const MainLayout = ({
             {children}
           </div>
 
-          <footer className="mt-auto px-8 py-10 opacity-40 hover:opacity-100 transition-opacity">
-            <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-[10px] font-bold uppercase tracking-[0.2em]">
-              <p>
-                &copy; {new Date().getFullYear()} Apna Khata • Built for human
-                simplicity.
-              </p>
-              <div className="flex gap-6">
+          <footer className="mt-auto px-4 md:px-8 py-8 md:py-12 border-t border-border/5">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
+              <div className="space-y-2">
+                <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-foreground/60">
+                  &copy; {new Date().getFullYear()} APNA KHATA
+                </p>
+                <p className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest">
+                  Built for human simplicity • All Rights Reserved.
+                </p>
+              </div>
+              <div className="flex flex-wrap justify-center gap-4 md:gap-8 text-[10px] font-black uppercase tracking-widest">
                 <Link
                   href="/guide"
-                  className="hover:text-primary transition-colors cursor-pointer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   User Guide
                 </Link>
                 <Link
                   href="/manifesto"
-                  className="hover:text-primary transition-colors cursor-pointer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Manifesto
                 </Link>
                 <Link
                   href="/contact"
-                  className="hover:text-primary transition-colors cursor-pointer"
+                  className="text-muted-foreground hover:text-primary transition-colors"
                 >
                   Contact
                 </Link>

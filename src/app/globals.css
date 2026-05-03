@@ -35,7 +35,7 @@
     /* Light Palette (Sapphire White) */
     --background: 225 30% 99%;
     --foreground: 224 71% 4%;
-    --card: 125 30% 99%;
+    --card: 225 30% 99%;
     --card-foreground: 224 71% 4%;
     --popover: 225 30% 99%;
     --popover-foreground: 224 71% 4%;
@@ -58,9 +58,9 @@
     --income: 142 71% 45%;
     --expense: 0 84% 60%;
 
-    /* Effects */
-    --glass-bg: 255 255 255 / 0.8;
-    --glass-border: 220 13% 91% / 0.6;
+    /* Effects - Smoke White Sapphire */
+    --glass-bg: 225 30% 98% / 0.8;
+    --glass-border: 225 30% 90% / 0.5;
   }
 
   .dark {

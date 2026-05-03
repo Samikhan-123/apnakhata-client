@@ -128,19 +128,19 @@ function ResetPasswordContent() {
     <div className="min-h-screen bg-background font-sans">
       <PublicHeader />
 
-      <div className="flex items-center justify-center min-h-screen pt-20 px-4 md:px-6">
-        <FadeIn className="w-full max-w-md flex flex-col gap-6 md:gap-10 premium-card p-6 md:p-14 rounded-[2.5rem] md:rounded-[3.5rem] border-border/40 shadow-2xl shadow-primary/5 py-8 md:py-12 relative overflow-hidden">
-          <div className="absolute -top-20 -left-20 w-40 h-40 bg-primary/5 rounded-full blur-[50px]" />
+      <div className="flex items-center justify-center min-h-screen pt-24 pb-12 px-4 md:px-6">
+        <FadeIn className="w-full max-w-md flex flex-col gap-6 md:gap-10 premium-card p-6 md:p-12 rounded-[2.5rem] md:rounded-[3.5rem] border-border/40 shadow-2xl shadow-primary/5 relative overflow-hidden">
+          <div className="absolute -top-24 -left-24 w-48 h-48 bg-primary/5 rounded-full blur-[80px]" />
 
           <div className="space-y-4 text-center relative z-10">
-            <div className="w-16 h-16 md:w-20 md:h-20 bg-primary/5 rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center mx-auto mb-4 md:mb-8 border border-primary/10">
-              <LockKeyhole className="h-8 w-8 md:h-10 md:w-10 text-primary" />
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-primary/5 rounded-3xl flex items-center justify-center mx-auto mb-4 md:mb-8 border border-primary/10">
+              <LockKeyhole className="h-8 w-8 md:h-12 md:w-12 text-primary" />
             </div>
-            <h2 className="text-3xl md:text-4xl font-black tracking-tighter text-foreground font-bold">
-              Set new password
+            <h2 className="text-3xl md:text-5xl font-black tracking-tighter text-foreground leading-none">
+              Set new <br /> <span className="text-primary">password</span>
             </h2>
-            <p className="text-muted-foreground font-bold text-sm md:text-base leading-snug max-w-[280px] mx-auto">
-              Confirm your identity with the recovery code and secure your
+            <p className="text-muted-foreground font-bold text-sm md:text-lg leading-relaxed max-w-[280px] md:max-w-none mx-auto">
+              Confirm your identity with the OTP code and secure your
               account.
             </p>
           </div>

@@ -6,20 +6,33 @@ import { LayoutDashboard, ArrowRight, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "next-themes";
+import { cn } from "@/lib/utils";
 
 export function PublicHeader() {
   const { user } = useAuth();
+  const [scrolled, setScrolled] = useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // Avoid hydration mismatch by waiting for mount
   useEffect(() => {
     setMounted(true);
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/40">
-      <div className="max-w-7xl mx-auto px-6 h-20 flex justify-between items-center">
+    <nav
+      className={cn(
+        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b flex items-center",
+        scrolled
+          ? "py-3 bg-background/90 backdrop-blur-xl border-border/60 shadow-lg shadow-black/5"
+          : "py-6 bg-background/0 border-transparent",
+      )}
+    >
+      <div className="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
         {/* Logo */}
         <Link
           href="/"
