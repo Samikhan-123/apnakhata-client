@@ -27,7 +27,11 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { LedgerSkeleton } from "@/components/ui/LedgerSkeleton";
 import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 
+import { useSearchParams } from "next/navigation";
+
 export default function LedgerPage() {
+  const searchParams = useSearchParams();
+  const action = searchParams.get("action");
   const { formatCurrency } = useCurrency();
   const { user } = useAuth();
   const now = new Date();
@@ -123,6 +127,12 @@ export default function LedgerPage() {
       // console.error('Failed to fetch metadata:', error);
     }
   };
+
+  useEffect(() => {
+    if (action === "new") {
+      setIsFormOpen(true);
+    }
+  }, [action]);
 
   useEffect(() => {
     fetchMetadata();
