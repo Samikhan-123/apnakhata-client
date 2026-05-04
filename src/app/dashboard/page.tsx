@@ -19,6 +19,7 @@ import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 
 import { ErrorState } from "@/components/ui/ErrorState";
 import { DashboardSkeleton } from "@/components/ui/DashboardSkeleton";
+import { SyncingIndicator } from "@/components/ui/SyncingIndicator";
 
 export default function DashboardPage() {
   const { user } = useAuth();
@@ -26,10 +27,12 @@ export default function DashboardPage() {
   const [ledgerEntries, setLedgerEntries] = useState<any[]>([]);
   const [stats, setStats] = useState<Record<string, any> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchData = useCallback(async (silent: boolean = false) => {
     if (!silent) setLoading(true);
+    else setIsRefreshing(true);
     setError(null);
     try {
       const statsData = await ledgerEntryService.getStats();
@@ -45,6 +48,7 @@ export default function DashboardPage() {
       );
     } finally {
       setLoading(false);
+      setIsRefreshing(false);
     }
   }, []);
 
@@ -80,6 +84,7 @@ export default function DashboardPage() {
   return (
     // main container
     <div className="space-y-12 pb-20 w-full overflow-hidden ">
+      <SyncingIndicator isVisible={isRefreshing} message="Syncing Dashboard" />
       <SlideIn duration={0.5}>
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
@@ -123,21 +128,21 @@ export default function DashboardPage() {
                 value: allTimeBalance,
                 icon: Wallet,
                 color: "primary",
-                description: "Available funds",
+                description: "Global available funds",
               },
               {
-                label: "Monthly Inflow",
+                label: "Total Inflow",
                 value: monthlyIncome,
                 icon: ArrowUpRight,
                 color: "emerald",
-                description: "Total received",
+                description: "All-time received",
               },
               {
-                label: "Monthly Outflow",
+                label: "Total Outflow",
                 value: monthlyExpense,
                 icon: ArrowDownLeft,
                 color: "rose",
-                description: "Total spent",
+                description: "All-time spent",
               },
             ].map((stat, i) => (
               <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>

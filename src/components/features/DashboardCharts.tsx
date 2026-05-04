@@ -114,7 +114,7 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
                           </span>
                         </div>
                         <span className="text-xs font-black tabular-nums text-emerald-500">
-                          {formatCurrency(item.income)}
+                          +{formatCurrency(item.income)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
@@ -125,24 +125,20 @@ export function DashboardCharts({ stats }: DashboardChartsProps) {
                           </span>
                         </div>
                         <span className="text-xs font-black tabular-nums text-rose-500">
-                          {formatCurrency(item.expense)}
+                          -{formatCurrency(item.expense)}
                         </span>
                       </div>
-                      <div className="pt-3 border-t border-white/5 flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-widest text-primary/60 font-bold">
-                          Net
-                        </span>
-                        <span
-                          className={cn(
-                            "text-xs font-black tabular-nums font-bold",
-                            item.netBalance >= 0
-                              ? "text-primary"
-                              : "text-rose-500",
-                          )}
-                        >
-                          {item.netBalance >= 0 ? "+" : ""}
-                          {formatCurrency(item.netBalance)}
-                        </span>
+                      <div className="pt-3 border-t border-white/5 space-y-3">
+                        <div className="flex items-center justify-between bg-primary/5 p-2 rounded-lg border border-primary/10">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-primary">
+                             Balance
+                          </span>
+
+                          <span className="text-xs font-black tabular-nums text-primary">
+                            {item.balance >= 0 ? "+" : ""}
+                            {formatCurrency(item.balance)}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>

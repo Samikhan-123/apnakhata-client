@@ -181,6 +181,7 @@ export const LedgerEntryList = ({
                           <Button
                             variant="ghost"
                             size="icon"
+                            aria-label={`Actions for ${entry.description}`}
                             className="h-8 w-8 sm:h-11 sm:w-11 rounded-xl hover:bg-muted transition-all active:scale-95 group/btn border border-transparent hover:border-border/10"
                           >
                             <MoreVertical className="h-4 w-4 text-muted-foreground/40 group-hover/btn:text-foreground transition-colors" />

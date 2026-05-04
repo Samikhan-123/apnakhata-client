@@ -188,14 +188,20 @@ export default function LandingPageClient() {
               </Link>
               <div className="flex flex-col sm:flex-row items-center gap-4">
                 <div className="flex -space-x-3">
-                  {[1, 2, 3, 4].map((i) => (
+                  {[
+                    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80",
+                    "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=100&h=100&q=80",
+                    "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&h=100&q=80",
+                    "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=100&h=100&q=80",
+                  ].map((url, i) => (
                     <div
                       key={i}
                       className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-background bg-muted flex items-center justify-center overflow-hidden"
                     >
                       <img
-                        src={`https://i.pravatar.cc/100?u=${i}`}
-                        alt="user"
+                        src={url}
+                        alt={`user ${i + 1}`}
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   ))}

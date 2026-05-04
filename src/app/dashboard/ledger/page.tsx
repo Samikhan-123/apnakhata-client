@@ -3,8 +3,6 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { ledgerEntryService } from "@/services/ledger-entry.service";
 import { LedgerEntryList } from "@/components/features/LedgerEntryList";
-import { LedgerEntryForm } from "@/components/features/LedgerEntryForm";
-import { LedgerFilters } from "@/components/features/LedgerFilters";
 import { categoryService } from "@/services/category.service";
 import {
   Plus,
@@ -25,7 +23,23 @@ import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 import { CustomModal } from "@/components/ui/CustomModal";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { LedgerSkeleton } from "@/components/ui/LedgerSkeleton";
-import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
+import { SyncingIndicator } from "@/components/ui/SyncingIndicator";
+import dynamic from "next/dynamic";
+
+// Performance Optimization: Dynamic Imports for heavy components
+const LedgerEntryForm = dynamic(
+  () =>
+    import("@/components/features/LedgerEntryForm").then(
+      (mod) => mod.LedgerEntryForm,
+    ),
+  { ssr: false },
+);
+
+const LedgerFilters = dynamic(
+  () =>
+    import("@/components/features/LedgerFilters").then((mod) => mod.LedgerFilters),
+  { ssr: false },
+);
 
 import { useSearchParams } from "next/navigation";
 
@@ -258,6 +272,7 @@ export default function LedgerPage() {
 
           <Button
             onClick={() => setIsFormOpen(true)}
+            aria-label="Add new wealth record"
             className="w-auto md:w-auto h-11 px-8 rounded-xl gap-2 font-bold shadow-sm bg-primary hover:bg-primary/90 active:scale-95 transition-all text-sm"
           >
             <Plus className="h-5 w-5" />
@@ -284,7 +299,7 @@ export default function LedgerPage() {
       </SlideIn>
 
       <div className="relative space-y-10">
-        <LoadingOverlay isVisible={isRefreshing} />
+        <SyncingIndicator isVisible={isRefreshing} message="Syncing Ledger" />
 
         {/* Dynamic Stats */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -351,7 +366,12 @@ export default function LedgerPage() {
         />
 
         <FadeIn delay={0.4} duration={0.6}>
-          <div className="space-y-6 relative">
+          <div
+            className={cn(
+              "space-y-6 relative transition-all duration-500",
+              isRefreshing && "opacity-50 blur-[1px] pointer-events-none sm:pointer-events-auto",
+            )}
+          >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 px-2">
               <h2 className="text-xl font-bold tracking-tight">
                 Recent Activity

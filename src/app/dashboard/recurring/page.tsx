@@ -37,7 +37,7 @@ import { CustomModal } from "@/components/ui/CustomModal";
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useAuth } from "@/context/AuthContext";
-import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
+import { SyncingIndicator } from "@/components/ui/SyncingIndicator";
 
 export default function RecurringPage() {
   const [patterns, setPatterns] = useState<any[]>([]);
@@ -250,7 +250,7 @@ export default function RecurringPage() {
 
       {/* Automation Command Center (Stats Grid) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 relative">
-        <LoadingOverlay isVisible={loading} />
+        <SyncingIndicator isVisible={loading} message="Processing Protocols" />
 
         {/* Card 1: System Health (Current) */}
         <FadeIn delay={0.1}>

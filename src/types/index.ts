@@ -1,6 +1,11 @@
-export type UserRole = 'ADMIN' | 'MODERATOR' | 'USER';
-export type LedgerEntryType = 'INCOME' | 'EXPENSE' | 'TRANSFER';
-export type Frequency = 'TEN_SECONDS' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
+export type UserRole = "ADMIN" | "MODERATOR" | "USER";
+export type LedgerEntryType = "INCOME" | "EXPENSE" | "TRANSFER";
+export type Frequency =
+  | "TEN_SECONDS"
+  | "DAILY"
+  | "WEEKLY"
+  | "MONTHLY"
+  | "YEARLY";
 
 export interface User {
   id: string;

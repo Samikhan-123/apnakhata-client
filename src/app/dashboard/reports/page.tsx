@@ -25,7 +25,7 @@ import { useAuth } from "@/context/AuthContext";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
+import { SyncingIndicator } from "@/components/ui/SyncingIndicator";
 import { ReportsSkeleton } from "@/components/ui/ReportsSkeleton";
 
 export default function ReportsPage() {
@@ -208,7 +208,10 @@ export default function ReportsPage() {
       </div>
 
       <div className="relative space-y-8">
-        <LoadingOverlay isVisible={isRefreshing} />
+        <SyncingIndicator
+          isVisible={isRefreshing}
+          message="Generating Insights"
+        />
 
         <div className="no-print">
           <ReportFilters onFilterChange={setFilters} currentFilters={filters} />
