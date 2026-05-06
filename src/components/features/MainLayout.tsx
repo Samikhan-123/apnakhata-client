@@ -71,8 +71,8 @@ export const MainLayout = ({
           <footer className="mt-auto px-4 md:px-8 py-8 md:py-12 border-t border-border/5">
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
               <div className="space-y-2">
-                <p className="text-[10px] md:text-xs font-black uppercase tracking-[0.3em] text-foreground/60">
-                  &copy; {new Date().getFullYear()} APNA KHATA
+                <p className="text-[10px] md:text-xs font-black tracking-[0.1em] text-foreground/60">
+                  &copy; {new Date().getFullYear()} Apna Khata
                 </p>
                 <p className="text-[9px] font-bold text-muted-foreground/40 uppercase tracking-widest">
                   Built for human simplicity • All Rights Reserved.

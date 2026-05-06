@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Suspense } from "react";
 import LandingPageClient from "./LandingClient";
 
 export const metadata: Metadata = {
@@ -17,5 +18,9 @@ export const metadata: Metadata = {
 };
 
 export default function LandingPage() {
-  return <LandingPageClient />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background" />}>
+      <LandingPageClient />
+    </Suspense>
+  );
 }

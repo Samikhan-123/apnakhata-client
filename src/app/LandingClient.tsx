@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion, Variants, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
@@ -86,12 +87,22 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 }
 
 export default function LandingPageClient() {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
   const [mounted, setMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const searchParams = useSearchParams();
+  const shouldRedirect = searchParams.get("redirect") !== "false";
+
+  useEffect(() => {
+    if (mounted && !loading && user && shouldRedirect) {
+      router.push("/dashboard");
+    }
+  }, [user, loading, router, mounted, shouldRedirect]);
 
   if (!mounted) return null;
 

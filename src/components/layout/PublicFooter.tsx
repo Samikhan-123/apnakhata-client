@@ -17,7 +17,7 @@ export function PublicFooter() {
               />
             </div>
             <span className="text-2xl md:text-3xl font-black tracking-tighter text-foreground">
-              APNA <span className="text-primary">KHATA</span>
+              Apna <span className="text-primary">Khata</span>
             </span>
           </div>
 
@@ -56,7 +56,7 @@ export function PublicFooter() {
         </div>
 
         <div className="mt-16 pt-8 border-t border-border/5 text-center">
-          <p className="text-muted-foreground/30 font-bold text-[10px] uppercase tracking-[0.2em]">
+          <p className="text-muted-foreground/30 font-bold text-[10px] tracking-[0.2em]">
             © {new Date().getFullYear()} Apna Khata. Built with care for human simplicity.
           </p>
         </div>
