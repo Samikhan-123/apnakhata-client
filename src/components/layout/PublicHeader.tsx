@@ -10,27 +10,18 @@ import { cn } from "@/lib/utils";
 
 export function PublicHeader() {
   const { user } = useAuth();
-  const [scrolled, setScrolled] = useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <nav
-      className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-500 ease-in-out border-b flex items-center",
-        scrolled
-          ? "py-3 bg-background/90 backdrop-blur-xl border-border/60 shadow-lg shadow-black/5"
-          : "py-6 bg-background/0 border-transparent",
-      )}
+      className={
+        "fixed top-0 left-0 right-0 z-50 border-b flex items-center py-3 bg-background/90 backdrop-blur-xl border-border/60 shadow-sm shadow-black/5"
+      }
     >
       <div className="max-w-7xl mx-auto px-6 w-full flex justify-between items-center">
         {/* Logo */}

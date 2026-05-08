@@ -10,6 +10,7 @@ The Precise, premium frontend for **Apna Khata**, an enterprise-grade personal e
 
 - **Strategic Admin Command Center**: A high-authority management interface for platform administrators and moderators, featuring real-time system metrics and user registry control.
 - **Intelligent Financial Dashboard**: Advanced data visualization using `recharts` with interactive area charts for liquidity trends and category distribution analytics.
+- **Generative AI Advisor**: Dynamic ai-chat interface highlighting context-aware financial insights, strategically designed for user acquisition.
 - **Premium Sapphire UI**: A sophisticated "Glassmorphism" aesthetic powered by `Framer Motion` and `Tailwind CSS`, featuring backdrop blurs, sapphire glows, and high-performance micro-animations.
 - **Bulk Configuration Engine**: High-performance multi-selection registry with "Sapphire Glow" bulk action banners for mass verification, role assignment, and account bans.
 - **Zero-Trust Security UI**: Context-aware administrative sessions with self-protection guards and visual banners for active security sessions.

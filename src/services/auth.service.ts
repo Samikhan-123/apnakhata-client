@@ -16,6 +16,7 @@ const API_URL = isProduction
 const api = axios.create({
   baseURL: API_URL,
   withCredentials: true, // Crucial for cookie-based auth
+  timeout: 30000, // 30 seconds to allow for backend retries
 });
 
 // Helper for consistent client-side cookie options

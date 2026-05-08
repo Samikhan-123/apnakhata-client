@@ -96,7 +96,7 @@ export default function LandingPageClient() {
   }, []);
 
   const searchParams = useSearchParams();
-  const shouldRedirect = searchParams.get("redirect") !== "false";
+  const shouldRedirect = searchParams.get("redirect") !== "false"; // skip rediection use ?redirect=false in url 
 
   useEffect(() => {
     if (mounted && !loading && user && shouldRedirect) {
@@ -291,6 +291,61 @@ export default function LandingPageClient() {
                 intuitive interface.
               </p>
             </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* --- AI Advisor Highlight Section --- */}
+      <section className="py-16 md:py-24 bg-background relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(var(--primary),0.05)_0%,transparent_70%)] pointer-events-none"></div>
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="premium-card rounded-[3rem] p-8 md:p-16 border border-primary/20 bg-gradient-to-br from-primary/5 via-background to-background shadow-2xl flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+            <div className="flex-1 space-y-8 text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary font-black text-xs uppercase tracking-widest">
+                <SparklesIcon size={14} className="animate-pulse" />
+                Premium Feature
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black tracking-tight text-foreground leading-tight">
+                Meet your Elite <br className="hidden md:block" />
+                <span className="text-primary">AI Financial Advisor</span>
+              </h2>
+              <p className="text-lg md:text-xl text-muted-foreground font-medium leading-relaxed max-w-xl mx-auto lg:mx-0">
+                Stop guessing where your money goes. Chat with our Gemini-powered AI assistant in your native language to get personalized savings advice and deep financial insights based on your real-time records.
+              </p>
+              <div className="pt-4">
+                <Link href={user ? "/dashboard/ai-advisor" : "/register"}>
+                  <Button className="h-14 px-8 rounded-2xl text-lg font-bold gap-3 shadow-xl shadow-primary/25 hover:scale-105 transition-all">
+                    Try AI Advisor
+                    <ArrowRight size={20} />
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="flex-1 w-full max-w-lg relative mt-10 lg:mt-0">
+              <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full opacity-50 animate-pulse"></div>
+              <div className="bg-card border border-border/50 rounded-3xl p-6 shadow-2xl relative z-10 transform lg:rotate-3 hover:rotate-0 transition-transform duration-500">
+                <div className="flex items-center gap-3 mb-6 border-b border-border/40 pb-4">
+                  <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-primary-foreground shadow-lg shadow-primary/30">
+                    <SparklesIcon size={20} />
+                  </div>
+                  <div className="text-left">
+                    <h4 className="font-black text-foreground text-sm tracking-wide">Apna Khata AI</h4>
+                    <p className="text-xs text-primary font-bold">Online</p>
+                  </div>
+                </div>
+                <div className="space-y-6">
+                  <div className="bg-foreground text-background p-4 rounded-2xl rounded-tr-sm ml-auto w-[85%] shadow-md">
+                    <p className="text-sm font-medium leading-relaxed">How can I save money this month?</p>
+                  </div>
+                  <div className="bg-primary/5 border border-primary/20 p-5 rounded-2xl rounded-tl-sm w-[95%] shadow-sm relative">
+                    <div className="absolute -top-2 -left-2 w-4 h-4 bg-primary rounded-full border-2 border-background"></div>
+                    <p className="text-sm font-medium text-foreground/90 leading-relaxed">
+                      Based on your recent records, you spent <strong className="text-primary">Rs 15,000</strong> on dining out. If you cut this by 20%, you can easily save <strong className="text-primary">Rs 3,000</strong> this month!
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

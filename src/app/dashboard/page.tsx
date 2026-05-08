@@ -21,6 +21,8 @@ import { ErrorState } from "@/components/ui/ErrorState";
 import { DashboardSkeleton } from "@/components/ui/DashboardSkeleton";
 import { SyncingIndicator } from "@/components/ui/SyncingIndicator";
 
+import { AIAdvisor } from "@/components/features/AIAdvisor";
+
 export default function DashboardPage() {
   const { user } = useAuth();
   const { formatCurrency } = useCurrency();
@@ -110,6 +112,7 @@ export default function DashboardPage() {
           </div>
         </header>
       </SlideIn>
+
 
       {error ? (
         <ErrorState

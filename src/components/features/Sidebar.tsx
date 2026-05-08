@@ -17,6 +17,7 @@ import {
   X,
   Download,
   Smartphone,
+  Brain,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ const menuGroups = [
     title: "Overview",
     items: [
       { name: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
+      { name: "AI Advisor", icon: Brain, href: "/dashboard/ai-advisor" },
       { name: "Reports", icon: BarChart3, href: "/dashboard/reports" },
     ],
   },

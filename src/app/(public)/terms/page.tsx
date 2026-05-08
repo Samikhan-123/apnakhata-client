@@ -71,11 +71,14 @@ export default function TermsPage() {
             <h3 className="text-2xl font-black flex items-center gap-4 text-foreground text-primary uppercase tracking-tighter italic">
               Limitations
             </h3>
-            <p className="text-muted-foreground font-medium leading-relaxed italic">
-              Apna Khata is an expense tracker, not a financial advisor. While
-              we help you see your data, any financial decisions you make are
-              your own responsibility. Use common sense.
-            </p>
+            <div className="space-y-4">
+              <p className="text-muted-foreground font-medium leading-relaxed italic">
+                While Apna Khata provides an AI-powered "Financial Advisor" feature to help you understand your data, this is for informational and organizational purposes only. It does not constitute professional financial, tax, or legal advice. 
+              </p>
+              <p className="text-muted-foreground font-medium leading-relaxed italic">
+                The AI Advisor operates under strict rate limits (quotas) to prevent abuse and may occasionally produce inaccurate insights. Any financial decisions you make remain solely your own responsibility. Use common sense.
+              </p>
+            </div>
           </div>
         </FadeIn>
       </div>

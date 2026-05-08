@@ -30,27 +30,18 @@ interface HeaderProps {
 
 export const Header = ({ onMenuClick }: HeaderProps) => {
   const { user, logout } = useAuth();
-  const [scrolled, setScrolled] = useState(false);
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <header
-      className={cn(
-        "sticky top-0 z-30 flex w-full items-center justify-between px-4 md:px-8 border-b transition-all duration-500 ease-in-out bg-background/60 backdrop-blur-xl",
-        scrolled
-          ? "py-2 md:py-3 border-border/60 shadow-sm shadow-black/5"
-          : "py-5 md:py-8 border-transparent",
-      )}
+      className={
+        "sticky top-0 z-30 flex w-full items-center justify-between px-4 md:px-8 py-3 md:py-4 border-b border-border/60 shadow-sm shadow-black/5 bg-background/90 backdrop-blur-xl"
+      }
     >
       <div className="flex items-center gap-4">
         {/* Mobile Menu Toggle */}
