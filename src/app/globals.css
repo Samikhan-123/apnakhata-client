@@ -81,12 +81,12 @@
     --accent-foreground: 243 75% 65%;
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 18%;       /* #1e293b - Clean Sapphire Border */
+    --border: 217 33% 18%;      
     --input: 217 33% 18%;
     --ring: 243 75% 65%;
 
     --glass-bg: 222 47% 5% / 0.75;
-    --glass-border: 255 255 255 / 0.12;
+    --glass-border: 30 41 59 / 0.12;
   }
 }
 
