@@ -21,6 +21,10 @@ import {
   Clock,
   Globe,
   Eye,
+  Target,
+  TrendingUp,
+  TrendingDown,
+  LucideActivity,
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { SlideIn, FadeIn } from "@/components/ui/FramerMotion";
@@ -477,6 +481,12 @@ export default function UserDetailPage() {
             icon: Clock,
             color: "purple",
           },
+          {
+            label: "Savings Goals",
+            value: user._count?.goals || 0,
+            icon: Target,
+            color: "rose",
+          },
         ].map((stat, i) => (
           <FadeIn key={stat.label} delay={0.2 + i * 0.1}>
             <div className="premium-card p-4 sm:p-6 rounded-3xl flex flex-col justify-between h-28 sm:h-32 border border-border/10 group hover:border-primary/20 hover:bg-primary/[0.01] transition-all shadow-sm">
@@ -506,6 +516,61 @@ export default function UserDetailPage() {
           </FadeIn>
         ))}
       </div>
+
+      {/* Advanced Financial Pulse (New Feature-Aware Section) */}
+      <FadeIn delay={0.4}>
+        <div className="premium-card p-6 md:p-8 rounded-[2.5rem] border border-border/10 bg-primary/[0.01] relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-8 opacity-[0.03]">
+            <Activity className="w-40 h-40" />
+          </div>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10">
+            <div>
+              <h2 className="text-xl font-black tracking-tight text-foreground flex items-center gap-2">
+                <LucideActivity className="h-5 w-5 text-primary" />
+                Financial Pulse
+              </h2>
+              <p className="text-xs font-bold text-muted-foreground mt-1">
+                Real-time liquidity and transaction velocity monitoring.
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full md:w-auto">
+              <div className="bg-muted/20 p-4 rounded-2xl border border-border/5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-1">
+                  Net Balance
+                </p>
+                <p className={cn(
+                  "text-lg font-black tabular-nums",
+                  user.financialHealth?.netBalance >= 0 ? "text-emerald-600" : "text-rose-600"
+                )}>
+                  {formatCurrency(user.financialHealth?.netBalance || 0)}
+                </p>
+              </div>
+              <div className="bg-muted/20 p-4 rounded-2xl border border-border/5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-emerald-600/60 mb-1">
+                  Total Inflow
+                </p>
+                <div className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                  <p className="text-lg font-black text-foreground tabular-nums">
+                    {formatCurrency(user.financialHealth?.totalIncome || 0)}
+                  </p>
+                </div>
+              </div>
+              <div className="bg-muted/20 p-4 rounded-2xl border border-border/5">
+                <p className="text-[10px] font-black uppercase tracking-widest text-rose-600/60 mb-1">
+                  Total Outflow
+                </p>
+                <div className="flex items-center gap-2">
+                  <TrendingDown className="h-4 w-4 text-rose-500" />
+                  <p className="text-lg font-black text-foreground tabular-nums">
+                    {formatCurrency(user.financialHealth?.totalExpense || 0)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </FadeIn>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* Left Wing: Security & Risk Diagnostics */}

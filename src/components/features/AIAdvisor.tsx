@@ -65,14 +65,14 @@ export function AIAdvisor() {
   return (
     <div className="w-full max-w-5xl mx-auto space-y-8">
       {/* Search Bar & Actions Container */}
-      <div className="premium-card p-6 md:p-8 rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-background to-background border border-primary/10 shadow-2xl shadow-primary/5">
+      <div className="premium-card p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] bg-gradient-to-br from-primary/10 via-background to-background border border-primary/10 shadow-2xl shadow-primary/5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8">
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
-                <Brain size={24} />
+              <div className="p-2.5 md:p-3 rounded-xl md:rounded-2xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
+                <Brain size={20} className="md:w-6 md:h-6" />
               </div>
-              <h2 className="text-2xl font-black tracking-tight text-foreground">
+              <h2 className="text-xl md:text-2xl font-black tracking-tight text-foreground">
                 Financial <span className="text-primary">Assistant</span>
               </h2>
             </div>
@@ -185,8 +185,8 @@ export function AIAdvisor() {
                     </div>
                   )}
 
-                  <div className="bg-card border border-border/60 shadow-sm rounded-3xl overflow-hidden">
-                    <div className="p-6 md:p-8 space-y-8">
+                  <div className="bg-card border border-border/60 shadow-sm rounded-2xl md:rounded-3xl overflow-hidden">
+                    <div className="p-5 md:p-8 space-y-6 md:space-y-8">
                     
                     {/* The Answer */}
                     <div>
@@ -233,7 +233,7 @@ export function AIAdvisor() {
                 /* === DASHBOARD MODE (General Overview) === */
                 <div className="space-y-6">
                   {/* Clean Summary (No Italics) */}
-                  <div className="bg-primary/5 border border-primary/10 rounded-3xl p-6 md:p-8 flex gap-6 items-center">
+                  <div className="bg-primary/5 border border-primary/10 rounded-2xl md:rounded-3xl p-5 md:p-8 flex gap-6 items-center">
                     <div className="hidden md:flex shrink-0 h-16 w-16 bg-primary/10 text-primary rounded-2xl items-center justify-center">
                       <ShieldCheck size={32} />
                     </div>
@@ -241,7 +241,7 @@ export function AIAdvisor() {
                       <h3 className="text-xs font-bold uppercase tracking-wider text-primary/60 mb-2">
                         Financial Overview
                       </h3>
-                      <p className="text-lg md:text-xl font-medium text-foreground leading-relaxed">
+                      <p className="text-base md:text-xl font-medium text-foreground leading-relaxed">
                         {insights.summary}
                       </p>
                     </div>

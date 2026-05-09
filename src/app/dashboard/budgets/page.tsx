@@ -41,11 +41,12 @@ export default function BudgetsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [error, setError] = useState<string | null>(null);
   const { currency, formatCurrency } = useCurrency();
-  const { readOnly } = useAuth();
+  const { user, readOnly } = useAuth();
 
   const {
     register,
@@ -73,9 +74,15 @@ export default function BudgetsPage() {
       setBudgets(budgetData || []);
       setCategories(catData || []);
 
-      // Auto-select first category if none selected
+      // Auto-select first category that doesn't have a budget yet
       if (catData && catData.length > 0) {
-        setValue("categoryId", catData[0].id);
+        const existingCatIds = new Set((budgetData || []).map((b: any) => b.categoryId));
+        const availableCat = catData.find((c: any) => !existingCatIds.has(c.id));
+        if (availableCat) {
+          setValue("categoryId", availableCat.id);
+        } else {
+          setValue("categoryId", catData[0].id);
+        }
       }
     } catch (err: any) {
       setError(
@@ -97,6 +104,7 @@ export default function BudgetsPage() {
       toast.error("Diagnostic Session: Mutation actions are disabled.");
       return;
     }
+    setIsSubmitting(true);
     try {
       await budgetService.setBudget({
         ...data,
@@ -104,12 +112,14 @@ export default function BudgetsPage() {
         month: selectedMonth,
         year: selectedYear,
       });
-      reset({ categoryId: data.categoryId, limit: "" });
+      reset({ categoryId: data.categoryId, limit: 0 });
       setIsModalOpen(false);
       fetchData(true);
       toast.success("Budget saved");
     } catch (error) {
       // Handled by global interceptor
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -165,9 +175,14 @@ export default function BudgetsPage() {
               variant="ghost"
               size="icon"
               className="h-10 w-10 rounded-xl hover:bg-muted transition-all"
-              onClick={() =>
-                setSelectedMonth((prev) => (prev === 1 ? 12 : prev - 1))
-              }
+              onClick={() => {
+                if (selectedMonth === 1) {
+                  setSelectedMonth(12);
+                  setSelectedYear((p) => p - 1);
+                } else {
+                  setSelectedMonth((prev) => prev - 1);
+                }
+              }}
             >
               <ChevronLeft size={20} />
             </Button>
@@ -183,9 +198,14 @@ export default function BudgetsPage() {
               variant="ghost"
               size="icon"
               className="h-10 w-10 rounded-xl hover:bg-muted transition-all"
-              onClick={() =>
-                setSelectedMonth((prev) => (prev === 12 ? 1 : prev + 1))
-              }
+              onClick={() => {
+                if (selectedMonth === 12) {
+                  setSelectedMonth(1);
+                  setSelectedYear((p) => p + 1);
+                } else {
+                  setSelectedMonth((prev) => prev + 1);
+                }
+              }}
             >
               <ChevronRight size={20} />
             </Button>
@@ -201,17 +221,36 @@ export default function BudgetsPage() {
           </span>
         </div>
 
-        <Button
-          onClick={() => !readOnly && setIsModalOpen(true)}
-          disabled={readOnly}
-          className={cn(
-            "w-full md:w-auto h-11 px-8 rounded-xl bg-primary text-primary-foreground font-bold active:scale-95 transition-all gap-2",
-            readOnly && "opacity-50 grayscale cursor-not-allowed",
-          )}
-        >
-          <Plus size={18} />
-          <span>{readOnly ? "Locked" : "New Budget"}</span>
-        </Button>
+        <div className="flex flex-wrap gap-4 w-full sm:w-auto">
+          <div className="flex-1 sm:flex-none premium-card px-6 py-3 rounded-2xl border-border/40 flex items-center gap-4">
+            <div className="h-10 w-10 bg-primary/10 text-primary rounded-xl flex items-center justify-center border border-primary/20">
+              <TrendingUp size={20} />
+            </div>
+            <div>
+              <p className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">
+                Total Budgeted
+              </p>
+              <p className="text-lg font-black tabular-nums text-foreground">
+                {formatCurrency(
+                  budgets.reduce((sum, b) => sum + Number(b.limit), 0),
+                )}
+              </p>
+            </div>
+          </div>
+
+          <Button
+            onClick={() => !readOnly && setIsModalOpen(true)}
+            disabled={readOnly}
+            className={cn(
+              "flex-1 sm:flex-none h-12 px-8 rounded-xl bg-primary text-primary-foreground font-black uppercase tracking-widest text-xs shadow-xl active:scale-95 transition-all gap-2",
+              readOnly && "opacity-50 grayscale cursor-not-allowed",
+            )}
+          >
+            <Plus size={18} />
+            <span>{readOnly ? "Locked" : "New Budget"}</span>
+          </Button>
+        </div>
+      </div>
 
         <CustomModal
           isOpen={isModalOpen}
@@ -233,15 +272,44 @@ export default function BudgetsPage() {
                       <SelectValue placeholder="Select Category" />
                     </SelectTrigger>
                     <SelectContent className="rounded-xl border-none shadow-2xl">
-                      {categories.map((cat) => (
-                        <SelectItem
-                          key={cat.id}
-                          value={cat.id}
-                          className="rounded-lg font-bold"
-                        >
-                          {capitalize(cat.name)}
-                        </SelectItem>
-                      ))}
+                      {categories
+                        .filter((cat) => {
+                          const hasBudget = budgets.some(
+                            (b) => b.categoryId === cat.id,
+                          );
+                          return !hasBudget;
+                        })
+                        .map((cat) => (
+                          <SelectItem
+                            key={cat.id}
+                            value={cat.id}
+                            className="rounded-lg font-bold"
+                          >
+                            {capitalize(cat.name)}
+                          </SelectItem>
+                        ))}
+                      {categories.filter((cat) =>
+                        budgets.some((b) => b.categoryId === cat.id),
+                      ).length > 0 && (
+                        <>
+                          <div className="px-2 py-1.5 text-[9px] font-black uppercase tracking-widest text-muted-foreground/30 border-t border-border/10 mt-1">
+                            Already Budgeted
+                          </div>
+                          {categories
+                            .filter((cat) =>
+                              budgets.some((b) => b.categoryId === cat.id),
+                            )
+                            .map((cat) => (
+                              <SelectItem
+                                key={cat.id}
+                                value={cat.id}
+                                className="rounded-lg font-bold opacity-40"
+                              >
+                                {capitalize(cat.name)} (Overwrite)
+                              </SelectItem>
+                            ))}
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 )}
@@ -275,17 +343,21 @@ export default function BudgetsPage() {
 
             <Button
               type="submit"
-              disabled={readOnly}
+              disabled={readOnly || isSubmitting}
               className={cn(
                 "w-full h-18 bg-primary text-primary-foreground hover:scale-[1.02] rounded-2xl font-black uppercase tracking-[0.2em] text-xs transition-all shadow-2xl active:scale-95",
-                readOnly && "opacity-50 grayscale cursor-not-allowed",
+                (readOnly || isSubmitting) &&
+                  "opacity-50 grayscale cursor-not-allowed",
               )}
             >
-              {readOnly ? "Locked: Diagnostic Session" : "Save Goal"}
+              {readOnly
+                ? "Locked: Diagnostic Session"
+                : isSubmitting
+                  ? "Saving..."
+                  : "Save Goal"}
             </Button>
           </form>
         </CustomModal>
-      </div>
 
       <div className="w-full">
         {loading ? (
@@ -320,7 +392,7 @@ export default function BudgetsPage() {
             className="py-20"
           />
         ) : budgets.length === 0 ? (
-          <div className="premium-card rounded-3xl p-24 text-center border-dashed">
+          <div className="premium-card rounded-3xl p-10 text-center border-dashed">
             <div className="w-16 h-16 bg-primary/5 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-primary/10">
               <CalendarIcon size={32} className="text-primary/20" />
             </div>

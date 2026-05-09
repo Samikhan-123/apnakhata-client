@@ -6,8 +6,8 @@ export function LedgerSkeleton() {
       {/* Header Skeleton */}
       <header className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
         <div className="space-y-2">
-          <Skeleton className="h-10 md:h-14 w-48 md:w-80 rounded-2xl" />
-          <Skeleton className="h-4 md:h-5 w-64 md:w-[450px] rounded-lg" />
+          <Skeleton className="h-10 md:h-14 w-full max-w-[240px] md:max-w-80 rounded-2xl" />
+          <Skeleton className="h-4 md:h-5 w-full max-w-[380px] md:max-w-[450px] rounded-lg" />
         </div>
         <Skeleton className="h-11 w-full md:w-44 rounded-xl shrink-0" />
       </header>
@@ -17,7 +17,7 @@ export function LedgerSkeleton() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="premium-card rounded-2xl p-5 h-28 flex flex-col justify-between border-border/10"
+            className="premium-card rounded-2xl md:rounded-3xl p-5 h-28 flex flex-col justify-between border-border/10"
           >
             <div className="flex justify-between items-start">
               <Skeleton className="h-9 w-9 rounded-lg" />
@@ -32,15 +32,15 @@ export function LedgerSkeleton() {
       </div>
 
       {/* Unified Filters Skeleton (Matched to LedgerFilters) */}
-      <div className="premium-card p-5 md:p-6 rounded-3xl border border-border/10">
+      <div className="premium-card p-5 md:p-6 rounded-2xl md:rounded-3xl border border-border/10">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div className="flex flex-wrap items-center gap-3">
-            <Skeleton className="h-11 w-36 rounded-xl" /> {/* Month Picker */}
-            <Skeleton className="h-11 w-32 rounded-xl" /> {/* Type Select */}
-            <Skeleton className="h-11 w-40 rounded-xl" />{" "}
+            <Skeleton className="h-11 w-full max-w-[140px] md:w-36 rounded-xl" /> {/* Month Picker */}
+            <Skeleton className="h-11 w-full max-w-[120px] md:w-32 rounded-xl" /> {/* Type Select */}
+            <Skeleton className="h-11 w-full max-w-[160px] md:w-40 rounded-xl" />{" "}
             {/* Category Select */}
           </div>
-          <Skeleton className="h-11 w-44 rounded-xl" /> {/* Export Button */}
+          <Skeleton className="h-11 w-full md:w-44 rounded-xl" /> {/* Export Button */}
         </div>
       </div>
 

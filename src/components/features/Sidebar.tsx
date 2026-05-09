@@ -18,6 +18,7 @@ import {
   Download,
   Smartphone,
   Brain,
+  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -38,6 +39,7 @@ const menuGroups = [
       { name: "Digital Ledger", icon: ReceiptText, href: "/dashboard/ledger" },
       { name: "Categories", icon: Tags, href: "/dashboard/categories" },
       { name: "Budgets", icon: PiggyBank, href: "/dashboard/budgets" },
+      { name: "Goals", icon: Target, href: "/dashboard/goals" },
       { name: "Schedules", icon: RefreshCcw, href: "/dashboard/recurring" },
     ],
   },

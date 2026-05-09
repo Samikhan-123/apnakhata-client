@@ -42,7 +42,7 @@ export default function DashboardLayout({
     <MainLayout>
       <GlobalErrorBoundary>
         {isMaintenance && <MaintenanceOverlay />}
-        <FadeIn className="p-5 md:p-8 glass-card border md:border md:border-border/20 rounded-[2rem] md:rounded-[2rem] min-h-[calc(100vh-6rem)] md:min-h-[calc(100vh-8rem)] shadow-none md:shadow-2xl shadow-slate-200/5">
+        <FadeIn className="p-4 md:p-8 glass-card border-x-0 md:border md:border-border/20 rounded-[1.5rem] md:rounded-[2.5rem] min-h-[calc(100vh-5rem)] md:min-h-[calc(100vh-8rem)] shadow-none md:shadow-2xl shadow-slate-200/5">
           {children}
         </FadeIn>
       </GlobalErrorBoundary>

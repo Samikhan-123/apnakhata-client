@@ -140,12 +140,11 @@ export const LedgerEntryForm = ({
       return;
     }
 
-    // Frontend Balance Validations
+    // Frontend Balance Validations — only for NEW entries.
+    // Edits are validated server-side with accurate real-time balance data.
     if (values.type === "EXPENSE" && !initialData) {
       if (totalIncome <= 0) {
-        toast.error(
-          "Process Income First! You need funds before adding an expense.",
-        );
+        toast.error("Process Income First! You need funds before adding an expense.");
         return;
       }
       if (Number(values.amount) > (remainingBalance || 0)) {

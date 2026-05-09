@@ -33,13 +33,11 @@ export const NetworkProvider = ({
       setShowOnlineFeedback(true);
 
       const queueSize = await offlineService.getQueueSize();
-      if (queueSize === 0) {
-        toast.success("Back Online", {
-          description: "You are now connected to the internet.",
-          icon: <Wifi className="w-4 h-4 text-emerald-500" />,
-          duration: 3000,
-        });
-      }
+      // toast.success("Back Online", {
+      //   description: "You are now connected to the internet.",
+      //   icon: <Wifi className="w-4 h-4 text-emerald-500" />,
+      //   duration: 3000,
+      // });
 
       // Trigger sync
       offlineService.processQueue(api);

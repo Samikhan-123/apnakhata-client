@@ -11,7 +11,7 @@ export const recurringService = {
     amount: number;
     description: string;
     type: "INCOME" | "EXPENSE";
-    frequency: "TEN_SECONDS" | "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
+    frequency: "DAILY" | "WEEKLY" | "MONTHLY" | "YEARLY";
     nextExecution?: string;
   }) {
     const { data: response } = await api.post("/recurring", data);

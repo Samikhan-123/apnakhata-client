@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/card";
 import { Activity } from "lucide-react";
 import { cn, capitalize } from "@/lib/utils";
+import { useWindowSize } from "@/hooks/useWindowSize";
 
 const COLORS = [
   "#6366f1", // Indigo
@@ -63,6 +64,8 @@ export default function ReportCharts({
   filters,
 }: ReportChartsProps) {
   const [timeframe, setTimeframe] = useState<"1M" | "6M" | "1Y">("6M");
+  const { width } = useWindowSize();
+  const isMobile = width > 0 && width < 640;
 
   const getSlicingLogic = () => {
     const rawData = stats?.monthlyTrends || [];
@@ -322,14 +325,14 @@ export default function ReportCharts({
                     fill="url(#colorIncome)"
                     name="Income"
                     radius={[4, 4, 0, 0]}
-                    barSize={window.innerWidth < 640 ? 12 : 24}
+                    barSize={isMobile ? 12 : 24}
                   />
                   <Bar
                     dataKey="expense"
                     fill="url(#colorExpense)"
                     name="Expense"
                     radius={[4, 4, 0, 0]}
-                    barSize={window.innerWidth < 640 ? 12 : 24}
+                    barSize={isMobile ? 12 : 24}
                   />
                   <Line
                     type="monotone"
@@ -390,8 +393,8 @@ export default function ReportCharts({
                       data={stats?.categoryBreakdown}
                       cx="50%"
                       cy="50%"
-                      innerRadius={window.innerWidth < 640 ? 70 : 90}
-                      outerRadius={window.innerWidth < 640 ? 100 : 125}
+                      innerRadius={isMobile ? 70 : 90}
+                      outerRadius={isMobile ? 100 : 125}
                       paddingAngle={8}
                       dataKey="value"
                       stroke="none"
@@ -445,6 +448,19 @@ export default function ReportCharts({
               </div>
 
               <div className="xl:col-span-7 p-8 md:p-10 bg-muted/5">
+                {stats?.categoryBreakdown?.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center h-full py-20 text-center">
+                    <div className="w-12 h-12 rounded-2xl bg-muted/30 flex items-center justify-center mb-4 border border-border/10">
+                      <Activity size={20} className="text-muted-foreground/30" />
+                    </div>
+                    <p className="text-[11px] font-black uppercase tracking-widest text-muted-foreground/40">
+                      No expenses in this period
+                    </p>
+                    <p className="text-[10px] font-medium text-muted-foreground/30 mt-1 max-w-xs">
+                      Add expense records to see your category breakdown.
+                    </p>
+                  </div>
+                ) : (
                 <div className="space-y-6">
                   {stats?.categoryBreakdown?.map((cat: any, idx: number) => (
                     <div key={idx} className="group cursor-pointer">
@@ -463,7 +479,7 @@ export default function ReportCharts({
                               {capitalize(cat.name)}
                             </p>
                             <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest font-bold">
-                              {cat.count} Entries
+                              {cat.count ?? 0} {cat.count === 1 ? "Entry" : "Entries"}
                             </p>
                           </div>
                         </div>
@@ -488,6 +504,7 @@ export default function ReportCharts({
                     </div>
                   ))}
                 </div>
+                )}
               </div>
             </div>
           </CardContent>

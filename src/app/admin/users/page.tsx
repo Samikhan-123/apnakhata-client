@@ -319,7 +319,7 @@ export default function UserManagementPage() {
             placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-11 md:h-12 pl-12 pr-12 font-medium text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+            className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-11 md:h-12 pl-12 pr-12 font-medium text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted-foreground/30"
           />
           {search && (
             <Button
@@ -358,7 +358,7 @@ export default function UserManagementPage() {
                 )}
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-80 p-6 rounded-[2rem] premium-card border-border/20 shadow-2xl sapphire-glow">
+            <PopoverContent className="w-[calc(100vw-2rem)] sm:w-80 p-5 md:p-6 rounded-2xl md:rounded-[2rem] premium-card border-border/20 shadow-2xl sapphire-glow">
               <div className="space-y-6">
                 <div className="flex items-center justify-between">
                   <h3 className="font-black text-xs uppercase tracking-widest text-foreground">
@@ -535,13 +535,13 @@ export default function UserManagementPage() {
           Array.from({ length: 4 }).map((_, i) => (
             <div
               key={i}
-              className="premium-card p-6 rounded-3xl animate-pulse space-y-4"
+              className="premium-card p-5 md:p-6 rounded-2xl md:rounded-3xl animate-pulse space-y-4"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-muted rounded-2xl" />
-                <div className="space-y-2">
-                  <div className="h-4 w-32 bg-muted rounded-md" />
-                  <div className="h-3 w-48 bg-muted rounded-md" />
+                <div className="w-12 h-12 bg-muted rounded-xl md:rounded-2xl" />
+                <div className="space-y-2 flex-1">
+                  <div className="h-4 w-full max-w-[120px] bg-muted rounded-md" />
+                  <div className="h-3 w-full max-w-[180px] bg-muted rounded-md" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/5">
@@ -561,7 +561,7 @@ export default function UserManagementPage() {
           filteredUsers.map((user) => (
             <FadeIn
               key={user.id}
-              className="premium-card p-6 rounded-3xl border border-border/10 space-y-5"
+              className="premium-card p-5 md:p-6 rounded-2xl md:rounded-3xl border border-border/10 space-y-5"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-4">

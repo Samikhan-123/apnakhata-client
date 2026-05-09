@@ -214,10 +214,10 @@ api.interceptors.response.use(
         data: JSON.parse(error.config.data || "{}"),
         headers: error.config.headers,
       });
-      toast.info("Saved offline. Changes will sync when reconnected.", {
-        description: `Your request is pending.`,
-        duration: 5000,
-      });
+      // toast.info("Saved offline. Changes will sync when reconnected.", {
+      //   description: `Your request is pending.`,
+      //   duration: 5000,
+      // });
 
       return Promise.resolve({ data: { success: true, offline: true } });
     }

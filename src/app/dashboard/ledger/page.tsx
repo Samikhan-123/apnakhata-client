@@ -50,18 +50,10 @@ export default function LedgerPage() {
   const { user } = useAuth();
   const now = new Date();
   const defaultStart = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    1,
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
   ).toISOString();
   const defaultEnd = new Date(
-    now.getFullYear(),
-    now.getMonth() + 1,
-    0,
-    23,
-    59,
-    59,
-    999,
+    Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999),
   ).toISOString();
 
   const [ledgerEntries, setLedgerEntries] = useState<any[]>([]);
@@ -305,11 +297,11 @@ export default function LedgerPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[
             {
-              label: "Available Balance",
-              value: allTimeOverview?.remainingBalance || 0,
+              label: "Period Savings",
+              value: overview?.remainingBalance || 0,
               icon: Wallet,
               color: "primary",
-              isGlobal: true,
+              description: "For selected period",
             },
             {
               label: "Total Inflow",
@@ -343,9 +335,9 @@ export default function LedgerPage() {
                     <span className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest block">
                       {stat.label}
                     </span>
-                    {stat.isGlobal && (
+                    {stat.description && (
                       <span className="text-[8px] font-bold text-primary/40 uppercase tracking-tighter">
-                        Global Total
+                        {stat.description}
                       </span>
                     )}
                   </div>

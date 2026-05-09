@@ -35,11 +35,11 @@ export default function AuditLogPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<Record<string, any> | null>(null);
 
+  const [search, setSearch] = useState("");
   const [filters, setFilters] = useState({
     action: "",
     startDate: "",
     endDate: "",
-    search: "",
   });
 
   useEffect(() => {
@@ -50,9 +50,18 @@ export default function AuditLogPage() {
 
   useEffect(() => {
     if (user?.role === "ADMIN") {
-      fetchLogs(currentPage, filters);
+      fetchLogs(currentPage, { ...filters, search });
     }
   }, [currentPage, filters, user]);
+
+  // Debounced search effect
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (currentPage === 1) fetchLogs(1, { ...filters, search });
+      else setCurrentPage(1);
+    }, 1500); // 1.5 second debounce as requested
+    return () => clearTimeout(timer);
+  }, [search]);
 
   const fetchLogs = async (page: number = 1, currentFilters: any = {}) => {
     setLoading(true);
@@ -160,7 +169,8 @@ export default function AuditLogPage() {
   };
 
   const resetFilters = () => {
-    setFilters({ action: "", startDate: "", endDate: "", search: "" });
+    setSearch("");
+    setFilters({ action: "", startDate: "", endDate: "" });
     setCurrentPage(1);
   };
 
@@ -185,140 +195,138 @@ export default function AuditLogPage() {
         </SlideIn>
       </header>
 
-      {/* Responsive Filter Bar */}
-      <div className="flex-none">
-        <SlideIn delay={0.1} duration={0.5}>
-          <div className="premium-card p-4 md:p-5 rounded-2xl md:rounded-[1.5rem] border border-border/10 space-y-3 md:space-y-4 shadow-xl">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 items-end">
-              <div className="col-span-1 md:col-span-1 space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                  Search
-                </label>
-                <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
-                  <input
-                    type="text"
-                    placeholder="Email or Name..."
-                    value={filters.search}
-                    onChange={(e) =>
-                      handleFilterChange("search", e.target.value)
-                    }
-                    className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 pl-11 pr-4 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted-foreground/30"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5 group/select">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground/40 ml-1 group-focus-within/select:text-primary transition-colors">
-                  Event Type
-                </label>
-                <div className="relative transition-transform active:scale-[0.98]">
-                  <select
-                    value={filters.action}
-                    onChange={(e) =>
-                      handleFilterChange("action", e.target.value)
-                    }
-                    className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 px-4 pr-10 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all appearance-none cursor-pointer hover:bg-muted/30 hover:border-border/60 sapphire-scrollbar-select"
-                  >
-                    <option value="" className="bg-background">
-                      All Action Anomalies
-                    </option>
-                    <option value="BAN_USER" className="bg-background">
-                      Ban User
-                    </option>
-                    <option value="REACTIVATE_USER" className="bg-background">
-                      Reactivate User
-                    </option>
-                    <option value="PROMOTE_ADMIN" className="bg-background">
-                      Promote Admin
-                    </option>
-                    <option value="DEMOTE_USER" className="bg-background">
-                      Demote User
-                    </option>
-                    <option value="VERIFY_USER" className="bg-background">
-                      Verify User
-                    </option>
-                    <option value="UNVERIFY_USER" className="bg-background">
-                      Unverify User
-                    </option>
-                    <option value="SCHEDULE_DELETION" className="bg-background">
-                      Schedule Deletion
-                    </option>
-                    <option value="CANCEL_DELETION" className="bg-background">
-                      Restore User
-                    </option>
-                    <option
-                      value="USER_REQUESTED_DELETION"
-                      className="bg-background"
-                    >
-                      Self-Deletion Request
-                    </option>
-                    <option value="STAFF_LOGIN" className="bg-background">
-                      Staff Login
-                    </option>
-                    <option
-                      value="SYSTEM_MAINTENANCE"
-                      className="bg-background"
-                    >
-                      System Maintenance
-                    </option>
-                  </select>
-                  <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none opacity-40 group-focus-within/select:opacity-100 group-focus-within/select:text-primary transition-all">
-                    <ChevronRight className="h-3 w-3 rotate-90" />
-                  </div>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                  Start Date
-                </label>
-                <input
-                  type="date"
-                  value={filters.startDate}
-                  onChange={(e) =>
-                    handleFilterChange("startDate", e.target.value)
-                  }
-                  className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 px-4 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="text-[9px] font-black uppercase tracking-widest text-muted-foreground ml-1">
-                  End Date
-                </label>
-                <input
-                  type="date"
-                  value={filters.endDate}
-                  onChange={(e) =>
-                    handleFilterChange("endDate", e.target.value)
-                  }
-                  className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-10 md:h-11 px-4 font-bold text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-border/5">
-              <Button
-                onClick={resetFilters}
-                variant="outline"
-                className="px-4 md:px-6 h-9 md:h-10 rounded-xl md:rounded-2xl font-bold text-[10px] uppercase tracking-widest hover:bg-muted/50 transition-all border-border/40"
-              >
-                Clear
-              </Button>
-              <Button
-                onClick={() => fetchLogs(1, filters)}
-                className="px-6 md:px-8 h-9 md:h-10 rounded-xl md:rounded-2xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-primary/10 sapphire-glow"
-              >
-                Apply Filters
-              </Button>
-            </div>
+      {/* Adaptive Filters Section */}
+      <div className="flex flex-col md:flex-row gap-3 md:gap-4 flex-none">
+        <div className="relative flex-1 group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/60 group-focus-within:text-primary transition-colors" />
+          <input
+            type="text"
+            placeholder="Search events, admin or target..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-muted/20 border border-border/40 rounded-xl md:rounded-2xl h-11 md:h-12 pl-12 pr-4 font-medium text-xs md:text-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all placeholder:text-muted-foreground/30"
+          />
+        </div>
+        <div className="flex gap-2">
+          {/* Desktop Filters (Visible on md+) */}
+          <div className="hidden md:flex gap-2">
+            <select
+              value={filters.action}
+              onChange={(e) => handleFilterChange("action", e.target.value)}
+              className="bg-muted/20 border border-border/40 rounded-xl h-11 md:h-12 px-4 font-bold text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+            >
+              <option value="">All Actions</option>
+              <option value="BAN_USER">Ban User</option>
+              <option value="REACTIVATE_USER">Reactivate</option>
+              <option value="SYSTEM_MAINTENANCE">Maintenance</option>
+              <option value="STAFF_LOGIN">Staff Login</option>
+            </select>
+            <input
+              type="date"
+              value={filters.startDate}
+              onChange={(e) => handleFilterChange("startDate", e.target.value)}
+              className="bg-muted/20 border border-border/40 rounded-xl h-11 md:h-12 px-4 font-bold text-xs outline-none focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer"
+            />
           </div>
-        </SlideIn>
+
+          {/* Mobile Filter Trigger */}
+          <Button
+            variant="outline"
+            className="md:hidden h-11 rounded-xl px-4 border-border/40 font-bold text-xs gap-2"
+            onClick={() => resetFilters()}
+          >
+            Reset
+          </Button>
+          <Button
+            className="h-11 md:h-12 px-6 md:px-8 rounded-xl md:rounded-2xl font-black text-[10px] uppercase tracking-widest sapphire-glow"
+            onClick={() => fetchLogs(1, filters)}
+          >
+            Apply
+          </Button>
+        </div>
       </div>
 
-      {/* Hybrid Scrolling Audit Table Container */}
-      <div className="w-full flex-none">
+
+
+      {/* Mobile Card View (Shown on small screens) */}
+      <div className="md:hidden space-y-4">
+        {loading ? (
+          Array.from({ length: 5 }).map((_, i) => (
+            <div
+              key={i}
+              className="premium-card p-5 rounded-2xl animate-pulse space-y-4"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-muted rounded-xl" />
+                <div className="space-y-2 flex-1">
+                  <div className="h-4 w-1/2 bg-muted rounded-md" />
+                  <div className="h-3 w-1/3 bg-muted rounded-md" />
+                </div>
+              </div>
+              <div className="h-10 w-full bg-muted rounded-xl" />
+            </div>
+          ))
+        ) : logs.length === 0 ? (
+          <div className="py-20 text-center glass-card rounded-2xl border border-dashed border-border/20">
+            <History className="h-10 w-10 text-muted-foreground/20 mx-auto mb-4" />
+            <p className="text-muted-foreground font-bold text-sm">
+              No anomalies detected.
+            </p>
+          </div>
+        ) : (
+          logs.map((log) => {
+            const meta = getActionMetadata(log.action);
+            const Icon = meta.icon;
+            return (
+              <FadeIn
+                key={log.id}
+                className="premium-card p-5 rounded-2xl border border-border/10 space-y-4"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary/5 rounded-xl flex items-center justify-center border border-primary/10 font-bold text-primary text-xs">
+                      {log.admin?.name?.[0].toUpperCase() || "S"}
+                    </div>
+                    <div>
+                      <p className="text-xs font-bold text-foreground">
+                        {log.admin?.name || "SYSTEM"}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground">
+                        {format(new Date(log.createdAt), "MMM dd, hh:mm a")}
+                      </p>
+                    </div>
+                  </div>
+                  <div
+                    className={cn(
+                      "p-2 rounded-lg border",
+                      meta.bgColor,
+                      meta.borderColor,
+                      meta.textColor,
+                    )}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </div>
+                </div>
+
+                <div className="bg-muted/30 p-3 rounded-xl border border-border/5">
+                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mb-1">
+                    Action Target
+                  </p>
+                  <p className="text-xs font-bold text-foreground">
+                    {formatAction(log.action)} →{" "}
+                    <span className="text-primary">
+                      {log.target?.name || log.target?.email || "System Core"}
+                    </span>
+                  </p>
+                </div>
+              </FadeIn>
+            );
+          })
+        )}
+      </div>
+
+      {/* Hybrid Scrolling Audit Table Container (Hidden on mobile) */}
+      <div className="w-full flex-none hidden md:block">
         <FadeIn className="w-full" duration={0.7}>
           <div className="premium-card rounded-2xl md:rounded-[2rem] overflow-hidden border border-border/10">
             <div className="w-full overflow-x-auto sapphire-scrollbar pb-2">
@@ -346,7 +354,15 @@ export default function AuditLogPage() {
                         <td
                           colSpan={4}
                           className="px-6 md:px-8 py-5 md:py-6 h-16 md:h-20 bg-muted/5"
-                        ></td>
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="h-10 w-10 bg-muted rounded-xl shrink-0" />
+                            <div className="space-y-2 flex-1">
+                              <div className="h-4 w-full max-w-[200px] bg-muted rounded-md" />
+                              <div className="h-3 w-full max-w-[150px] bg-muted rounded-md" />
+                            </div>
+                          </div>
+                        </td>
                       </tr>
                     ))
                   ) : error ? (

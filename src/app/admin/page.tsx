@@ -103,13 +103,14 @@ export default function AdminDashboardPage() {
 
   if (loading) {
     return (
-      <div className="animate-pulse space-y-8 p-8">
-        <div className="h-12 w-64 bg-muted rounded-xl" />
+      <div className="animate-pulse space-y-8 p-5 md:p-8">
+        <div className="h-10 md:h-12 w-full max-w-[240px] md:w-64 bg-muted rounded-xl" />
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="h-32 bg-muted rounded-3xl" />
+            <div key={i} className="h-32 bg-muted rounded-2xl md:rounded-3xl" />
           ))}
         </div>
+        <div className="h-64 md:h-80 w-full bg-muted rounded-[1.5rem] md:rounded-[3rem]" />
       </div>
     );
   }
@@ -186,10 +187,10 @@ export default function AdminDashboardPage() {
               System Command Center
             </span>
           </div>
-          <h1 className="text-4xl font-black tracking-tight text-foreground">
+          <h1 className="text-3xl md:text-4xl font-black tracking-tight text-foreground">
             Global Overview
           </h1>
-          <p className="text-muted-foreground font-medium mt-1">
+          <p className="text-sm md:text-base text-muted-foreground font-medium mt-1">
             Real-time platform metrics and financial health monitoring.
           </p>
         </SlideIn>
@@ -203,15 +204,15 @@ export default function AdminDashboardPage() {
             exit={{ opacity: 0, height: 0, marginTop: 0 }}
             className="overflow-hidden"
           >
-            <div className="premium-card p-6 rounded-[2.5rem] bg-emerald-500/[0.03] border-emerald-500/20 relative group">
+            <div className="premium-card p-5 md:p-8 rounded-2xl md:rounded-[2.5rem] bg-emerald-500/[0.03] border-emerald-500/20 relative group">
               <button
                 onClick={() => setMaintenanceResults(null)}
-                className="absolute top-6 right-6 p-2 rounded-xl bg-muted/40 hover:bg-muted text-muted-foreground transition-all"
+                className="absolute top-4 right-4 md:top-6 md:right-6 p-2 rounded-xl bg-muted/40 hover:bg-muted text-muted-foreground transition-all"
               >
                 <X className="h-4 w-4" />
               </button>
-              <div className="flex flex-col md:flex-row md:items-center gap-6">
-                <div className="h-14 w-14 rounded-[1.5rem] bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-emerald-500 sapphire-glow">
+              <div className="flex flex-col md:flex-row md:items-center gap-5 md:gap-6">
+                <div className="h-14 w-14 rounded-xl md:rounded-[1.5rem] bg-emerald-500/10 flex items-center justify-center border border-emerald-500/20 text-emerald-500 sapphire-glow">
                   <CheckCircle2 className="h-7 w-7" />
                 </div>
                 <div className="flex-1 space-y-1">
@@ -255,8 +256,8 @@ export default function AdminDashboardPage() {
       {/* Primary Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {statCards.map((stat, i) => (
-          <FadeIn key={stat.title} delay={i * 0.1}>
-            <div className="premium-card p-6 rounded-[2.5rem] border border-border/10 overflow-hidden group hover:border-primary/30 transition-all relative">
+          <FadeIn key={stat.title} delay={0.1 + i * 0.1}>
+            <div className="premium-card p-6 rounded-2xl md:rounded-[2.5rem] border border-border/10 overflow-hidden group hover:border-primary/30 transition-all relative">
               <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <stat.icon className="w-24 h-24" />
               </div>
@@ -300,8 +301,8 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
         {/* Activity Trend Chart */}
-        <FadeIn className="lg:col-span-1" delay={0.4}>
-          <div className="premium-card p-8 rounded-[3rem] border border-border/10 h-full flex flex-col">
+        <FadeIn className="lg:col-span-1" delay={0.5}>
+          <div className="premium-card p-5 md:p-8 rounded-2xl md:rounded-[3rem] border border-border/10 h-full flex flex-col">
             <div className="flex justify-between items-start mb-10">
               <div>
                 <h2 className="text-xl font-black text-foreground tracking-tight">
@@ -328,7 +329,7 @@ export default function AdminDashboardPage() {
                 </Button>
               </div>
             </div>
-            <div className="h-72 w-full mt-auto">
+            <div className="h-64 md:h-80 w-full mt-auto">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={financialStats?.activityTrends || []}>
                   <defs>
@@ -422,8 +423,8 @@ export default function AdminDashboardPage() {
         </FadeIn>
 
         {/* Financial Distribution */}
-        <FadeIn delay={0.5}>
-          <div className="premium-card p-8 rounded-[3rem] border border-border/10 h-full">
+        <FadeIn delay={0.6}>
+          <div className="premium-card p-5 md:p-8 rounded-2xl md:rounded-[3rem] border border-border/10 h-full">
             <h2 className="text-xl font-black text-foreground tracking-tight mb-8">
               Asset Liquidity
             </h2>
@@ -524,8 +525,8 @@ export default function AdminDashboardPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 pb-12">
         {/* Global Ledger Pulse */}
-        <FadeIn delay={0.6}>
-          <div className="premium-card p-8 rounded-[3rem] border border-border/10">
+        <FadeIn delay={0.7}>
+          <div className="premium-card p-5 md:p-8 rounded-2xl md:rounded-[3rem] border border-border/10">
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
                 <Scale className="h-5 w-5 text-primary" />
@@ -601,8 +602,8 @@ export default function AdminDashboardPage() {
         </FadeIn>
 
         {/* Top Active Users Engagement */}
-        <FadeIn delay={0.65}>
-          <div className="premium-card p-8 rounded-[3rem] border border-border/10">
+        <FadeIn delay={0.8}>
+          <div className="premium-card p-5 md:p-8 rounded-2xl md:rounded-[3rem] border border-border/10">
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-xl font-black tracking-tight flex items-center gap-2 text-foreground">
                 <LucideActivity className="h-5 w-5 text-indigo-500" />
@@ -662,8 +663,8 @@ export default function AdminDashboardPage() {
         </FadeIn>
 
         {/* System Infrastructure */}
-        <FadeIn delay={0.7}>
-          <div className="premium-card p-8 rounded-[3rem] border border-border/10 flex flex-col h-full">
+        <FadeIn delay={0.9}>
+          <div className="premium-card p-5 md:p-8 rounded-2xl md:rounded-[3rem] border border-border/10 flex flex-col h-full">
             <div className="flex justify-between items-center mb-8">
               <h3 className="text-xl font-black tracking-tight flex items-center gap-2">
                 <Globe className="h-5 w-5 text-amber-500" />

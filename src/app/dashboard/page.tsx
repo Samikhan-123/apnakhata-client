@@ -149,7 +149,7 @@ export default function DashboardPage() {
               },
             ].map((stat, i) => (
               <SlideIn key={stat.label} delay={0.1 + i * 0.1} duration={0.5}>
-                <div className="premium-card rounded-3xl p-7 group relative overflow-hidden h-full">
+                <div className="premium-card rounded-2xl md:rounded-3xl p-6 md:p-7 group relative overflow-hidden h-full active:scale-[0.98] md:active:scale-100 transition-transform">
                   <div className="flex flex-col h-full justify-between">
                     <div className="flex justify-between items-start mb-6">
                       <div
@@ -184,7 +184,7 @@ export default function DashboardPage() {
 
           {/* Analytics Section - Massive Panel */}
           <FadeIn delay={0.4} duration={0.6}>
-            <div className="premium-card rounded-[2.5rem] p-6 md:p-8 relative overflow-hidden">
+            <div className="premium-card rounded-2xl md:rounded-[2.5rem] p-5 md:p-8 relative overflow-hidden">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
                 <div>
                   <h3 className="text-2xl font-bold text-foreground tracking-tight">
@@ -215,7 +215,7 @@ export default function DashboardPage() {
                   </div>
                 </div>
               </div>
-              <div className="h-[450px]">
+              <div className="h-[300px] md:h-[450px]">
                 <DashboardCharts stats={stats} />
               </div>
             </div>

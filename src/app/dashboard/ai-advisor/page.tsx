@@ -12,11 +12,11 @@ export default function AIAdvisorPage() {
       <SlideIn duration={0.5}>
         <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
-            <h1 className="text-4xl font-black text-foreground tracking-tight sm:text-5xl flex items-center gap-4">
-              <Brain className="text-primary h-12 w-12" />
+            <h1 className="text-3xl font-black text-foreground tracking-tight sm:text-5xl flex items-center gap-4">
+              <Brain className="h-8 w-8 sm:h-12 sm:w-12 text-primary" />
               Apna Khata AI Advisor
             </h1>
-            <p className="text-muted-foreground font-medium mt-2 text-lg">
+            <p className="text-muted-foreground font-medium mt-2 text-base sm:text-lg">
               Personalized financial insights powered by <span className="text-primary font-bold">Google Gemini AI</span>.
             </p>
           </div>
@@ -54,9 +54,9 @@ export default function AIAdvisorPage() {
           },
         ].map((feature, i) => (
           <FadeIn key={i} delay={0.3 + i * 0.1}>
-            <div className="premium-card p-6 rounded-3xl h-full border border-border/40 hover:border-primary/20 transition-all group">
-              <div className={`${feature.bg} ${feature.color} w-12 h-12 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
-                <feature.icon size={24} />
+            <div className="premium-card p-6 rounded-2xl md:rounded-3xl h-full border border-border/40 hover:border-primary/20 transition-all group">
+              <div className={`${feature.bg} ${feature.color} w-10 h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
+                <feature.icon size={20} className="md:w-6 md:h-6" />
               </div>
               <h3 className="text-lg font-bold text-foreground mb-2">{feature.title}</h3>
               <p className="text-sm font-medium text-muted-foreground/70 leading-relaxed">
@@ -69,17 +69,17 @@ export default function AIAdvisorPage() {
 
       {/* Pro Tip Banner */}
       <FadeIn delay={0.6}>
-        <div className="relative overflow-hidden rounded-[2rem] bg-primary/5 border border-primary/10 p-8 md:p-10">
+        <div className="relative overflow-hidden rounded-2xl md:rounded-[2rem] bg-primary/5 border border-primary/10 p-6 md:p-10">
           <div className="absolute top-0 right-0 p-10 opacity-[0.03] pointer-events-none">
             <Sparkles size={200} className="text-primary" />
           </div>
-          <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-            <div className="h-16 w-16 bg-primary text-primary-foreground rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30 shrink-0">
-              <Sparkles size={32} />
+          <div className="relative z-10 flex flex-col md:flex-row items-center gap-6 md:gap-8">
+            <div className="h-14 w-14 md:h-16 md:w-16 bg-primary text-primary-foreground rounded-xl md:rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30 shrink-0">
+              <Sparkles size={28} className="md:w-8 md:h-8" />
             </div>
             <div className="text-center md:text-left">
-              <h3 className="text-xl font-black text-foreground mb-2 uppercase tracking-tight">Pro Tip: Keep your categories consistent</h3>
-              <p className="text-muted-foreground font-medium leading-relaxed max-w-2xl">
+              <h3 className="text-lg md:text-xl font-black text-foreground mb-2 uppercase tracking-tight">Pro Tip: Keep your categories consistent</h3>
+              <p className="text-sm md:text-base text-muted-foreground font-medium leading-relaxed max-w-2xl">
                 The AI Advisor works best when you use consistent categories for your expenses. This allows Gemini to identify long-term patterns and give you more accurate savings advice.
               </p>
             </div>

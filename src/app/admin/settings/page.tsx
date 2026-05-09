@@ -139,7 +139,7 @@ export default function SystemSettingsPage() {
         <FadeIn delay={0.1}>
           <div
             className={cn(
-              "premium-card p-6 md:p-10 rounded-[2.5rem] border transition-all duration-500 h-full flex flex-col justify-between",
+              "premium-card p-6 md:p-10 rounded-2xl md:rounded-[2.5rem] border transition-all duration-500 h-full flex flex-col justify-between",
               settings?.maintenanceMode
                 ? "border-rose-500/30 bg-rose-500/[0.03] shadow-rose-900/10"
                 : "border-emerald-500/10 bg-emerald-500/[0.01] hover:border-emerald-500/20 shadow-emerald-900/5",
@@ -217,7 +217,7 @@ export default function SystemSettingsPage() {
 
         {/* User Registration Card */}
         <FadeIn delay={0.2}>
-          <div className="premium-card p-6 md:p-10 rounded-[2.5rem] border border-border/10 h-full flex flex-col justify-between hover:border-primary/20 transition-all duration-300">
+          <div className="premium-card p-6 md:p-10 rounded-2xl md:rounded-[2.5rem] border border-border/10 h-full flex flex-col justify-between hover:border-primary/20 transition-all duration-300">
             <div>
               <div className="flex items-center justify-between mb-8">
                 <div className="p-5 bg-primary/10 rounded-3xl text-primary sapphire-glow/20">
@@ -279,7 +279,7 @@ export default function SystemSettingsPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
         {/* Max Entries Limit */}
         <FadeIn delay={0.3} className="md:col-span-2">
-          <div className="premium-card p-6 md:p-10 rounded-[2.5rem] border border-border/10 flex flex-col justify-between hover:border-blue-500/20 transition-all duration-300 group">
+          <div className="premium-card p-6 md:p-10 rounded-2xl md:rounded-[2.5rem] border border-border/10 flex flex-col justify-between hover:border-blue-500/20 transition-all duration-300 group">
             <div className="flex items-center gap-5 mb-8">
               <div className="p-4 bg-blue-500/10 rounded-2xl text-blue-600 group-hover:scale-110 transition-transform">
                 <Database className="h-6 w-6" />
@@ -327,7 +327,7 @@ export default function SystemSettingsPage() {
       </div>
 
       <FadeIn delay={0.5}>
-        <div className="p-8 md:p-10 bg-primary/[0.03] border border-primary/10 rounded-[2rem] flex flex-col md:flex-row items-center gap-6 shadow-xl sapphire-glow/5">
+        <div className="p-6 md:p-10 bg-primary/[0.03] border border-primary/10 rounded-2xl md:rounded-[2rem] flex flex-col md:flex-row items-center gap-6 shadow-xl sapphire-glow/5">
           <div className="p-4 bg-primary/10 rounded-2xl animate-pulse">
             <AlertTriangle className="h-8 w-8 text-primary" />
           </div>

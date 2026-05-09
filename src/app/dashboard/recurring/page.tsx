@@ -46,6 +46,7 @@ export default function RecurringPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { currency, formatCurrency } = useCurrency();
   const { readOnly } = useAuth();
@@ -142,7 +143,7 @@ export default function RecurringPage() {
       toast.error("Diagnostic Session: Mutation actions are disabled.");
       return;
     }
-    setLoading(true);
+    setIsSubmitting(true);
     try {
       const executionDateTime = new Date(`${data.nextExecution}T12:00:00`);
 
@@ -162,7 +163,7 @@ export default function RecurringPage() {
     } catch (error) {
       // Handled by global interceptor
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -570,16 +571,16 @@ export default function RecurringPage() {
 
           <Button
             type="submit"
-            disabled={readOnly || loading}
+            disabled={readOnly || isSubmitting}
             className={cn(
               "w-full h-16 rounded-2xl bg-primary text-primary-foreground font-black uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 transition-all mt-4",
-              (readOnly || loading) &&
+              (readOnly || isSubmitting) &&
                 "opacity-50 grayscale cursor-not-allowed",
             )}
           >
             {readOnly
               ? "Locked: Diagnostic Session"
-              : loading
+              : isSubmitting
                 ? "Processing..."
                 : "Start Automated Task"}
           </Button>

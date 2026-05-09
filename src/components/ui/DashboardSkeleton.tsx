@@ -6,8 +6,8 @@ export function DashboardSkeleton() {
       {/* Header Skeleton */}
       <header className="flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div className="space-y-2">
-          <Skeleton className="h-10 w-48 rounded-xl" />
-          <Skeleton className="h-5 w-64 rounded-lg" />
+          <Skeleton className="h-10 w-full max-w-[240px] rounded-xl" />
+          <Skeleton className="h-5 w-full max-w-[320px] rounded-lg" />
         </div>
         <Skeleton className="h-11 w-40 rounded-xl" />
       </header>
@@ -17,7 +17,7 @@ export function DashboardSkeleton() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="premium-card rounded-3xl p-6 h-36 flex flex-col justify-between border-border/10"
+            className="premium-card rounded-2xl md:rounded-3xl p-6 h-36 flex flex-col justify-between border-border/10"
           >
             <div className="flex justify-between items-start">
               <Skeleton className="h-10 w-10 rounded-xl" />
@@ -32,18 +32,18 @@ export function DashboardSkeleton() {
       </div>
 
       {/* Chart Skeleton */}
-      <div className="premium-card rounded-[2.5rem] p-6 md:p-8 space-y-6 border-border/10">
+      <div className="premium-card rounded-2xl md:rounded-[2.5rem] p-5 md:p-8 space-y-6 border-border/10">
         <div className="flex justify-between items-center">
           <div className="space-y-2">
             <Skeleton className="h-6 w-32 rounded-lg" />
-            <Skeleton className="h-3.5 w-48 rounded-md" />
+            <Skeleton className="h-3.5 w-full max-w-[180px] rounded-md" />
           </div>
           <div className="flex gap-2">
-            <Skeleton className="h-8 w-16 rounded-xl" />
-            <Skeleton className="h-8 w-16 rounded-xl" />
+            <Skeleton className="h-8 w-12 sm:w-16 rounded-xl" />
+            <Skeleton className="h-8 w-12 sm:w-16 rounded-xl" />
           </div>
         </div>
-        <Skeleton className="h-[320px] w-full rounded-2xl" />
+        <Skeleton className="h-[250px] md:h-[320px] w-full rounded-2xl" />
       </div>
 
       {/* List Skeleton Removed because dashboard doesn't display it */}

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import dynamic from "next/dynamic";
 const ReportCharts = dynamic(
   () => import("@/components/features/ReportCharts"),
@@ -17,6 +17,7 @@ import {
   TrendingDown,
 } from "lucide-react";
 import { ledgerEntryService } from "@/services/ledger-entry.service";
+import { budgetService } from "@/services/budget.service";
 import { ReportFilters } from "@/components/features/ReportFilters";
 import { useCurrency } from "@/context/CurrencyContext";
 import { FadeIn, SlideIn } from "@/components/ui/FramerMotion";
@@ -28,6 +29,19 @@ import { format } from "date-fns";
 import { SyncingIndicator } from "@/components/ui/SyncingIndicator";
 import { ReportsSkeleton } from "@/components/ui/ReportsSkeleton";
 
+// Fix #3: Use UTC boundaries to avoid timezone drift
+const getDefaultFilters = () => {
+  const now = new Date();
+  return {
+    startDate: new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1),
+    ).toISOString(),
+    endDate: new Date(
+      Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 0, 23, 59, 59, 999),
+    ).toISOString(),
+  };
+};
+
 export default function ReportsPage() {
   const [stats, setStats] = useState<Record<string, any> | null>(null);
   const [allTimeStats, setAllTimeStats] = useState<Record<string, any> | null>(null);
@@ -37,53 +51,50 @@ export default function ReportsPage() {
   const { formatCurrency } = useCurrency();
   const { user } = useAuth();
 
-  const getDefaultFilters = () => {
-    const now = new Date();
-    const start = new Date(now.getFullYear(), now.getMonth(), 1);
-    const end = now;
-    return {
-      startDate: start.toISOString(),
-      endDate: end.toISOString(),
-    };
-  };
-
   const [filters, setFilters] = useState<Record<string, any>>(getDefaultFilters());
   const [currentTipIndex, setCurrentTipIndex] = useState(0);
 
-  const fetchStats = async (currentFilters: any = {}, isInitial = false) => {
-    try {
-      if (isInitial) {
-        setLoading(true);
-        setError(null);
-      } else {
-        setIsRefreshing(true);
-      }
+  // Fix #5: Wrap in useCallback to avoid stale closure / unnecessary effect re-runs
+  const fetchStats = useCallback(
+    async (currentFilters: any = {}, isInitial = false) => {
+      try {
+        if (isInitial) {
+          setLoading(true);
+          setError(null);
+        } else {
+          setIsRefreshing(true);
+        }
 
-      const [data, allTimeData] = await Promise.all([
-        ledgerEntryService.getStats(currentFilters),
-        ledgerEntryService.getOverview({}), // Global all-time context
-      ]);
-      setStats(data);
-      setAllTimeStats(allTimeData);
-    } catch (err: any) {
-      if (isInitial)
-        setError(
-          err?.response?.data?.message ||
-            err.message ||
-            "Unable to connect to the server",
-        );
-    } finally {
-      setLoading(false);
-      setIsRefreshing(false);
-    }
-  };
+        // Fix #7 (PDF): Fetch active budgets alongside stats
+        const [data, allTimeData, budgetData] = await Promise.all([
+          ledgerEntryService.getStats(currentFilters),
+          ledgerEntryService.getOverview({}),
+          budgetService.getAll(),
+        ]);
+        setStats({ ...data, activeBudgets: budgetData || [] });
+        setAllTimeStats(allTimeData);
+      } catch (err: any) {
+        if (isInitial)
+          setError(
+            err?.response?.data?.message ||
+              err.message ||
+              "Unable to connect to the server",
+          );
+      } finally {
+        setLoading(false);
+        setIsRefreshing(false);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     fetchStats(filters, !stats);
-  }, [filters]);
+  }, [filters, fetchStats]);
 
-  const getSmartTips = () => {
-    const tips: any[] = [];
+  // Fix #6: Memoize tips so carousel effect doesn't reset unnecessarily
+  const tips = useMemo(() => {
+    const list: any[] = [];
     if (!stats || !stats.monthlyTrends || stats.monthlyTrends.length === 0) {
       return [
         {
@@ -105,14 +116,14 @@ export default function ReportsPage() {
     const savingsRate = income > 0 ? (savings / income) * 100 : 0;
 
     if (savingsRate > 20) {
-      tips.push({
+      list.push({
         title: "Doing Great!",
         text: `You saved ${savingsRate.toFixed(0)}% of your income. A big win!`,
         bgColor: "bg-emerald-950",
         icon: <TrendingUp size={32} className="text-emerald-500" />,
       });
     } else if (savingsRate < 0) {
-      tips.push({
+      list.push({
         title: "Budget Alert",
         text: "You've spent more than you earned. Let's look for savings.",
         bgColor: "bg-rose-950",
@@ -120,18 +131,17 @@ export default function ReportsPage() {
       });
     }
 
-    if (tips.length === 0) {
-      tips.push({
+    if (list.length === 0) {
+      list.push({
         title: "Keep it Up!",
         text: "Tracking every small expense helps build a clear picture.",
         bgColor: "bg-slate-950",
         icon: <Sparkles size={32} className="text-primary" />,
       });
     }
-    return tips;
-  };
+    return list;
+  }, [stats]);
 
-  const tips = getSmartTips();
   const currentTip = tips[currentTipIndex];
 
   useEffect(() => {
@@ -172,9 +182,16 @@ export default function ReportsPage() {
         categoryStats: (stats?.categoryBreakdown || []).map((c: any) => ({
           name: c.name,
           total: c.value,
+          count: c.count,
           percentage: expense > 0 ? (c.value / expense) * 100 : 0,
         })),
-        activeBudgets: [],
+        // Fix #7: Pass real active budget data instead of hardcoded []
+        activeBudgets: (stats?.activeBudgets || []).map((b: any) => ({
+          category: b.category?.name || "Unknown",
+          limit: Number(b.limit),
+          spent: Number(b.spent),
+          progress: b.progress,
+        })),
         period: filters,
       };
       await exportReportToPDF(reportData, user?.name || "User");
@@ -183,6 +200,10 @@ export default function ReportsPage() {
       setIsRefreshing(false);
     }
   };
+
+  // Fix #4: Use period-based balance (income - expense for selected range)
+  const periodNetBalance =
+    (stats?.overview?.totalIncome || 0) - (stats?.overview?.totalExpense || 0);
 
   return (
     <div className="space-y-8 pb-20 px-4 md:px-0">
@@ -232,11 +253,12 @@ export default function ReportsPage() {
               color: "rose",
             },
             {
-              label: "Available Balance",
-              value: allTimeStats?.remainingBalance || 0,
+              // Fix #4: Period-specific balance instead of global all-time
+              label: "Period Net",
+              value: periodNetBalance,
               icon: Wallet,
               color: "primary",
-              isGlobal: true,
+              description: "Selected period",
             },
             {
               label: "Savings Rate",
@@ -276,13 +298,20 @@ export default function ReportsPage() {
                     <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
                       {metric.label}
                     </p>
-                    {metric.isGlobal && (
+                    {"description" in metric && metric.description && (
                       <span className="text-[8px] font-black uppercase tracking-tighter text-primary/40">
-                        Global
+                        {metric.description}
                       </span>
                     )}
                   </div>
-                  <div className="text-2xl font-black tracking-tighter text-foreground">
+                  <div
+                    className={cn(
+                      "text-2xl font-black tracking-tighter",
+                      "isPercentage" in metric && !metric.isPercentage && periodNetBalance < 0
+                        ? "text-rose-500"
+                        : "text-foreground",
+                    )}
+                  >
                     {metric.isPercentage
                       ? `${metric.value}%`
                       : formatCurrency(metric.value)}
@@ -299,7 +328,7 @@ export default function ReportsPage() {
             Analytics Engine Active:{" "}
             <span className="text-foreground">
               {filters.startDate
-                ? `${format(new Date(filters.startDate), "MMM dd")} - ${format(new Date(filters.endDate), "MMM dd")}`
+                ? `${format(new Date(filters.startDate), "MMM dd")} - ${format(new Date(filters.endDate), "MMM dd, yyyy")}`
                 : "Global Period"}
             </span>
           </p>
@@ -311,7 +340,8 @@ export default function ReportsPage() {
             isRefreshing && "pointer-events-none",
           )}
         >
-          <ReportCharts stats={stats} formatCurrency={formatCurrency} />
+          {/* Fix #9: Pass filters so chart shows correct period label */}
+          <ReportCharts stats={stats} formatCurrency={formatCurrency} filters={filters} />
 
           {/* Smart Tips */}
           <div className="lg:col-span-12 xl:col-span-12 no-print mt-10">
