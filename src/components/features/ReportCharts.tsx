@@ -269,7 +269,7 @@ export default function ReportCharts({
                               </div>
                               <div className="pt-2 sm:pt-3 border-t border-white/5 flex items-center justify-between">
                                 <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-primary font-bold">
-                                  Net
+                                  Net Balance
                                 </span>
                                 <span
                                   className={cn(

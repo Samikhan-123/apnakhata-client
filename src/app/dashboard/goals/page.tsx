@@ -634,8 +634,8 @@ export default function GoalsPage() {
             {isActioning
               ? "Processing..."
               : actionModal?.type === "contribute"
-              ? "Save Funds 💰"
-              : "Withdraw Funds"}
+                ? "Save Funds 💰"
+                : "Withdraw Funds"}
           </Button>
         </div>
       </CustomModal>

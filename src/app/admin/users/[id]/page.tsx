@@ -811,6 +811,26 @@ export default function UserDetailPage() {
                         </p>
                       </Tooltip>
                     </div>
+                    <div>
+                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">
+                        Region / State
+                      </p>
+                      <Tooltip content={user.metadata.region || "N/A"}>
+                        <p className="text-[10px] font-bold text-foreground truncate">
+                          {user.metadata.region || "N/A"}
+                        </p>
+                      </Tooltip>
+                    </div>
+                    <div>
+                      <p className="text-[8px] font-black text-muted-foreground uppercase tracking-tighter">
+                        Timezone
+                      </p>
+                      <Tooltip content={user.metadata.timezone || "N/A"}>
+                        <p className="text-[10px] font-bold text-foreground truncate">
+                          {user.metadata.timezone || "N/A"}
+                        </p>
+                      </Tooltip>
+                    </div>
                   </div>
                 </div>
               </div>

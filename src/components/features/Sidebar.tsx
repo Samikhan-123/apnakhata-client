@@ -18,7 +18,6 @@ import {
   Download,
   Smartphone,
   Brain,
-  Target,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -39,7 +38,6 @@ const menuGroups = [
       { name: "Digital Ledger", icon: ReceiptText, href: "/dashboard/ledger" },
       { name: "Categories", icon: Tags, href: "/dashboard/categories" },
       { name: "Budgets", icon: PiggyBank, href: "/dashboard/budgets" },
-      { name: "Goals", icon: Target, href: "/dashboard/goals" },
       { name: "Schedules", icon: RefreshCcw, href: "/dashboard/recurring" },
     ],
   },
@@ -206,21 +204,21 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
 
       {/* Install Prompt Trigger (Sidebar) */}
       {!isStandalone && (
-        <div className="p-6 border-t border-border/40">
+        <div className="p-3 md:p-4 border-t border-border/40">
           <div
             onClick={() => {
               window.dispatchEvent(new CustomEvent("trigger-pwa-install"));
               if (window.innerWidth < 1024) onClose();
             }}
-            className="flex items-center gap-3.5 px-4 py-2.5 rounded-xl transition-all duration-300 font-bold text-sm cursor-pointer group hover:bg-primary/10 text-muted-foreground hover:text-primary border border-transparent hover:border-primary/10"
+            className="flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-300 font-bold text-xs cursor-pointer group hover:bg-primary/5 text-muted-foreground hover:text-primary border border-transparent hover:border-primary/10"
           >
-            <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-all duration-500 shadow-sm border border-primary/10 group-hover:rotate-6">
-              <Smartphone size={18} className="text-primary" />
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-all duration-500 shadow-sm border border-primary/10 group-hover:rotate-6">
+              <Smartphone size={14} className="text-primary" />
             </div>
             <div className="flex flex-col">
-              <span className="leading-tight text-foreground group-hover:text-primary transition-colors">Native Experience</span>
-              <span className="text-[9px] text-muted-foreground/50 font-black uppercase tracking-[0.2em] mt-1">
-                Install Official App
+              <span className="leading-none text-foreground group-hover:text-primary transition-colors font-black text-[11px]">Native Exp.</span>
+              <span className="text-[8px] text-muted-foreground/50 font-black uppercase tracking-widest mt-0.5">
+                Install App
               </span>
             </div>
           </div>

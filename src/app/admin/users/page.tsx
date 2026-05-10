@@ -267,8 +267,10 @@ export default function UserManagementPage() {
     });
   };
 
-  // Filtering is now handled on the backend
-  const filteredUsers = users;
+  // Filtering is now handled on the backend, but we add a client-side guard for safety
+  const filteredUsers = isModerator
+    ? users.filter((u) => u.role !== "ADMIN")
+    : users;
 
   return (
     <div className="flex flex-col h-full space-y-4 md:space-y-8 relative">
@@ -702,11 +704,11 @@ export default function UserManagementPage() {
       </div>
 
       {/* Hybrid Table (Hidden on mobile) */}
-      <div className="w-full flex-none hidden md:block">
+      <div className="w-full flex-none hidden md:block overflow-hidden">
         <FadeIn className="w-full" duration={0.7}>
-          <div className="premium-card rounded-2xl md:rounded-[2rem] overflow-hidden border border-border/10">
-            <div className="w-full overflow-x-auto sapphire-scrollbar pb-2">
-              <table className="w-full text-left border-collapse min-w-[1100px]">
+          <div className="premium-card rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-border/10 sapphire-glow/5">
+            <div className="w-full overflow-x-auto sapphire-scrollbar">
+              <table className="w-full text-left border-collapse min-w-full table-auto">
                 <thead className="sticky top-0 z-20">
                   <tr className="bg-muted/90 backdrop-blur-xl border-b border-border/10">
                     <th className="px-4 py-4 md:py-5 w-12 text-center">
@@ -726,23 +728,23 @@ export default function UserManagementPage() {
                           )}
                       </div>
                     </th>
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                    <th className="px-3 md:px-4 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
                       Platform Member
                     </th>
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                    <th className="px-2 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 text-center">
                       Status
                     </th>
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                    <th className="hidden xl:table-cell px-4 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
                       Auth Role
                     </th>
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                    <th className="hidden 2xl:table-cell px-4 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
                       Connectivity
                     </th>
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
-                      Metric Activity
+                    <th className="hidden 2xl:table-cell px-4 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">
+                      Activity
                     </th>
-                    <th className="px-6 md:px-8 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 text-right">
-                      Operations
+                    <th className="px-4 py-4 md:py-5 text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 text-right">
+                      Ops
                     </th>
                   </tr>
                 </thead>
@@ -851,7 +853,7 @@ export default function UserManagementPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 md:px-8 py-5 md:py-6">
+                        <td className="px-3 md:px-4 py-5 md:py-6">
                           <div className="flex items-center gap-4">
                             <div className="relative">
                               <div className="w-10 h-10 md:w-12 md:h-12 bg-primary/5 rounded-xl md:rounded-2xl flex items-center justify-center border border-primary/10 font-black text-primary sapphire-glow/20 overflow-hidden">
@@ -887,7 +889,7 @@ export default function UserManagementPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 md:px-8 py-5 md:py-6">
+                        <td className="px-2 py-5 md:py-6">
                           <div className="flex flex-col gap-1.5">
                             <div
                               className={cn(
@@ -921,7 +923,7 @@ export default function UserManagementPage() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 md:px-8 py-5 md:py-6">
+                        <td className="hidden xl:table-cell px-4 py-4">
                           <div
                             className={cn(
                               "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] md:text-[10px] font-black uppercase tracking-tighter border",
@@ -937,7 +939,7 @@ export default function UserManagementPage() {
                             {user.role}
                           </div>
                         </td>
-                        <td className="px-6 md:px-8 py-5 md:py-6">
+                        <td className="hidden 2xl:table-cell px-4 py-4">
                           <div className="flex flex-col gap-0.5">
                             <p className="text-[11px] font-black text-foreground selection:bg-primary/30 uppercase tracking-tighter">
                               {user.lastIp || "No IP"}
@@ -961,7 +963,7 @@ export default function UserManagementPage() {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 md:px-8 py-5 md:py-6">
+                        <td className="hidden 2xl:table-cell px-4 py-4">
                           <div className="flex flex-col gap-0.5">
                             <p className="text-xs md:text-sm font-black text-foreground">
                               {user._count?.ledgerEntries || 0}{" "}
@@ -975,7 +977,7 @@ export default function UserManagementPage() {
                             </p>
                           </div>
                         </td>
-                        <td className="px-6 md:px-8 py-5 md:py-6">
+                        <td className="px-4 py-4">
                           <div className="flex items-center justify-end gap-1 md:gap-2">
                             <Tooltip
                               content={

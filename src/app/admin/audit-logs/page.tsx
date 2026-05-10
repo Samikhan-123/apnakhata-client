@@ -48,18 +48,24 @@ export default function AuditLogPage() {
     }
   }, [user, authLoading, router]);
 
+  // Unified fetch that always includes latest state
   useEffect(() => {
     if (user?.role === "ADMIN") {
       fetchLogs(currentPage, { ...filters, search });
     }
   }, [currentPage, filters, user]);
 
-  // Debounced search effect
+  // Debounced search only updates the search state or page
+  // We'll keep the search effect separate but ensure it doesn't double-call
   useEffect(() => {
+    if (!search) return; // Don't trigger on initial empty
     const timer = setTimeout(() => {
-      if (currentPage === 1) fetchLogs(1, { ...filters, search });
-      else setCurrentPage(1);
-    }, 1500); // 1.5 second debounce as requested
+      if (currentPage !== 1) {
+        setCurrentPage(1);
+      } else {
+        fetchLogs(1, { ...filters, search });
+      }
+    }, 1000); // Reduced to 1s for better feel
     return () => clearTimeout(timer);
   }, [search]);
 
@@ -239,7 +245,7 @@ export default function AuditLogPage() {
           </Button>
           <Button
             className="h-11 md:h-12 px-6 md:px-8 rounded-xl md:rounded-2xl font-black text-[10px] uppercase tracking-widest sapphire-glow"
-            onClick={() => fetchLogs(1, filters)}
+            onClick={() => fetchLogs(1, { ...filters, search })}
           >
             Apply
           </Button>
@@ -324,6 +330,21 @@ export default function AuditLogPage() {
           })
         )}
       </div>
+
+      {/* Shared Pagination for both Mobile and Desktop */}
+      {pagination && pagination.totalPages > 1 && (
+        <FadeIn delay={0.2}>
+          <div className="px-6 md:px-8 py-3 md:py-4 premium-card rounded-xl md:rounded-2xl border border-border/10 bg-background/60 backdrop-blur-xl">
+            <PaginationPlus
+              currentPage={currentPage}
+              totalPages={pagination.totalPages}
+              totalResults={pagination.total}
+              limit={pagination.limit}
+              onPageChange={setCurrentPage}
+            />
+          </div>
+        </FadeIn>
+      )}
 
       {/* Hybrid Scrolling Audit Table Container (Hidden on mobile) */}
       <div className="w-full flex-none hidden md:block">
@@ -490,18 +511,7 @@ export default function AuditLogPage() {
               </table>
             </div>
 
-            {/* Anchored Registry Pagination */}
-            {pagination && pagination.totalPages > 1 && (
-              <div className="flex-none px-6 md:px-8 py-3 md:py-4 bg-background/60 backdrop-blur-2xl border-t border-border/5">
-                <PaginationPlus
-                  currentPage={currentPage}
-                  totalPages={pagination.totalPages}
-                  totalResults={pagination.total}
-                  limit={pagination.limit}
-                  onPageChange={setCurrentPage}
-                />
-              </div>
-            )}
+
           </div>
         </FadeIn>
       </div>
